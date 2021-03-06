@@ -3,6 +3,7 @@ stages:
   - build
   - test
   - docker
+  - deploy
 
 node_modules:
   stage: dependencies
@@ -82,3 +83,16 @@ docker-master:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.corteks.net
     - docker build -t registry.corteks.net/epitech/chinese-checkers:latest .
     - docker push registry.corteks.net/epitech/chinese-checkers:latest
+
+deploy-net:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  only:
+    - master
+  tags:
+    - stage
+  dependencies:
+    - docker-master
+  script:
+    - docker run -d -e VIRTUAL_HOST=game.corteks.net -e LETSENCRYPT_HOST=game.corteks.net registry.corteks.net/epitech/chinese-checkers:latest
