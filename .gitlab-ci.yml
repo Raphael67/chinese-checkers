@@ -1,0 +1,35 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  image: node:lts-alpine
+  tags:
+    - docker
+  script:
+    - cd backend
+    - yarn install --pure-lockfile
+    - yarn build
+    - cd ../frontend
+    - yarn install --pure-lockfile
+    - yarn build
+  artifacts:
+    untracked: false
+    expire_in: 7 days
+    paths:
+      - "backend/dist"
+      - "frontend/build"
+
+e2e:
+  stage: test
+  image: node:lts-alpine
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - docker
+  script:
+    - cd backend
+    - yarn test:e2e
+    - cd ../frontend
+    - yarn test
