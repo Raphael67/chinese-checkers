@@ -1,35 +1,84 @@
 stages:
+  - dependencies
   - build
   - test
+  - docker
+
+node_modules:
+  stage: dependencies
+  image: node:lts-alpine
+  only:
+    changes:
+      - backend/yarn.lock
+      - frontend/yarn.lock
+  tags:
+    - docker
+  script:
+    - cd backend
+    - yarn install --pure-lockfile
+    - cd ../frontend
+    - yarn install --pure-lockfile
+  artifacts:
+    name: dependencies
+    untracked: true
 
 build:
   stage: build
   image: node:lts-alpine
   tags:
     - docker
+  dependencies:
+    - node_modules
   script:
     - cd backend
-    - yarn install --pure-lockfile
     - yarn build
     - cd ../frontend
-    - yarn install --pure-lockfile
     - yarn build
   artifacts:
-    untracked: false
-    expire_in: 7 days
-    paths:
-      - "backend/dist"
-      - "frontend/build"
+    untracked: true
+    expire_in: 1 days
+
+unit-test:
+  stage: test
+  image: node:lts-alpine
+  tags:
+    - docker
+  dependencies:
+    - build
+  script:
+    - cd frontend
+    - yarn test
 
 e2e:
   stage: test
   image: node:lts-alpine
-  variables:
-    GIT_STRATEGY: none
   tags:
     - docker
+  dependencies:
+    - build
   script:
     - cd backend
     - yarn test:e2e
-    - cd ../frontend
-    - yarn test
+  artifacts:
+    untracked: false
+    expire_in: 1 days
+    paths:
+      - "backend/dist"
+      - "frontend/build"
+      - "Dockerfile"
+
+docker-master:
+  stage: docker
+  tags:
+    - stage
+  only:
+    - master
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - unit-test
+    - e2e
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.corteks.net
+    - docker build -t registry.corteks.net/epitech/chinese-checkers:latest .
+    - docker push registry.corteks.net/epitech/chinese-checkers:latest
