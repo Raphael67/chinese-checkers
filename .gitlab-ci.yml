@@ -95,4 +95,4 @@ deploy-net:
   dependencies:
     - docker-master
   script:
-    - docker run -d -e VIRTUAL_HOST=game.corteks.net -e LETSENCRYPT_HOST=game.corteks.net registry.corteks.net/epitech/chinese-checkers:latest
+    - docker run -d --name game.corteks.net -e VIRTUAL_HOST=game.corteks.net -e LETSENCRYPT_HOST=game.corteks.net registry.corteks.net/epitech/chinese-checkers:latest
