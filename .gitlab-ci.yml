@@ -1,7 +1,6 @@
 stages:
   - dependencies
   - build
-  - test
   - docker
   - deploy
 
@@ -10,17 +9,22 @@ node_modules:
   image: node:lts-alpine
   only:
     changes:
-      - backend/yarn.lock
-      - frontend/yarn.lock
+      - "backend/yarn.lock"
+      - "frontend/yarn.lock"
   tags:
     - docker
   script:
     - cd backend
-    - yarn install --pure-lockfile
+    - yarn install --cache-folder .yarn --frozen-lockfile
     - cd ../frontend
-    - yarn install --pure-lockfile
+    - yarn install --cache-folder .yarn --frozen-lockfile
+  cache:
+    paths:
+      - backend/node_modules/
+      - backend/.yarn
+      - frontend/node_modules/
+      - frontend/.yarn
   artifacts:
-    name: dependencies
     untracked: true
 
 build:
@@ -31,40 +35,24 @@ build:
   dependencies:
     - node_modules
   script:
-    - cd backend
-    - yarn build
-    - cd ../frontend
-    - yarn build
-  artifacts:
-    untracked: true
-    expire_in: 1 days
-
-unit-test:
-  stage: test
-  image: node:lts-alpine
-  tags:
-    - docker
-  dependencies:
-    - build
-  script:
     - cd frontend
     - yarn test
-
-e2e:
-  stage: test
-  image: node:lts-alpine
-  tags:
-    - docker
-  dependencies:
-    - build
-  script:
-    - cd backend
+    - yarn build
+    - cd ../backend
+    - yarn build
     - yarn test:e2e
+  cache:
+    paths:
+      - backend/node_modules/
+      - backend/.yarn
+      - frontend/node_modules/
+      - frontend/.yarn
   artifacts:
     untracked: false
     expire_in: 1 days
     paths:
       - "backend/dist"
+      - "backend/node_modules"
       - "frontend/build"
       - "Dockerfile"
 
@@ -77,8 +65,7 @@ docker-master:
   variables:
     GIT_STRATEGY: none
   dependencies:
-    - unit-test
-    - e2e
+    - build
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.corteks.net
     - docker build -t registry.corteks.net/epitech/chinese-checkers:latest .
@@ -95,4 +82,6 @@ deploy-net:
   dependencies:
     - docker-master
   script:
-    - docker run -d --name game.corteks.net -e VIRTUAL_HOST=game.corteks.net -e LETSENCRYPT_HOST=game.corteks.net registry.corteks.net/epitech/chinese-checkers:latest
+    - docker stop game.corteks.net || true
+    - docker rm game.corteks.net || true
+    - docker run -d --name game.corteks.net --network corteks_net_nginx_proxy -e VIRTUAL_HOST=game.corteks.net -e VIRTUAL_PORT=8080 -e LETSENCRYPT_HOST=game.corteks.net registry.corteks.net/epitech/chinese-checkers:latest
