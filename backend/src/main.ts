@@ -1,14 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { ConfigService } from './config/config.service';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
+    const configSerice = app.get<ConfigService>(ConfigService);
+
     const config = new DocumentBuilder()
         .setTitle('Chinese checkers')
         .setDescription('The chinese checkers API description')
-        .setVersion('1.0')
+        .setVersion(configSerice.getVersion())
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
