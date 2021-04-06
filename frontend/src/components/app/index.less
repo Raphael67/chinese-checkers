@@ -1,0 +1,214 @@
+@import '~antd/dist/antd.less';
+@import './theme.less';
+@import '../../assets/fonts/d-din.css';
+
+@media (max-width: 640px) {
+    * {
+        box-sizing: border-box;
+    }
+
+    /* passer body (et tous les éléments de largeur fixe) en largeur automatique */
+
+    body {
+        width: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* fixer une largeur maximale de 100% aux éléments potentiellement problématiques */
+
+    img,
+    table,
+    td,
+    blockquote,
+    code,
+    pre,
+    textarea,
+    input,
+    iframe,
+    object,
+    embed,
+    video {
+        max-width: 100%;
+    }
+
+    /* conserver le ratio des images */
+
+    img {
+        height: auto;
+    }
+
+    /* gestion des mots longs */
+
+    textarea,
+    table,
+    td,
+    th,
+    code,
+    pre,
+    samp {
+        -webkit-hyphens: auto; /* césure propre */
+        -moz-hyphens: auto;
+        hyphens: auto;
+        word-wrap: break-word; /* passage à la ligne forcé */
+    }
+
+    code,
+    pre,
+    samp {
+        white-space: pre-wrap; /* passage à la ligne spécifique pour les éléments à châsse fixe */
+    }
+
+    /* Passer à une seule colonne (à appliquer aux éléments multi-colonnes) */
+
+    .element1,
+    .element2 {
+        float: none;
+        width: auto;
+    }
+
+    /* masquer les éléments superflus */
+
+    .hide_mobile {
+        display: none !important;
+    }
+
+    /* Un message personnalisé */
+
+    body:before {
+        display: block;
+        text-align: center;
+        font-style: italic;
+        color: #777;
+    }
+}
+
+@media (max-device-width: 768px) and (orientation: landscape) {
+    html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+}
+
+a {
+    color: #3451a4;
+}
+
+body {
+    font-family: 'd-din';
+    color: black;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+}
+
+.app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.app nav {
+    min-height: 79.4px;
+    display: flex;
+    align-items: center;
+    background: #c1d9ff;
+    color: #3451a4;
+}
+
+.app nav a {
+    color: #3451a4;
+}
+
+.app .browse {
+    margin: 0 0 0 2rem;
+    font-size: 16pt;
+    position: relative;
+    z-index: 10;
+}
+
+.app .title {
+    position: relative;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 16pt;
+    flex: 1;
+    font-weight: bold;
+    left: -2rem;
+}
+
+.app .content {
+    padding: 2rem;
+}
+
+.app .extend {
+    flex: 1;
+}
+
+.app .footer {
+    padding: 2rem;
+    text-align: center;
+}
+
+.app .sub-title {
+    background: cornflowerblue;
+    text-align: center;
+    padding: 0.75rem 0;
+    font-size: 12pt;
+    color: white;
+}
+
+.ant-form-item {
+    margin-bottom: 1rem;
+}
+
+.ant-form-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+.ant-alert-error {
+    > .ant-alert-message {
+        color: red;
+    }
+}
+
+.ant-alert-success {
+    > .ant-alert-message {
+        color: green;
+    }
+}
+
+.ant-alert-info {
+    > .ant-alert-message {
+        color: #1890ff;
+    }
+}
+
+.ant-alert-warning {
+    > .ant-alert-message {
+        color: orange;
+    }
+}
+
+.ant-tabs-tab {
+    padding: 1rem 0;
+}
+
+.ant-divider-horizontal {
+    border-top-width: 2px;
+    color: #ebeaed;
+    margin: 1rem 0;
+}
+
+.ant-menu-horizontal {
+    border-bottom: none;
+}
+
+.ant-layout-footer {
+    position: relative;
+    padding: 1.5rem 3rem;
+}

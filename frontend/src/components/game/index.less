@@ -1,0 +1,43 @@
+@import './board.less';
+.game {
+    display: flex;
+    width: 100%;
+
+    .board-container {
+        display: flex;
+        flex: 1;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+
+        .board();
+    }
+
+    .info-container {
+        display: flex;
+        flex-direction: column;
+        width: 20rem;
+
+        .info {
+            flex: 1;
+
+            .current-game,
+            .players {
+                margin: 2rem;
+
+                .ant-card-head-title {
+                    font-weight: bold;
+                }
+            }
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+
+            button {
+                margin: 0 2rem 2rem 2rem;
+            }
+        }
+    }
+}
