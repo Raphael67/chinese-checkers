@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
+import { GameMoves } from './game-moves.entity';
 import { GamePlayer } from './game-player.entity';
 
 export enum GameStatus {
@@ -30,4 +31,7 @@ export class Game {
 
     @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game)
     public gamePlayers: GamePlayer[];
+
+    @OneToOne(() => GameMoves, gameMoves => gameMoves.game)
+    public moves: GameMoves;
 }

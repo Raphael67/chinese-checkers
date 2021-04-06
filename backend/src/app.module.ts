@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { GameMoves } from './game/game-moves.entity';
 import { GamePlayer } from './game/game-player.entity';
 import { Game } from './game/game.entity';
 import { GameModule } from './game/game.module';
@@ -34,6 +35,7 @@ import { PlayerModule } from './player/player.module';
                         Game,
                         Player,
                         GamePlayer,
+                        GameMoves,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
                 };
