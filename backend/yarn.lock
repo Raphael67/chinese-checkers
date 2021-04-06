@@ -364,13 +364,15 @@
   resolved "https://registry.yarnpkg.com/@corteks/gitversion/-/gitversion-0.3.3.tgz#5049bb012e6a0c24fb2b5baac287b828d3049452"
   integrity sha512-Oj6C+ylJ+ttcQp7WVlpJJ+1o0kdaim+ilLQQKoKXy3fmJQFuN2OsUEFfom11qoXpnGwRgmXPCQbGM3dfogUF4w==
 
-"@corteks/nest-database@^1.0.1":
-  version "1.0.1"
-  resolved "https://gitlab.corteks.net/api/v4/projects/81/packages/npm/@corteks/nest-database/-/@corteks/nest-database-1.0.1.tgz#459813e904488be44a3f20a9ad0244e197e0fb32"
-  integrity sha1-RZgT6QRIi+RKPyCprQJE4Zfg+zI=
+"@corteks/nest-database@^1.0.4":
+  version "1.0.7"
+  resolved "https://gitlab.corteks.net/api/v4/projects/83/packages/npm/@corteks/nest-database/-/@corteks/nest-database-1.0.7.tgz#dbd8228dfe507853404cc4acb35f4604fdb5ae52"
+  integrity sha1-29gijf5QeFNATMSss19GBP21rlI=
   dependencies:
     "@nestjs/common" "^7.6.14"
+    "@nestjs/core" "^7.6.14"
     "@nestjs/typeorm" "^7.1.5"
+    mysql "^2.18.1"
     rxjs "^6.6.6"
     semver "^7.3.4"
     typeorm "^0.2.31"
@@ -615,7 +617,7 @@
     tslib "2.1.0"
     uuid "8.3.2"
 
-"@nestjs/core@^7.5.1":
+"@nestjs/core@^7.5.1", "@nestjs/core@^7.6.14":
   version "7.6.14"
   resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-7.6.14.tgz#b3be15506aee33b847abce993a7371439b292dd9"
   integrity sha512-iAeQIsC79xcLTpga3he48ROX4g561VFsfbksicqotrFy0k9czKxVtHxevsnwo8KzFsYXQqOCO6XYI8MsuAjMcg==
@@ -793,6 +795,13 @@
   version "3.4.34"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.34.tgz#170a40223a6d666006d93ca128af2beb1d9b1901"
   integrity sha512-ePPA/JuI+X0vb+gSWlPKOY0NdNAie/rPUqX2GUPpbZwiKTkSPhjXWuee47E4MtE54QVzGCQMQkAL6JhV2E1+cQ==
+  dependencies:
+    "@types/node" "*"
+
+"@types/convict@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@types/convict/-/convict-6.0.1.tgz#224832262e1e3b5a7cca5bcc88e550ca70b6b230"
+  integrity sha512-5094Bw9nSvkUNV7qqUvzDt6lgWZpKbpR/AJu8lmtojKa12nxtHHGrPFwK3YP4YZA1rCc2tbpI5TUEBU35eqVxg==
   dependencies:
     "@types/node" "*"
 
@@ -1563,6 +1572,11 @@ big.js@^5.2.2:
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
+bignumber.js@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.0.tgz#805880f84a329b5eac6e7cb6f8274b6d82bdf075"
+  integrity sha512-t/OYhhJ2SD+YGBQcjY8GzzDHEk9f3nerxjtfa6tlMXfe7frs/WozhvCNoGvpM0P3bNf3Gq5ZRMlGr5f3r4/N8A==
+
 binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
@@ -1994,6 +2008,14 @@ convert-source-map@^1.4.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   integrity sha512-4FJkXzKXEDB1snCFZlLP4gpC3JILicCpGbzG9f9G7tGqGCzETQ2hWPrcinA9oU4wtf2biUaEH5065UnMeR33oA==
   dependencies:
     safe-buffer "~5.1.1"
+
+convict@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/convict/-/convict-6.0.1.tgz#d909a844d8a1187d1366d47d9bc21ec052e8bf0d"
+  integrity sha512-M4YNNq5NV4/VS8JhvBSHAokwvQRL4evEuU0VFe1GNPiqnj9TAkLXpf39ImCCVZlsp3CFp04bc/kRSWPGsJGJWg==
+  dependencies:
+    lodash.clonedeep "^4.5.0"
+    yargs-parser "^18.1.3"
 
 cookie-signature@1.0.6:
   version "1.0.6"
@@ -4032,6 +4054,11 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
+
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -4264,6 +4291,16 @@ mute-stream@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
+
+mysql@^2.18.1:
+  version "2.18.1"
+  resolved "https://registry.yarnpkg.com/mysql/-/mysql-2.18.1.tgz#2254143855c5a8c73825e4522baf2ea021766717"
+  integrity sha512-Bca+gk2YWmqp2Uf6k5NFEurwY/0td0cpebAucFpY/3jhrwrVGuxU2uQFCHjU19SJfje0yQvi+rVWdq78hR5lig==
+  dependencies:
+    bignumber.js "9.0.0"
+    readable-stream "2.3.7"
+    safe-buffer "5.1.2"
+    sqlstring "2.3.1"
 
 mz@^2.4.0:
   version "2.7.0"
@@ -4836,7 +4873,7 @@ readable-stream@1.1.x:
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-readable-stream@^2.0.1, readable-stream@^2.2.2:
+readable-stream@2.3.7, readable-stream@^2.0.1, readable-stream@^2.2.2:
   version "2.3.7"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.7.tgz#1eca1cf711aef814c04f62252a36a62f6cb23b57"
   integrity sha512-Ebho8K4jIbHAxnuxi7o42OrZgF/ZTNcsZj6nRKyUmkhLFq8CHItp/fy6hQZuZmP/n3yZ9VBUbp4zz/mX8hmYPw==
@@ -5374,6 +5411,11 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
+
+sqlstring@2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.1.tgz#475393ff9e91479aea62dcaf0ca3d14983a7fb40"
+  integrity sha1-R1OT/56RR5rqYtyvDKPRSYOn+0A=
 
 sshpk@^1.7.0:
   version "1.16.1"
@@ -6284,7 +6326,7 @@ yargs-parser@20.x, yargs-parser@^20.2.2:
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.7.tgz#61df85c113edfb5a7a4e36eb8aa60ef423cbc90a"
   integrity sha512-FiNkvbeHzB/syOjIUxFDCnhSfzAL8R5vs40MgLFBorXACCOAEaWu0gRZl14vG8MR9AOJIZbmkjhusqBYZ3HTHw==
 
-yargs-parser@^18.1.2:
+yargs-parser@^18.1.2, yargs-parser@^18.1.3:
   version "18.1.3"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-18.1.3.tgz#be68c4975c6b2abf469236b0c870362fab09a7b0"
   integrity sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==
