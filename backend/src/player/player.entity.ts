@@ -1,5 +1,5 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Game } from '../game/game.entity';
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { GamePlayer } from '../game/game-player.entity';
 
 @Entity()
 export class Player {
@@ -15,17 +15,7 @@ export class Player {
     @Column({ name: 'updated_at' })
     public readonly updatedAt: Date;
 
-    @ManyToMany(() => Game, game => game.players)
-    @JoinTable({
-        name: 'game_player',
-        joinColumn: {
-            name: 'player_id',
-            referencedColumnName: 'id',
-        },
-        inverseJoinColumn: {
-            name: 'game_id',
-            referencedColumnName: 'id',
-        },
-    })
-    public games: Game[];
+    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.player)
+    @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
+    public gamePlayers: GamePlayer[];
 }

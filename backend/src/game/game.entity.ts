@@ -1,6 +1,6 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
-import { Player } from '../player/player.entity';
+import { GamePlayer } from './game-player.entity';
 
 export enum GameStatus {
     CREATED = "CREATED",
@@ -28,17 +28,6 @@ export class Game {
     @Column({ name: 'longest_streak' })
     public longestStreak: number = 0;
 
-    @ManyToMany(() => Player, player => player.games, { cascade: true })
-    @JoinTable({
-        name: 'game_player',
-        joinColumn: {
-            name: 'game_id',
-            referencedColumnName: 'id',
-        },
-        inverseJoinColumn: {
-            name: 'player_id',
-            referencedColumnName: 'id',
-        },
-    })
-    public players: Player[];
+    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game)
+    public gamePlayers: GamePlayer[];
 }

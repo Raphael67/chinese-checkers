@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { GamePlayer } from './game/game-player.entity';
 import { Game } from './game/game.entity';
 import { GameModule } from './game/game.module';
 import { Player } from './player/player.entity';
@@ -31,7 +32,8 @@ import { PlayerModule } from './player/player.module';
                     autoLoadEntities: true,
                     entities: [
                         Game,
-                        Player
+                        Player,
+                        GamePlayer,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
                 };
