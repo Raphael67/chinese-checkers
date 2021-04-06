@@ -8,7 +8,7 @@
     "scripts": {
         "mkversion": "node scripts/mkversion",
         "prebuild": "rimraf dist",
-        "build": "nest build",
+        "build": "node scripts/mkversion && nest build",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "node scripts/mkversion && nest start",
         "start:dev": "node scripts/mkversion && nest start --watch",
