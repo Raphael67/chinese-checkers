@@ -1,3 +1,4 @@
+import { DatabaseService } from '@corteks/nest-database';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -7,6 +8,8 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     const configSerice = app.get<ConfigService>(ConfigService);
+    const databaseService = app.get<DatabaseService>(DatabaseService);
+    await databaseService.migrate();
 
     const config = new DocumentBuilder()
         .setTitle('Chinese checkers')
