@@ -6,6 +6,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { Game } from './game/game.entity';
+import { GameModule } from './game/game.module';
+import { Player } from './player/player.entity';
+import { PlayerModule } from './player/player.module';
 
 @Module({
     imports: [
@@ -25,11 +29,16 @@ import { ConfigService } from './config/config.service';
                     password: configService.getConfig().get('database').password,
                     database: configService.getConfig().get('database').name,
                     autoLoadEntities: true,
-                    entities: [],
+                    entities: [
+                        Game,
+                        Player
+                    ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
                 };
             },
         }),
+        GameModule,
+        PlayerModule,
     ],
     controllers: [AppController],
     providers: [AppService],
