@@ -33,25 +33,25 @@ const schema = {
     },
     database: {
         host: {
-            default: 'mariadb.interop.fr',
+            default: 'mariadb.corteks.fr',
             format: String,
             env: 'DATABASE_HOST',
             arg: 'database-host',
         },
         user: {
-            default: 'interop',
+            default: 'chinese-checkers',
             format: String,
             env: 'DATABASE_USER',
             arg: 'database-user',
         },
         password: {
-            default: 'interop-password',
+            default: 'chinese-checkers',
             format: String,
             env: 'DATABASE_PASSWORD',
             arg: 'database-password',
         },
         name: {
-            default: 'interop',
+            default: 'chinese-checkers',
             format: String,
             env: 'DATABASE_NAME',
             arg: 'database-name',
