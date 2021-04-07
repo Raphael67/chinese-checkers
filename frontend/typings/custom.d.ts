@@ -18,3 +18,8 @@ declare interface IPlayer {
     name: string;
     status?: 'idle' | 'disconnected' | 'playing';
 }
+
+declare interface IPosition {
+    x: number;
+    y: number;
+}
