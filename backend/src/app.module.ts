@@ -38,6 +38,7 @@ import { PlayerModule } from './player/player.module';
                         GameMoves,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
+                    logging: ['error']
                 };
             },
         }),
