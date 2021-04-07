@@ -14,4 +14,18 @@ export class PlayerService {
             }
         });
     }
+
+    public findOneByNickname(nickname: string): Promise<Player> {
+        return this.playerRepository.findOne({
+            where: {
+                nickname
+            }
+        });
+    }
+
+    public createPlayer(nickname: string): Promise<Player> {
+        const player = new Player();
+        player.nickname = nickname;
+        return this.playerRepository.save(player);
+    }
 }

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Player } from '../player/player.entity';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GameMoves } from './game-moves.entity';
-import { GamePlayer } from './game-player.entity';
+import { Color, GamePlayer } from './game-player.entity';
 import { Game } from './game.entity';
 import { GameRepository, IFinishedGamesWithPlayers } from './game.repository';
 
@@ -44,5 +44,21 @@ export class GameService {
         const game = new Game();
         await this.gameRepository.save(game);
         return game;
+    }
+
+    public findOne(gameId: string): Promise<Game> {
+        return this.gameRepository.findOne(gameId, {
+            relations: ['gamePlayers', 'players'],
+        });
+    }
+
+    public async linkPlayerToGame(game: Game, player: Player, color: Color): Promise<Game> {
+        const gamePlayer = new GamePlayer();
+        gamePlayer.game = game;
+        gamePlayer.player = player;
+        gamePlayer.color = color;
+        await this.gamePlayerRepository.save(gamePlayer);
+        game.creator = player;
+        return await this.gameRepository.save(game);
     }
 }
