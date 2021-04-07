@@ -22,9 +22,6 @@ export class GamePlayer {
     @Column({ enum: Color })
     public color: Color;
 
-    @Column()
-    public creator: boolean;
-
     @ManyToOne(() => Player, player => player.gamePlayers)
     @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
     public player: Player;

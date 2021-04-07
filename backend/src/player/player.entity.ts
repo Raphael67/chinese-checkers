@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { GamePlayer } from '../game/game-player.entity';
+import { Game } from '../game/game.entity';
 
 @Entity()
 export class Player {
@@ -18,4 +19,18 @@ export class Player {
     @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.player)
     @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
     public gamePlayers: GamePlayer[];
+
+    @OneToMany(() => Game, game => game.winner)
+    @JoinColumn({
+        name: 'winner',
+        referencedColumnName: 'id'
+    })
+    public winnedGames: Game[];
+
+    @OneToMany(() => Game, game => game.creator)
+    @JoinColumn({
+        name: 'creator',
+        referencedColumnName: 'id'
+    })
+    public createdGames: Game[];
 }
