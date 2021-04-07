@@ -16,6 +16,12 @@ export class Player {
     @Column({ name: 'updated_at' })
     public readonly updatedAt: Date;
 
+    @Column()
+    public win: number;
+
+    @Column()
+    public lose: number;
+
     @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.player)
     @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
     public gamePlayers: GamePlayer[];
