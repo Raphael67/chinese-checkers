@@ -40,7 +40,7 @@ build:
     - yarn build
     - cd ../backend
     - yarn build
-    - yarn test:e2e
+    - yarn test
   cache:
     paths:
       - backend/node_modules/
