@@ -22,6 +22,9 @@ export class Player {
     @Column()
     public lose: number;
 
+    @Column()
+    public readonly rating: number;
+
     @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.player)
     @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
     public gamePlayers: GamePlayer[];
