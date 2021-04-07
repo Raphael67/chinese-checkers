@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Player } from '../player/player.entity';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GameMoves } from './game-moves.entity';
-import { Color, GamePlayer } from './game-player.entity';
+import { GamePlayer } from './game-player.entity';
 import { Game } from './game.entity';
 import { GameRepository, IFinishedGamesWithPlayers } from './game.repository';
 
@@ -40,4 +40,9 @@ export class GameService {
         return [...gameMap].map(([key, value]) => value);
     }
 
+    public async createGame() {
+        const game = new Game();
+        await this.gameRepository.save(game);
+        return game;
+    }
 }

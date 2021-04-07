@@ -1,6 +1,7 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { GameDetailsDto } from './dto/game-details.dto';
+import { Game } from './game.entity';
 import { GameService } from './game.service';
 
 @Controller('game')
@@ -31,4 +32,10 @@ export class GameController {
     ): Promise<GameDetailsDto[]> {
         return this.gameService.listGames(player, date ? new Date(date) : undefined, orderBy);
     }
+
+    @Post('/')
+    public async createGame(): Promise<Game> {
+        return this.gameService.createGame();
+    }
+
 }
