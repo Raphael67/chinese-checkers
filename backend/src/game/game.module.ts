@@ -5,6 +5,7 @@ import { GameMoves } from './game-moves.entity';
 import { GamePlayer } from './game-player.entity';
 import { GameController } from './game.controller';
 import { Game } from './game.entity';
+import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
 
 @Module({
@@ -14,9 +15,12 @@ import { GameService } from './game.service';
             Player,
             GamePlayer,
             GameMoves,
+            GameRepository,
         ])
     ],
     controllers: [GameController],
-    providers: [GameService]
+    providers: [
+        GameService
+    ]
 })
 export class GameModule { }
