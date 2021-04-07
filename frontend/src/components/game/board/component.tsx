@@ -1,5 +1,8 @@
-import './board.less';
-const Board = () => <svg viewBox="0 137 744.09448819 800" className="board">
+import { Colour } from '.';
+import Pawn from '../pawn';
+import './index.less';
+
+const BoardComponent = () => <svg viewBox="0 137 744.09448819 800" className="board">
     <g>
         <circle r="20" cy="351.41861" cx="103.51184" id="p1" className="place red"></circle>
         <circle r="20" cy="351.41861" cx="157.21387" id="p2" className="place red"></circle>
@@ -122,66 +125,67 @@ const Board = () => <svg viewBox="0 137 744.09448819 800" className="board">
         <circle r="20" cy="816.7724" cx="318.30524" id="p119" className="place yellow"></circle>
         <circle className="place yellow" id="p120" cx="345.16806" cy="863.30017" r="20"></circle>
         <circle className="place yellow" id="p121" cx="399.01025" cy="863.23688" r="20"></circle>
-        <circle className="pawn blue" id="pawn1" cx="613.83923" cy="491.08954" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn2" cx="533.18213" cy="351.3873" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn3" cx="560.06781" cy="397.95474" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn4" cx="586.95355" cy="444.52213" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn5" cx="613.83923" cy="397.95474" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn6" cx="640.69855" cy="444.56781" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn7" cx="640.53943" cy="351.43152" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn8" cx="586.89661" cy="351.3801" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn9" cx="667.75006" cy="397.95474" r="16.071173"></circle>
-        <circle className="pawn blue" id="pawn10" cx="694.41724" cy="351.52441" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn11" cx="130.30804" cy="584.04999" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn12" cx="103.47699" cy="630.52277" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn13" cx="211.08548" cy="723.96063" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn14" cx="76.645874" cy="676.99561" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn15" cx="157.23386" cy="630.68683" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn16" cx="184.1597" cy="677.32379" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn17" cx="130.45422" cy="677.24872" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn18" cx="157.43149" cy="723.97467" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn19" cx="104.06158" cy="723.82465" r="16.071173"></circle>
-        <circle className="pawn green" id="pawn20" cx="49.908939" cy="723.63141" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn21" cx="130.26566" cy="491.07831" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn22" cx="157.23883" cy="444.47647" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn23" cx="103.40286" cy="444.55057" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn24" cx="184.07819" cy="397.94901" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn25" cx="130.37534" cy="397.94754" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn26" cx="76.540039" cy="398.02283" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn27" cx="210.9158" cy="351.41861" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn28" cx="157.21387" cy="351.41861" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn29" cx="103.51184" cy="351.41861" r="16.071173"></circle>
-        <circle className="pawn red" id="pawn30" cx="49.67728" cy="351.49512" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn31" cx="291.44241" cy="770.24463" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn32" cx="372.03085" cy="909.82788" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn33" cx="399.01025" cy="863.23688" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn34" cx="345.16806" cy="863.30017" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn35" cx="425.85712" cy="816.72235" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn36" cx="372.14676" cy="816.70795" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn37" cx="318.30524" cy="816.7724" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn38" cx="452.70392" cy="770.20789" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn39" cx="398.99277" cy="770.19196" r="16.071173"></circle>
-        <circle className="pawn yellow" id="pawn40" cx="345.28326" cy="770.17902" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn41" cx="452.72672" cy="305.07776" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn42" cx="398.69955" cy="305.25867" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn43" cx="345.04459" cy="305.21497" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn44" cx="291.38403" cy="305.16153" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn45" cx="425.87802" cy="258.57449" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn46" cx="371.84854" cy="258.75134" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn47" cx="318.19077" cy="258.70276" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn48" cx="399.02933" cy="212.07121" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn49" cx="344.99753" cy="212.24402" r="16.071173"></circle>
-        <circle className="pawn black" id="pawn50" cx="372.18066" cy="165.56793" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn51" cx="694.36487" cy="723.6073" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn52" cx="640.3587" cy="723.82465" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn53" cx="586.729" cy="723.82465" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn54" cx="533.0993" cy="723.82465" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn55" cx="667.51611" cy="677.104" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn56" cx="613.50775" cy="677.31732" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn57" cx="559.87518" cy="677.3125" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn58" cx="640.66748" cy="630.60077" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn59" cx="586.65668" cy="630.80994" r="16.071173"></circle>
-        <circle className="pawn purple" id="pawn60" cx="613.81879" cy="584.09747" r="16.071173"></circle>
+        <Pawn colour={Colour.Blue} id="pawn1" x={613.83923} y={491.08954} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn2" x={533.18213} y={351.3873} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn3" x={560.06781} y={397.95474} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn4" x={586.95355} y={444.52213} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn5" x={613.83923} y={397.95474} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn6" x={640.69855} y={444.56781} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn7" x={640.53943} y={351.43152} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn8" x={586.89661} y={351.3801} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn9" x={667.75006} y={397.95474} r={16.071173} />
+        <Pawn colour={Colour.Blue} id="pawn10" x={694.41724} y={351.52441} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn11" x={130.30804} y={584.04999} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn12" x={103.47699} y={630.52277} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn13" x={211.08548} y={723.96063} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn14" x={76.645874} y={676.99561} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn15" x={157.23386} y={630.68683} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn16" x={184.1597} y={677.32379} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn17" x={130.45422} y={677.24872} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn18" x={157.43149} y={723.97467} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn19" x={104.06158} y={723.82465} r={16.071173} />
+        <Pawn colour={Colour.Green} id="pawn20" x={49.908939} y={723.63141} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn21" x={130.26566} y={491.07831} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn22" x={157.23883} y={444.47647} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn23" x={103.40286} y={444.55057} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn24" x={184.07819} y={397.94901} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn25" x={130.37534} y={397.94754} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn26" x={76.540039} y={398.02283} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn27" x={210.9158} y={351.41861} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn28" x={157.21387} y={351.41861} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn29" x={103.51184} y={351.41861} r={16.071173} />
+        <Pawn colour={Colour.Red} id="pawn30" x={49.67728} y={351.49512} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn31" x={291.44241} y={770.24463} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn32" x={372.03085} y={909.82788} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn33" x={399.01025} y={863.23688} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn34" x={345.16806} y={863.30017} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn35" x={425.85712} y={816.72235} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn36" x={372.14676} y={816.70795} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn37" x={318.30524} y={816.7724} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn38" x={452.70392} y={770.20789} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn39" x={398.99277} y={770.19196} r={16.071173} />
+        <Pawn colour={Colour.Yellow} id="pawn40" x={345.28326} y={770.17902} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn41" x={452.72672} y={305.07776} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn42" x={398.69955} y={305.25867} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn43" x={345.04459} y={305.21497} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn44" x={291.38403} y={305.16153} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn45" x={425.87802} y={258.57449} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn46" x={371.84854} y={258.75134} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn47" x={318.19077} y={258.70276} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn48" x={399.02933} y={212.07121} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn49" x={344.99753} y={212.24402} r={16.071173} />
+        <Pawn colour={Colour.Black} id="pawn50" x={372.18066} y={165.56793} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn51" x={694.36487} y={723.6073} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn52" x={640.3587} y={723.82465} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn53" x={586.729} y={723.82465} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn54" x={533.0993} y={723.82465} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn55" x={667.51611} y={677.104} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn56" x={613.50775} y={677.31732} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn57" x={559.87518} y={677.3125} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn58" x={640.66748} y={630.60077} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn59" x={586.65668} y={630.80994} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn59" x={586.65668} y={630.80994} r={16.071173} />
+        <Pawn colour={Colour.Purple} id="pawn60" x={613.81879} y={584.09747} r={16.071173} />
     </g>
 </svg>;
-export default Board;
+export default BoardComponent;

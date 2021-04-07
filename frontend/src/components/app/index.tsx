@@ -11,7 +11,7 @@ import {
 import store from 'redux/store';
 import './index.less';
 
-const MainPage = React.lazy(() => import('components/main'));
+const LeaderBoardPage = React.lazy(() => import('components/leader-board'));
 const LoginPage = React.lazy(() => import('components/login'));
 const GamePage = React.lazy(() => import('components/game'));
 
@@ -21,7 +21,7 @@ const App = (): ReactElement => {
             <Router>
                 <Suspense fallback={<Loading />}>
                     <Switch>
-                        <DefaultLayout exact path={pages.main.path} component={MainPage} />
+                        <DefaultLayout exact path={pages.leaderBoard.path} component={LeaderBoardPage} />
                         <DefaultLayout exact path={pages.login.path} component={LoginPage} />
                         <DefaultLayout exact path={pages.game.path} component={GamePage} />
                     </Switch>

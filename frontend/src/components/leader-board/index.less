@@ -1,0 +1,77 @@
+.leader-board {
+    padding: 2rem;
+    gap: 2rem;
+    display: flex;
+    width: 100%;
+
+    .leader-board-container {
+        background: transparent;
+
+        .ant-card-head-title {
+            font-weight: bold;
+        }
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+
+            .board-list {
+                flex: 1;
+
+                .top-player {
+                    display: flex;
+
+                    .place-number {
+                        width: 2rem;
+                        font-size: larger;
+                    }
+
+                    .player-name {
+                        flex: 1;
+                    }
+                }
+            }
+        }
+    }
+
+    .games {
+        display: flex;
+
+        .games-list {
+            width: 100%;
+
+            .search-form {
+                padding: 2rem;
+                background: #fbfbfb;
+            }
+
+            .game-players {
+                display: flex;
+                flex: 1;
+
+                > div {
+                    display: flex;
+                    align-items: center;
+                    width: 10rem;
+                    gap: 1rem;
+
+                    .game-player-name {
+                        flex: 1;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        white-space: nowrap;
+                    }
+                }
+            }
+
+            .play-game-action {
+                margin-left: 1rem;
+            }
+        }
+
+        .ant-card-head-title {
+            font-weight: bold;
+        }
+    }
+}

@@ -1,2 +1,35 @@
-.login {
+.login-component {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 25rem;
+
+    .login-action {
+        width: 100%;
+    }
+
+    .ant-form-item,
+    .ant-alert {
+        margin-bottom: 1.5rem;
+    }
+
+    .player .ant-form-item-control-input-content {
+        display: flex;
+        align-items: center;
+
+        .ant-input-affix-wrapper,
+        > .ant-input {
+            margin-left: 1rem;
+            flex: 1;
+
+            &.disconnected {
+                border: 1px solid transparent;
+                background: pink;
+
+                .ant-input {
+                    color: red;
+                }
+            }
+        }
+    }
 }
