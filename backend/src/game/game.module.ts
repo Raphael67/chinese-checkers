@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Player } from '../player/player.entity';
+import { PlayerModule } from '../player/player.module';
 import { GameMoves } from './game-moves.entity';
 import { GamePlayer } from './game-player.entity';
 import { GameController } from './game.controller';
@@ -16,7 +17,8 @@ import { GameService } from './game.service';
             GamePlayer,
             GameMoves,
             GameRepository,
-        ])
+        ]),
+        PlayerModule,
     ],
     controllers: [GameController],
     providers: [
