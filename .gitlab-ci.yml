@@ -53,6 +53,7 @@ build:
     paths:
       - "backend/dist"
       - "backend/node_modules"
+      - "backend/migrations"
       - "frontend/build"
       - "Dockerfile"
 
