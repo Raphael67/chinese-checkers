@@ -10,6 +10,9 @@ export class Move {
     @PrimaryColumn({ name: 'game_id', type: 'char', length: 36 })
     public gameId: string;
 
+    @PrimaryColumn({ name: 'move_index' })
+    public moveIndex: number;
+
     @Column({ type: 'json' })
     public moves: IMoves;
 
