@@ -13,6 +13,7 @@
 
     .info-container {
         display: flex;
+        gap: 2rem;
         flex-direction: column;
         width: 20rem;
 
@@ -21,9 +22,16 @@
             flex: 1;
             gap: 2rem;
             flex-direction: column;
+            overflow: hidden;
+
+            .current-game {
+                min-height: 12rem;
+            }
 
             .current-game,
             .players {
+                flex: initial;
+
                 .ant-card-head-title {
                     font-weight: bold;
                 }
