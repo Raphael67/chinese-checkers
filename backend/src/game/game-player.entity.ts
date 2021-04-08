@@ -17,7 +17,7 @@ export class GamePlayer {
     public playerId: number;
 
     @PrimaryColumn({ name: 'game_id' })
-    public gameId: number;
+    public gameId: string;
 
     @Column({ enum: Color })
     public color: Color;
