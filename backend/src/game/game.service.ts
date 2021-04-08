@@ -52,12 +52,26 @@ export class GameService {
         });
     }
 
+    public isColorAvailable(game: Game, color: Color): boolean {
+        if (game.gamePlayers.find((gamePlayer) => gamePlayer.color === color)) {
+            return false;
+        }
+        return true;
+    }
+
+    public isNicknameAvailable(game: Game, nickname: string): boolean {
+        if (game.players.find((p) => p.nickname === nickname)) {
+            return false;
+        }
+        return true;
+    }
+
     public async linkPlayerToGame(game: Game, player: Player, color: Color): Promise<Game> {
         const gamePlayer = new GamePlayer();
-        gamePlayer.game = game;
+        gamePlayer.gameId = game.id;
         gamePlayer.player = player;
         gamePlayer.color = color;
-        await this.gamePlayerRepository.save(gamePlayer);
+        game.gamePlayers.push(gamePlayer);
         game.creator = player;
         return await this.gameRepository.save(game);
     }

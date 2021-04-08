@@ -3,7 +3,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from '../player/player.entity';
 import { GameMoves } from './game-moves.entity';
-import { GamePlayer } from './game-player.entity';
+import { Color, GamePlayer } from './game-player.entity';
+import { Game } from './game.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
 
@@ -45,7 +46,12 @@ describe('GameService', () => {
         service = module.get<GameService>(GameService);
     });
 
-    it('should be defined', () => {
-        expect(service).toBeDefined();
+    it('should test if color available', () => {
+        const game = new Game();
+        const gamePlayer = new GamePlayer();
+        gamePlayer.color = Color.RED;
+        game.gamePlayers = [gamePlayer];
+
+        expect(service.isColorAvailable(game, Color.RED)).toBeFalsy();
     });
 });
