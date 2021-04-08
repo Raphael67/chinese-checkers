@@ -25,6 +25,12 @@ const GameComponent = (props: IProps): ReactElement => {
                     <p>Raph</p>
                     <p>Joe</p>
                     <p>Michou-misalade</p>
+                    <p>Michou-misalade</p>
+                    <p>Michou-misalade</p>
+                    <p>Michou-misalade</p>
+                    <p>Michou-misalade</p>
+                    <p>Michou-misalade</p>
+
                 </Card>
             </div>
             <div className="actions">

@@ -1,6 +1,11 @@
-export const INIT_SESSION = 'INIT_SESSION';
-export const SET_USER = 'SET_USER';
-export const SAVE_USER = 'SAVE_USER';
+export enum Type {
+    INIT_SESSION,
+    SET_USER,
+    SAVE_USER,
+    SET_POSSIBLE_PLACES,
+    SET_PATH,
+    SET_PAWN_PLACE
+}
 
 export interface ISessionPayload {
     accessToken?: string;
@@ -10,7 +15,7 @@ export interface ISessionPayload {
 
 export interface IInitSessionAction {
     payload: ISessionPayload;
-    type: typeof INIT_SESSION;
+    type: Type.INIT_SESSION;
 }
 
 export interface IUserPayload {
@@ -19,7 +24,22 @@ export interface IUserPayload {
 
 export interface ISetUserAction {
     payload: IUserPayload;
-    type: typeof SET_USER;
+    type: Type.SET_USER;
 }
 
-export type ActionTypes = IInitSessionAction | ISetUserAction;
+export interface ISetPossiblePlaces {
+    payload: string[];
+    type: Type.SET_POSSIBLE_PLACES;
+}
+
+export interface ISetPath {
+    payload: string[];
+    type: Type.SET_PATH;
+}
+
+export interface ISetPawnPlace {
+    payload: IPawnPlace;
+    type: Type.SET_PAWN_PLACE;
+}
+
+export type ActionTypes = IInitSessionAction | ISetUserAction | ISetPossiblePlaces | ISetPath | ISetPawnPlace;

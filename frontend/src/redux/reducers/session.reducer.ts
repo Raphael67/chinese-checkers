@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { ActionTypes, INIT_SESSION, SET_USER } from 'redux/actions/types';
+import { ActionTypes, Type } from 'redux/actions/types';
 
 export interface ISessionState {
     token?: string;
@@ -30,10 +30,10 @@ if (localStorage.getItem('sessionState')) {
 const session = (state: ISessionState = savedState, action: ActionTypes) => {
     let temporaryState: ISessionState = { ...state };
     switch (action.type) {
-        case INIT_SESSION:
+        case Type.INIT_SESSION:
             temporaryState = { ...temporaryState, ...action.payload };
             break;
-        case SET_USER:
+        case Type.SET_USER:
             temporaryState.user = action.payload.user;
             break;
         default:

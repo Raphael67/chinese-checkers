@@ -19,6 +19,10 @@ declare interface IPlayer {
     status?: 'idle' | 'disconnected' | 'playing';
 }
 
+declare interface IPawnPlace {
+    pawn: string;
+    place: string;
+}
 declare interface IPosition {
     x: number;
     y: number;
