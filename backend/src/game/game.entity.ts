@@ -52,9 +52,9 @@ export class Game {
     })
     public players: Player[];
 
-    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game)
+    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game, { cascade: true })
     public gamePlayers: GamePlayer[];
 
-    @OneToOne(() => GameMoves, gameMoves => gameMoves.game)
+    @OneToOne(() => GameMoves, gameMoves => gameMoves.game, { cascade: true })
     public moves: GameMoves;
 }
