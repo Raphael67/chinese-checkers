@@ -1,13 +1,14 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PlayModule } from '../play/play.module';
 import { Player } from '../player/player.entity';
 import { PlayerModule } from '../player/player.module';
-import { GameMoves } from './game-moves.entity';
 import { GamePlayer } from './game-player.entity';
 import { GameController } from './game.controller';
 import { Game } from './game.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
+import { Move } from './move.entity';
 
 @Module({
     imports: [
@@ -15,10 +16,11 @@ import { GameService } from './game.service';
             Game,
             Player,
             GamePlayer,
-            GameMoves,
+            Move,
             GameRepository,
         ]),
         PlayerModule,
+        forwardRef(() => PlayModule),
     ],
     controllers: [GameController],
     providers: [
