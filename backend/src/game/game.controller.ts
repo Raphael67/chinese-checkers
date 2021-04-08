@@ -28,7 +28,6 @@ export class GameController {
     })
     @ApiQuery({
         name: 'orderBy',
-        required: false,
         enum: ['created_at', 'rounds']
     })
     public async getGames(

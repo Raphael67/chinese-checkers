@@ -1,14 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsString } from 'class-validator';
 import { Color } from '../game-player.entity';
 
 export class GamePlayerDto {
     @ApiProperty({
         example: 'Test'
     })
-    nickname: string;
+    @IsString()
+    readonly nickname: string;
 
     @ApiProperty({
-        example: Color.RED
+        example: Color.RED,
+        enum: Color
     })
-    color: Color;
+    @IsEnum(Color)
+    readonly color: Color;
 }
