@@ -22,7 +22,10 @@ import { GameService } from './game.service';
     ],
     controllers: [GameController],
     providers: [
-        GameService
+        GameService,
+    ],
+    exports: [
+        GameService,
     ]
 })
 export class GameModule { }

@@ -12,6 +12,7 @@ import { Game } from './game/game.entity';
 import { GameModule } from './game/game.module';
 import { Player } from './player/player.entity';
 import { PlayerModule } from './player/player.module';
+import { PlayModule } from './play/play.module';
 
 @Module({
     imports: [
@@ -38,11 +39,13 @@ import { PlayerModule } from './player/player.module';
                         GameMoves,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
+                    logging: ['error']
                 };
             },
         }),
         GameModule,
         PlayerModule,
+        PlayModule,
     ],
     controllers: [AppController],
     providers: [AppService],
