@@ -1,7 +1,7 @@
-@import './board.less';
 .game {
     display: flex;
     width: 100%;
+    padding: 2rem;
 
     .board-container {
         display: flex;
@@ -9,8 +9,6 @@
         position: relative;
         justify-content: center;
         align-items: center;
-
-        .board();
     }
 
     .info-container {
@@ -19,12 +17,13 @@
         width: 20rem;
 
         .info {
+            display: flex;
             flex: 1;
+            gap: 2rem;
+            flex-direction: column;
 
             .current-game,
             .players {
-                margin: 2rem;
-
                 .ant-card-head-title {
                     font-weight: bold;
                 }
@@ -33,11 +32,8 @@
 
         .actions {
             display: flex;
+            gap: 2rem;
             flex-direction: column;
-
-            button {
-                margin: 0 2rem 2rem 2rem;
-            }
         }
     }
 }

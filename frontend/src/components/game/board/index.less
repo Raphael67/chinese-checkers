@@ -1,0 +1,51 @@
+.board {
+    position: absolute;
+    width: 100%;
+    max-height: 100%;
+
+    .place {
+        fill-rule: evenodd;
+        stroke: #729bd8;
+        stroke-width: 2;
+        stroke-linecap: butt;
+        stroke-linejoin: miter;
+        stroke-miterlimit: 4;
+        stroke-dasharray: none;
+        stroke-opacity: 1;
+
+        &.red {
+            fill: #ff0000;
+            fill-opacity: 0.30386741;
+        }
+
+        &.purple {
+            fill: #7e42ff;
+            fill-opacity: 0.44198908;
+        }
+
+        &.blue {
+            fill: #65a8ff;
+            fill-opacity: 0.44198908;
+        }
+
+        &.black {
+            fill: #000000;
+            fill-opacity: 0.25966851;
+        }
+
+        &.green {
+            fill: #01d100;
+            fill-opacity: 0.32044199;
+        }
+
+        &.yellow {
+            fill: #f9f900;
+            fill-opacity: 0.46408841;
+        }
+
+        &.empty {
+            fill: #efefef;
+            fill-opacity: 1;
+        }
+    }
+}
