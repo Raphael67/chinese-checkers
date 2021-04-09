@@ -20,9 +20,9 @@ const Board = (): ReactElement => {
     const mapStateToObj = useSelector((state: AppState) => {
         const { possiblePlaces, pawnPlace, path } = state.game;
         return {
-            possiblePlaces,
+            possiblePlaces: { possiblePlaces, hash: JSON.stringify(possiblePlaces) },
             pawnPlace,
-            path
+            path: { path, hash: JSON.stringify(path) }
         };
     });
 

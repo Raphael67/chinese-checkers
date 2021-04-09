@@ -17,8 +17,8 @@ export default class Game {
     public placePawn(place: string) {
         if (this.pawnTaken) {
             this.board.placePawn(this.pawnTaken, place);
-            //this.setPawn([]);
             setPawnPlace(this.store.dispatch, this.pawnTaken, place);
+            this.setPawn([]);
         }
     }
 
@@ -27,21 +27,33 @@ export default class Game {
         this.pawnTaken = pawn;
         this.possiblePlaces = possiblePlaces;
         setPossiblePlaces(this.store.dispatch, this.possiblePlaces);
+        setPath(this.store.dispatch, this.path);
     }
 
     public clickPlace(place: string) {
-        if (this.pawnTaken) {
-            this.possiblePlaces = this.board.getPossiblePlacesForPlace(place);
-            setPossiblePlaces(this.store.dispatch, this.possiblePlaces);
-
+        // If click on a place already clicked, reset path to this place
+        if (this.path.includes(place)) {
+            this.path = this.path.reduce((newPath: string[], pathPlace: string) => {
+                return !newPath.includes(place) ? newPath.concat([pathPlace]) : newPath;
+            }, []);
+            this.setPathAndPossiblePlaces(place, this.path);
+        }
+        else if (this.pawnTaken && this.possiblePlaces?.includes(place)) {
             this.path.push(place);
-            setPath(this.store.dispatch, this.path);
+            this.setPathAndPossiblePlaces(place, this.path);
         }
     }
 
     public doubleClickPlace(place: string) {
-        if (this.pawnTaken) {
+        if (this.pawnTaken && this.path.includes(place)) {
             this.placePawn(place);
         }
+    }
+
+    private setPathAndPossiblePlaces(place: string, path: string[]) {
+        // Get possible places and remove entries from path
+        this.possiblePlaces = this.board.getPossiblePlacesForPlace(place).filter((possiblePlace: string) => !path.includes(possiblePlace));
+        setPossiblePlaces(this.store.dispatch, this.possiblePlaces);
+        setPath(this.store.dispatch, this.path);
     }
 }
