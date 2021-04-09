@@ -1,18 +1,10 @@
+import { Colour } from 'core/board';
 import { ReactElement, useContext } from 'react';
 import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducers';
 import { AppContext } from '../../..';
-import { AppState } from '../../../redux/reducers';
 import BoardComponent from './component';
 import './index.less';
-
-export enum Colour {
-    Black,
-    Blue,
-    Purple,
-    Yellow,
-    Green,
-    Red
-}
 
 const Board = (): ReactElement => {
     const { game } = useContext(AppContext);
