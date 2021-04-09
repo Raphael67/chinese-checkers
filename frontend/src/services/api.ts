@@ -10,15 +10,60 @@ let config: any = {
 };
 
 export default class Api {
-
-
-    public static register(params: IRegisterParams): Promise<IUser> {
+    public static register(gameParams: IGameParams, params: IRegisterParams): Promise<IUser> {
         return Api.fetch(
             routes.register,
-            {},
+            gameParams,
             {
                 body: JSON.stringify(params),
             },
+        );
+    }
+
+    public static getGames(params: ISearchGameParams): Promise<IGame[]> {
+        return Api.fetch(
+            routes.games,
+            params,
+        );
+    }
+
+    public static newGame(): Promise<IGame> {
+        return Api.fetch(
+            routes.newGame,
+        );
+    }
+
+    public static getGame(params: IGameParams): Promise<IGame> {
+        return Api.fetch(
+            routes.newGame,
+            params
+        );
+    }
+
+    public static getPlayers(): Promise<IPlayer[]> {
+        return Api.fetch(
+            routes.players,
+        );
+    }
+
+    public static getBoard(params: IGameParams): Promise<IBoard> {
+        return Api.fetch(
+            routes.board,
+            params
+        );
+    }
+
+    public static getMoves(params: IGameParams): Promise<IMove[]> {
+        return Api.fetch(
+            routes.moves,
+            params
+        );
+    }
+
+    public static newMove(params: IMoveParams): Promise<IMove> {
+        return Api.fetch(
+            routes.newMove,
+            params
         );
     }
 
