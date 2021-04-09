@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MoveService } from '../play/move.service';
 import { Player } from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
 import { Color } from './game-player.entity';
@@ -9,11 +10,13 @@ import { GameService } from './game.service';
 
 class GameServiceMock extends GameService { }
 class PlayerServiceMock extends PlayerService { }
+class MoveServiceMock extends MoveService { }
 
 describe('GameController', () => {
     let controller: GameController;
     let gameService: GameService = new GameServiceMock();
     let playerService: PlayerService = new PlayerServiceMock();
+    let moveService: MoveService = new MoveServiceMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +29,10 @@ describe('GameController', () => {
                 {
                     provide: PlayerService,
                     useValue: playerService,
+                },
+                {
+                    provide: MoveService,
+                    useValue: moveService,
                 }
             ],
         }).compile();
