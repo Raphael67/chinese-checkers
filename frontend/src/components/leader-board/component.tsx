@@ -1,8 +1,8 @@
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Button, Card, Empty, Form, Input, Layout, List, Radio } from 'antd';
+import Pawn from 'components/game/pawn';
+import { Colour } from 'core/board';
 import React, { ReactElement } from 'react';
-import { Colour } from '../game/board';
-import Pawn from '../game/pawn';
 import './index.less';
 
 interface IProps {
@@ -23,15 +23,15 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
         props.newGame();
     };
 
-    const renderTopPlayer = (player: IGamePlayer, index: number): ReactElement => {
+    const renderTopPlayer = (player: IPlayer, index: number): ReactElement => {
         return <List.Item key={`player${index}`} className="top-player">
             <div className="place-number">{index + 1}</div>
             <div className="player-name">{player.nickname}</div>
         </List.Item>;
     };
 
-    const renderGamePlayers = (players: IGamePlayer[]): ReactElement[] => {
-        return players.map((player: IGamePlayer, index: number) => {
+    const renderGamePlayers = (players: IPlayer[]): ReactElement[] => {
+        return players.map((player: IPlayer, index: number) => {
             return <div key={`game_player${index}`}>
                 <Pawn colour={player.colour || Colour.Black} r={10} alone={true} />
                 <div className="game-player-name">{player.nickname}</div>
