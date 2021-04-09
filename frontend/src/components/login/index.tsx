@@ -1,10 +1,11 @@
 import LoginComponent from 'components/login/component';
+import { Colour, ColourMapReverse } from 'core/board';
+import pages from 'pages';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { register } from 'redux/actions/session.action';
-import pages from '../../pages';
-import Api from '../../services/api';
+import Api from 'services/api';
 
 const Login = (): ReactElement => {
     const dispatch = useDispatch();
@@ -29,15 +30,23 @@ const Login = (): ReactElement => {
 
     }, [gameParams.gameId]);
 
-    const registerDispatch = (params: IRegisterParams) => {
-        register(dispatch, gameParams, params);
+    const login = (playerName: string, colour: Colour): void => {
+        try {
+            register(dispatch, gameParams, {
+                nickname: playerName,
+                color: ColourMapReverse[colour]
+            });
+        }
+        catch (err) {
+            console.error(err);
+        }
     };
 
     const goToGame = () => {
-        history.push(pages.game.path);
+        history.push(pages.game.path.replace(':gameId', gameParams.gameId));
     };
 
-    return <LoginComponent players={game?.gamePlayers || []} login={registerDispatch} goToGame={goToGame} errorMessage={errorMessage} />;
+    return <LoginComponent players={game?.gamePlayers || []} login={login} goToGame={goToGame} errorMessage={errorMessage} />;
 };
 
 export default Login;

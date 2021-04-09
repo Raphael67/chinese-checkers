@@ -1,13 +1,13 @@
 import { RightOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Button, Form, Input } from 'antd';
+import Pawn from 'components/game/pawn';
+import { Colour } from 'core/board';
 import React, { ReactElement, useState } from 'react';
-import { Colour } from '../game/board';
-import Pawn from '../game/pawn';
 import './index.less';
 
 interface IProps {
     errorMessage?: string;
-    login: (params: IRegisterParams) => void;
+    login: (playerName: string, colour: Colour) => void;
     goToGame: () => void;
     players: IGamePlayer[];
 }
@@ -26,11 +26,10 @@ const LoginComponent = (props: IProps): ReactElement => {
 
     const [savedColours, setSavedColours] = useState<Record<string, string>>();
 
-    const onLogin = (values: Record<string, string>) => {
-        //props.login(credentials);
-        Object.keys(values).forEach((key: string) => {
-            console.log(key, values[key]);
-        });
+    const onLogin = (colour: Colour, playerName?: string) => {
+        if (playerName) {
+            props.login(playerName, colour);
+        }
     };
 
     const renderPlayerPlaces = (players: IGamePlayer[], savedColours?: Record<string, string>): ReactElement[] => {
@@ -54,8 +53,9 @@ const LoginComponent = (props: IProps): ReactElement => {
         }
 
         const key = `nickname[${colour}]`;
+        const playerName = savedColours && savedColours[key];
         return <Input size="large" placeholder="Your pseudo" prefix={<UserOutlined />} suffix={
-            <Button htmlType="submit" disabled={!(savedColours && key in savedColours && savedColours[key])} type="primary" icon={<RightOutlined />}></Button>
+            <Button onClick={() => onLogin(colour, playerName)} disabled={!playerName} type="primary" icon={<RightOutlined />}></Button>
         } />;
     };
 
@@ -66,7 +66,6 @@ const LoginComponent = (props: IProps): ReactElement => {
     const error = props.errorMessage ? <Alert type="error" message={props.errorMessage} /> : undefined;
 
     return <Form
-        onFinish={onLogin}
         initialValues={props.players}
         onValuesChange={(values: Record<string, string>) => {
             setSavedColours({ ...savedColours, ...values });
