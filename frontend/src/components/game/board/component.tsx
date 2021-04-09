@@ -10,12 +10,12 @@ interface IProps {
     clickPlace: (place: string) => void;
     doubleClickPlace: (place: string) => void;
     pawnPlace?: IPawnPlace;
-    path: string[];
-    placesHighlighted: string[];
+    path: { path: string[], hash: string; };
+    placesHighlighted: { possiblePlaces: string[], hash: string; };
 }
 
 const BoardComponent = (props: IProps) => {
-    const [placesHighlighted, setPlacesHighlighted] = useState<string[]>(props.placesHighlighted);
+    const [placesHighlighted, setPlacesHighlighted] = useState<string[]>(props.placesHighlighted.possiblePlaces);
 
     const highlightPlaces = (places: string[], reset: boolean) => {
         places.forEach((place: string) => {
@@ -41,13 +41,14 @@ const BoardComponent = (props: IProps) => {
     };
 
     useEffect(() => {
+        const possiblePlaces = props.placesHighlighted.possiblePlaces;
         // Reset to default places colour for previous ones
         highlightPlaces(placesHighlighted, true);
 
         // Highlight new places
-        highlightPlaces(props.placesHighlighted, false);
+        highlightPlaces(possiblePlaces, false);
 
-        setPlacesHighlighted(props.placesHighlighted);
+        setPlacesHighlighted(possiblePlaces);
     }, [setPlacesHighlighted, placesHighlighted, props.placesHighlighted]);
 
     useEffect(() => {
@@ -64,11 +65,13 @@ const BoardComponent = (props: IProps) => {
     }, [props.pawnPlace]);
 
     useEffect(() => {
+        document.querySelectorAll('text').forEach((element: SVGTextElement) => element.parentElement?.removeChild(element));
+
         const svgElement = document.querySelector('svg');
         if (!svgElement) {
             return;
         }
-        props.path.forEach((place: string, index: number) => {
+        props.path.path.forEach((place: string, index: number) => {
             const placeElement = document.getElementById(place);
             if (placeElement) {
                 const pathNumber = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -82,7 +85,6 @@ const BoardComponent = (props: IProps) => {
                 const pathNumberTextNode = document.createTextNode(String(index + 1));
                 pathNumber.appendChild(pathNumberTextNode);
                 svgElement.appendChild(pathNumber);
-
             }
         });
     }, [props.path]);
