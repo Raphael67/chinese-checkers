@@ -1,9 +1,10 @@
-import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, Inject, NotFoundException, Param, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, ForbiddenException, Get, Inject, Param, Post, Query, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
 import { Game } from './game.entity';
+import { GameGuard, RequestWithGame } from './game.guard';
 import { GameService } from './game.service';
 
 @Controller('game')
@@ -38,6 +39,15 @@ export class GameController {
         return this.gameService.listGames(player, date ? new Date(date) : undefined, orderBy);
     }
 
+    @Get('/:gameId')
+    @ApiParam({
+        name: 'gameId',
+        type: String
+    })
+    public async getGame(@Param('gameId') gameId: string): Promise<Game> {
+        return this.gameService.findOne(gameId);
+    }
+
     @Post('/')
     public createGame(): Promise<Game> {
         return this.gameService.createGame();
@@ -55,22 +65,24 @@ export class GameController {
         }
     })
     @Post('/:gameId/player')
-    public async upsertPlayerToGame(@Param('gameId') gameId, @Body() gamePlayerDto: GamePlayerDto): Promise<Game> {
-        const game = await this.gameService.findOne(gameId);
-        if (!game) throw new NotFoundException(`Game does not exist`);
-        if (game.gamePlayers.find((gamePlayer) => gamePlayer.color === gamePlayerDto.color)) {
-            throw new BadRequestException('This color is already taken in this game');
+    @UseGuards(GameGuard)
+    public async upsertPlayerToGame(
+        @Body() gamePlayerDto: GamePlayerDto,
+        @Request() request: RequestWithGame,
+    ): Promise<void> {
+        const game = request.game;
+        if (!this.gameService.isColorAvailable(game, gamePlayerDto.color)) {
+            throw new ForbiddenException('This color is already taken in this game');
         }
-        if (game.players.find((p) => p.nickname === gamePlayerDto.nickname)) {
-            throw new BadRequestException('This nickname is already taken in this game');
+        if (!this.gameService.isNicknameAvailable(game, gamePlayerDto.nickname)) {
+            throw new ForbiddenException('This nickname is already taken in this game');
         }
 
         let player = await this.playerService.findOneByNickname(gamePlayerDto.nickname);
         if (!player) {
             player = await this.playerService.createPlayer(gamePlayerDto.nickname);
         }
-        console.log(player);
-        return this.gameService.linkPlayerToGame(game, player, gamePlayerDto.color);
+        this.gameService.linkPlayerToGame(game, player, gamePlayerDto.color);
     }
 
 }

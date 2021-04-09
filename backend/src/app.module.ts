@@ -6,13 +6,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
-import { GameMoves } from './game/game-moves.entity';
 import { GamePlayer } from './game/game-player.entity';
 import { Game } from './game/game.entity';
 import { GameModule } from './game/game.module';
+import { Move } from './game/move.entity';
+import { PlayModule } from './play/play.module';
 import { Player } from './player/player.entity';
 import { PlayerModule } from './player/player.module';
-import { PlayModule } from './play/play.module';
 
 @Module({
     imports: [
@@ -36,10 +36,10 @@ import { PlayModule } from './play/play.module';
                         Game,
                         Player,
                         GamePlayer,
-                        GameMoves,
+                        Move,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
-                    logging: ['error']
+                    logging: ['query', 'error']
                 };
             },
         }),

@@ -2,22 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from '../player/player.entity';
-import { GameMoves } from './game-moves.entity';
-import { GamePlayer } from './game-player.entity';
+import { Color, GamePlayer } from './game-player.entity';
+import { Game } from './game.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
+import { Move } from './move.entity';
 
 class GameRepositoryMock extends GameRepository { };
 class PlayerRepositoryMock extends Repository<Player> { };
 class GamePlayerRepositoryMock extends Repository<GamePlayer> { };
-class GameMovesRepositoryMock extends Repository<GameMoves> { };
+class GameMovesRepositoryMock extends Repository<Move> { };
 
 describe('GameService', () => {
     let service: GameService;
     let gameRepository: GameRepository = new GameRepositoryMock;
     let playerRepository: Repository<Player> = new PlayerRepositoryMock;
     let gamePlayerRepository: Repository<GamePlayer> = new GamePlayerRepositoryMock;
-    let gameMovesRepository: Repository<GameMoves> = new GameMovesRepositoryMock;
+    let gameMovesRepository: Repository<Move> = new GameMovesRepositoryMock;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -36,7 +37,7 @@ describe('GameService', () => {
                     useValue: gamePlayerRepository,
                 },
                 {
-                    provide: getRepositoryToken(GameMoves),
+                    provide: getRepositoryToken(Move),
                     useValue: gameMovesRepository,
                 },
             ],
@@ -45,7 +46,12 @@ describe('GameService', () => {
         service = module.get<GameService>(GameService);
     });
 
-    it('should be defined', () => {
-        expect(service).toBeDefined();
+    it('should test if color available', () => {
+        const game = new Game();
+        const gamePlayer = new GamePlayer();
+        gamePlayer.color = Color.RED;
+        game.gamePlayers = [gamePlayer];
+
+        expect(service.isColorAvailable(game, Color.RED)).toBeFalsy();
     });
 });

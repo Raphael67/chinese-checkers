@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Player } from '../player/player.entity';
-import { GameMoves } from './game-moves.entity';
 import { GamePlayer } from './game-player.entity';
+import { Move } from './move.entity';
 
 export enum GameStatus {
     CREATED = "CREATED",
@@ -52,9 +52,9 @@ export class Game {
     })
     public players: Player[];
 
-    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game)
+    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game, { cascade: true })
     public gamePlayers: GamePlayer[];
 
-    @OneToOne(() => GameMoves, gameMoves => gameMoves.game)
-    public moves: GameMoves;
+    @OneToOne(() => Move, gameMoves => gameMoves.game, { cascade: true })
+    public moves: Move;
 }

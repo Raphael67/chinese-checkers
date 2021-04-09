@@ -3,17 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from '../player/player.entity';
 import { GameDetailsDto } from './dto/game-details.dto';
-import { GameMoves } from './game-moves.entity';
 import { Color, GamePlayer } from './game-player.entity';
 import { Game } from './game.entity';
 import { GameRepository, IFinishedGamesWithPlayers } from './game.repository';
+import { Move } from './move.entity';
 
 @Injectable()
 export class GameService {
     @Inject(GameRepository) private readonly gameRepository: GameRepository;
     @InjectRepository(Player) private readonly playerRepository: Repository<Player>;
     @InjectRepository(GamePlayer) private readonly gamePlayerRepository: Repository<GamePlayer>;
-    @InjectRepository(GameMoves) private readonly gameMovesRepository: Repository<GameMoves>;
+    @InjectRepository(Move) private readonly gameMovesRepository: Repository<Move>;
 
     public async listGames(
         player?: string,
@@ -52,12 +52,26 @@ export class GameService {
         });
     }
 
+    public isColorAvailable(game: Game, color: Color): boolean {
+        if (game.gamePlayers.find((gamePlayer) => gamePlayer.color === color)) {
+            return false;
+        }
+        return true;
+    }
+
+    public isNicknameAvailable(game: Game, nickname: string): boolean {
+        if (game.players.find((p) => p.nickname === nickname)) {
+            return false;
+        }
+        return true;
+    }
+
     public async linkPlayerToGame(game: Game, player: Player, color: Color): Promise<Game> {
         const gamePlayer = new GamePlayer();
-        gamePlayer.game = game;
+        gamePlayer.gameId = game.id;
         gamePlayer.player = player;
         gamePlayer.color = color;
-        await this.gamePlayerRepository.save(gamePlayer);
+        game.gamePlayers.push(gamePlayer);
         game.creator = player;
         return await this.gameRepository.save(game);
     }
