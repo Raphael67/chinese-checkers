@@ -31,7 +31,9 @@ export class MoveService {
         });
         moves.forEach((move) => {
             const from = board.getCell(move.path[0][0], move.path[0][1]);
-            const to = board.getCell(move.path[move.path.length][0], move.path[0][1]);
+            const to = board.getCell(move.path[move.path.length - 1][0], move.path[move.path.length - 1][1]);
+            to.setPawn(from.getPawn());
+            from.setPawn(undefined);
         });
         this.boards.set(game.id, board);
         return board;
