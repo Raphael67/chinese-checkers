@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { setPath, setPawnPlace, setPossiblePlaces } from '../redux/actions/game.action';
+import { setPath, setPawnPlace, setPossiblePlaces } from 'redux/actions/game.action';
 import Board from './board';
 
 export default class Game {

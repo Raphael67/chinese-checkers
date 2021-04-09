@@ -1,8 +1,8 @@
+import { Colour } from 'core/board';
+import pages from 'pages';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import pages from '../../pages';
-import Api from '../../services/api';
-import { Colour } from '../game/board';
+import Api from 'services/api';
 import LeaderBoardComponent from './component';
 import './index.less';
 
