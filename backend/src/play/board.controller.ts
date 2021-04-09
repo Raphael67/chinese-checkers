@@ -1,11 +1,15 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Inject, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { GameGuard } from '../game/game.guard';
-import { Board, Cell } from './board';
+import { GameGuard, RequestWithGame } from '../game/game.guard';
+import { Cell } from './board';
+import { MoveService } from './move.service';
 
 @Controller('board')
 @ApiTags('Board')
 export class BoardController {
+    @Inject(MoveService)
+    private readonly moveService: MoveService;
+
     @Get('/:gameId')
     @ApiParam({
         name: 'gameId',
@@ -15,8 +19,8 @@ export class BoardController {
     @ApiOperation({
         summary: 'Return all pawns position for a game',
     })
-    public async getBoard(@Request() request: Request): Promise<Cell[]> {
-        const board = new Board();
+    public async getBoard(@Request() request: RequestWithGame): Promise<Cell[]> {
+        const board = await this.moveService.getBoard(request.game);
         return board.getCells();
     }
 }
