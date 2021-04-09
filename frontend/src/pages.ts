@@ -6,7 +6,7 @@ interface IPage {
 
 const pages: IPage = {
     leaderBoard: { path: '/', },
-    game: { path: '/game', },
+    game: { path: '/game/:gameId', },
     login: { path: '/login/:gameId', },
 };
 
