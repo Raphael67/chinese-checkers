@@ -11,7 +11,7 @@ export default class Board {
         }
     }
 
-    public getPossiblePlacesForPawn(pawn: string): string[] {
+    public getPossiblePlacesForPawn(pawn: string): IPath[] {
         const possiblePlaces = [];
         const placesAround = this.map[this.pawns[pawn]];
 
@@ -24,19 +24,25 @@ export default class Board {
                 // ... then iterate over places directly around this place
                 for (const place2 in this.map[placeAround]) {
                     if (this.map[placeAround][place2] === placesAround[placeAround] && !this.pawnsMap[place2]) {
-                        possiblePlaces.push(place2);
+                        possiblePlaces.push({
+                            place: place2,
+                            fromOverPawn: true
+                        });
                     }
                 }
             }
             // ... else store the place
             else {
-                possiblePlaces.push(placeAround);
+                possiblePlaces.push({
+                    place: placeAround,
+                    fromOverPawn: false
+                });
             }
         }
         return possiblePlaces;
     }
 
-    public getPossiblePlacesForPlace(place: string): string[] {
+    public getPossiblePlacesForPlace(place: string): IPath[] {
         const possiblePlaces = [];
         const placesAround = this.map[place];
 
@@ -49,7 +55,10 @@ export default class Board {
                 // ... then iterate over places directly around this place
                 for (const place2 in this.map[placeAround]) {
                     if (this.map[placeAround][place2] === placesAround[placeAround] && !this.pawnsMap[place2]) {
-                        possiblePlaces.push(place2);
+                        possiblePlaces.push({
+                            place: place2,
+                            fromOverPawn: true
+                        });
                     }
                 }
             }

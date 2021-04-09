@@ -23,6 +23,11 @@ declare interface IPawnPlace {
     pawn: string;
     place: string;
 }
+
+declare interface IPath {
+    place: string;
+    fromOverPawn: boolean;
+}
 declare interface IPosition {
     x: number;
     y: number;
