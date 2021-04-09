@@ -1,7 +1,16 @@
 import store from 'redux/store';
 import { IRoute, routes } from '../routes';
 
-let config: any = {
+interface IConfig {
+    api: {
+        hostname: string;
+        port: string;
+        protocol: string;
+        path?: string;
+    };
+}
+
+let config: IConfig = {
     api: {
         hostname: window.location.host,
         port: window.location.port,
@@ -123,7 +132,7 @@ export default class Api {
     private static getApiHost(): string {
         return (
             config.api.protocol +
-            '://' +
+            '//' +
             (config.api.hostname
                 ? config.api.hostname
                 : document.location.hostname) +
