@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GameService } from '../game/game.service';
-import { Move } from '../game/move.entity';
 import { MoveController } from './move.controller';
+import { Move } from './move.entity';
 import { MoveService } from './move.service';
 
 class GameServiceMock extends GameService { }

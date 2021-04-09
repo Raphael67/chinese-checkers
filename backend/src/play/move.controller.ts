@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Inject, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GameGuard, RequestWithGame } from '../game/game.guard';
-import { IMoves } from '../game/move.entity';
 import { MoveService } from './move.service';
 
 @Controller('board')
@@ -21,9 +20,9 @@ export class MoveController {
     })
     public async move(
         @Request() request: RequestWithGame
-    ): Promise<IMoves[]> {
+    ): Promise<number[][][]> {
         const moves = await this.moveService.findByGame(request.game);
-        return moves.map((move) => move.moves);
+        return moves.map((move) => move.path);
     }
 
     @Post('/:gameId/player/:playerIndex/move')

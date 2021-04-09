@@ -4,12 +4,12 @@ import { GamePlayer } from '../game/game-player.entity';
 import { Game } from '../game/game.entity';
 import { GameModule } from '../game/game.module';
 import { GameRepository } from '../game/game.repository';
-import { Move } from '../game/move.entity';
 import { Player } from '../player/player.entity';
 import { AccessService } from './access.service';
 import { BoardController } from './board.controller';
 import { EventsGateway } from './events/events.gateway';
 import { MoveController } from './move.controller';
+import { Move } from './move.entity';
 import { MoveService } from './move.service';
 
 @Module({

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Game } from '../game/game.entity';
-import { Move } from '../game/move.entity';
 import { Board } from './board';
+import { Move } from './move.entity';
 
 @Injectable()
 export class MoveService {
@@ -24,7 +24,17 @@ export class MoveService {
     }
 
     private async loadBoard(game: Game): Promise<Board> {
-        return new Board();
+        const board = new Board();
+        const moves = await this.moveRepository.find({
+            where: { gameId: game.id },
+            order: { moveIndex: 'ASC' }
+        });
+        moves.forEach((move) => {
+            const from = board.getCell(move.path[0][0], move.path[0][1]);
+            const to = board.getCell(move.path[move.path.length][0], move.path[0][1]);
+        });
+        this.boards.set(game.id, board);
+        return board;
     }
 
     public async getBoard(game: Game): Promise<Board> {
