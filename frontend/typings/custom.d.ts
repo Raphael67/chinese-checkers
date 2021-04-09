@@ -1,5 +1,20 @@
 declare interface IRegisterParams {
-    login: string;
+    nickname: string;
+    color: 'BLACK' | 'BLUE' | 'PURPLE' | 'YELLOW' | 'GREEN' | 'RED';
+}
+
+declare interface ISearchGameParams {
+    player: name;
+    date: Date;
+    orderBy: 'created_at' | 'rounds';
+}
+declare interface IGameParams {
+    gameId: string;
+}
+
+declare interface IMoveParams {
+    gameId: string;
+    playerIndex: string;
 }
 
 declare interface IUser {
@@ -28,7 +43,11 @@ declare interface IPath {
     place: string;
     fromOverPawn: boolean;
 }
-declare interface IPosition {
-    x: number;
-    y: number;
+declare interface IBoard {
+    pawns: string[];
+}
+
+declare interface IMove {
+    from: string;
+    to: string;
 }
