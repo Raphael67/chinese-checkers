@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Move } from '../play/move.entity';
 import { PlayModule } from '../play/play.module';
 import { Player } from '../player/player.entity';
 import { PlayerModule } from '../player/player.module';
@@ -8,7 +9,6 @@ import { GameController } from './game.controller';
 import { Game } from './game.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
-import { Move } from './move.entity';
 
 @Module({
     imports: [

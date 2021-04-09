@@ -1,9 +1,5 @@
 import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
-import { Game } from './game.entity';
-
-export interface IMoves {
-    moves: number[][][];
-}
+import { Game } from '../game/game.entity';
 
 @Entity({ name: 'move' })
 export class Move {
@@ -14,7 +10,7 @@ export class Move {
     public moveIndex: number;
 
     @Column({ type: 'json' })
-    public moves: IMoves;
+    public path: number[][];
 
     @OneToOne(() => Game, game => game.moves)
     public game: Game;

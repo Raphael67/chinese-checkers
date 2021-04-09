@@ -12,8 +12,7 @@ export class ConfigController {
 
     @Get('version')
     @ApiOperation({
-        summary: 'Get API and meta version',
-        description: 'Get API and meta version',
+        summary: 'Get project version',
     })
     public getVersion(): string {
         return this.configService.getVersion();
