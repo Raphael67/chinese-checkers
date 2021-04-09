@@ -11,7 +11,6 @@ import { BoardController } from './board.controller';
 import { EventsGateway } from './events/events.gateway';
 import { MoveController } from './move.controller';
 import { MoveService } from './move.service';
-import { PlayService } from './play.service';
 
 @Module({
     controllers: [
@@ -29,7 +28,6 @@ import { PlayService } from './play.service';
         forwardRef(() => GameModule)
     ],
     providers: [
-        PlayService,
         EventsGateway,
         AccessService,
         MoveService,
