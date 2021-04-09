@@ -1,5 +1,4 @@
-import store from 'redux/store';
-import { IRoute, routes } from '../routes';
+import { IRoute, routes } from 'routes';
 
 interface IConfig {
     api: {
@@ -87,13 +86,7 @@ export default class Api {
             path: this.replaceInPath(route.path, params),
         };
 
-        const token = accessToken ? accessToken : (store.getState().session.token || null);
-
         const options = {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             method: route.method,
             ...optionsSupp,
         };
