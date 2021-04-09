@@ -7,7 +7,7 @@ interface IPage {
 const pages: IPage = {
     leaderBoard: { path: '/', },
     game: { path: '/game', },
-    login: { path: '/login/:game', },
+    login: { path: '/login/:gameId', },
 };
 
 export default pages;

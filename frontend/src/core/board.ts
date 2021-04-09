@@ -11,9 +11,8 @@ export default class Board {
         }
     }
 
-    public getPossiblePlacesForPawn(pawn: string): string[] {
+    private getPlacesAroundPlace(placesAround: Record<string, number>, forPawn: boolean): IPath[] {
         const possiblePlaces = [];
-        const placesAround = this.map[this.pawns[pawn]];
 
         // Iterate over places directly around the pawn
         for (const placeAround in placesAround) {
@@ -24,37 +23,32 @@ export default class Board {
                 // ... then iterate over places directly around this place
                 for (const place2 in this.map[placeAround]) {
                     if (this.map[placeAround][place2] === placesAround[placeAround] && !this.pawnsMap[place2]) {
-                        possiblePlaces.push(place2);
+                        possiblePlaces.push({
+                            place: place2,
+                            fromOverPawn: true
+                        });
                     }
                 }
             }
             // ... else store the place
-            else {
-                possiblePlaces.push(placeAround);
+            else if (forPawn) {
+                possiblePlaces.push({
+                    place: placeAround,
+                    fromOverPawn: false
+                });
             }
         }
+
         return possiblePlaces;
     }
 
-    public getPossiblePlacesForPlace(place: string): string[] {
-        const possiblePlaces = [];
-        const placesAround = this.map[place];
+    public getPossiblePlacesForPawn(pawn: string): IPath[] {
+        return this.getPlacesAroundPlace(this.map[this.pawns[pawn]], true);
+    }
 
-        // Iterate over places directly around the place
-        for (const placeAround in placesAround) {
+    public getPossiblePlacesForPlace(place: string): IPath[] {
+        return this.getPlacesAroundPlace(this.map[place], false);
 
-            // If a pawn is found on this place...
-            if (this.pawnsMap[placeAround]) {
-
-                // ... then iterate over places directly around this place
-                for (const place2 in this.map[placeAround]) {
-                    if (this.map[placeAround][place2] === placesAround[placeAround] && !this.pawnsMap[place2]) {
-                        possiblePlaces.push(place2);
-                    }
-                }
-            }
-        }
-        return possiblePlaces;
     }
 
     public placePawn(pawn: string, place: string) {

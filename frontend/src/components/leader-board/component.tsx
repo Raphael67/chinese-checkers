@@ -23,25 +23,25 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
         props.newGame();
     };
 
-    const renderTopPlayer = (player: IPlayer, index: number): ReactElement => {
+    const renderTopPlayer = (player: IGamePlayer, index: number): ReactElement => {
         return <List.Item key={`player${index}`} className="top-player">
             <div className="place-number">{index + 1}</div>
-            <div className="player-name">{player.name}</div>
+            <div className="player-name">{player.nickname}</div>
         </List.Item>;
     };
 
-    const renderGamePlayers = (players: IPlayer[]): ReactElement[] => {
-        return players.map((player: IPlayer, index: number) => {
+    const renderGamePlayers = (players: IGamePlayer[]): ReactElement[] => {
+        return players.map((player: IGamePlayer, index: number) => {
             return <div key={`game_player${index}`}>
                 <Pawn colour={player.colour || Colour.Black} r={10} alone={true} />
-                <div className="game-player-name">{player.name}</div>
+                <div className="game-player-name">{player.nickname}</div>
             </div>;
         });
     };
 
     const renderGamePlayed = (game: IGame, index: number): ReactElement => {
         return <List.Item key={`game${index}`}>
-            <div className="game-players">{renderGamePlayers(game.players)}</div>
+            <div className="game-players">{renderGamePlayers(game.gamePlayers || [])}</div>
             <div>Played on {game.date.toUTCString()}</div>
             <Button className="play-game-action" size="large" icon={<CaretRightOutlined />} />
 

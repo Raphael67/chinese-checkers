@@ -1,6 +1,6 @@
 import { RightOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Button, Form, Input } from 'antd';
-import React, { ChangeEvent, ReactElement, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { Colour } from '../game/board';
 import Pawn from '../game/pawn';
 import './index.less';
@@ -9,60 +9,53 @@ interface IProps {
     errorMessage?: string;
     login: (params: IRegisterParams) => void;
     goToGame: () => void;
-    players: IPlayer[];
+    players: IGamePlayer[];
 }
 
 const colours = [Colour.Black, Colour.Blue, Colour.Green, Colour.Red, Colour.Yellow, Colour.Purple];
 
 const LoginComponent = (props: IProps): ReactElement => {
-    const getPlayableColours = (players: IPlayer[]): Colour[] => {
+    const getPlayableColours = (players: IGamePlayer[]): Colour[] => {
         return colours.map((colour: Colour) => {
-            if (players.find((player: IPlayer) => player.colour === colour && ['idle', 'disconnected', undefined].includes(player.status))) {
+            if (players.find((player: IGamePlayer) => player.colour === colour && ['idle', 'disconnected', undefined].includes(player.status))) {
                 return colour;
             }
             return undefined;
         }).filter((colour?: Colour) => colour) as Colour[];
     };
 
-    const [playableColours, setPlayableColours] = useState<Colour[]>(getPlayableColours(props.players));
+    const [savedColours, setSavedColours] = useState<Record<string, string>>();
 
-    const onLogin = (credentials: IRegisterParams) => {
-        props.login(credentials);
-    };
-
-    const setPlayer = (value: string, isPlayableColour: boolean, playableColours: Colour[], colour: Colour) => {
-        if (value === '') {
-            setPlayableColours(playableColours.filter((cl: Colour) => cl !== colour));
-        }
-        else if (!isPlayableColour) {
-            setPlayableColours(playableColours.concat([colour]));
-        }
-    };
-
-    const renderPlayerPlaces = (playableColours: Colour[], players: IPlayer[]): ReactElement[] => {
-        return colours.map((colour: Colour) => {
-            const player = players.find((player: IPlayer) => player.colour === colour);
-            return <Form.Item
-                className="player"
-                key={colour}
-            >
-                <Pawn colour={colour} r={20} alone={true} />
-                {renderPlayerPlace(playableColours, colour, player)}
-            </Form.Item>;
+    const onLogin = (values: Record<string, string>) => {
+        //props.login(credentials);
+        Object.keys(values).forEach((key: string) => {
+            console.log(key, values[key]);
         });
     };
 
-    const renderPlayerPlace = (playableColours: Colour[], colour: Colour, player?: IPlayer): ReactElement => {
-        const isPlayableColour = playableColours.includes(colour);
+    const renderPlayerPlaces = (players: IGamePlayer[], savedColours?: Record<string, string>): ReactElement[] => {
+        return colours.map((colour: Colour) => {
+            const player = players.find((player: IGamePlayer) => player.colour === colour);
+            return <div key={colour} className="player">
+                <Pawn colour={colour} r={20} alone={true} />
+                <Form.Item name={`nickname[${colour}]`} initialValue={player?.nickname}>
+                    {renderPlayerPlace(getPlayableColours(props.players), colour, player, savedColours)}
+                </Form.Item>
+            </div>;
+        });
+    };
+
+    const renderPlayerPlace = (playableColours: Colour[], colour: Colour, player?: IGamePlayer, savedColours?: Record<string, string>): ReactElement => {
         if (player) {
             if (player.status === 'disconnected') {
-                return <Input bordered={false} className="disconnected" readOnly={true} size="large" value={player.name} suffix={<Button disabled={!isPlayableColour} onClick={goToGame} type="primary" icon={<RightOutlined />}></Button>} />;
+                return <Input bordered={false} className="disconnected" readOnly={true} size="large" suffix={<Button disabled={!playableColours.includes(colour)} onClick={goToGame} type="primary" icon={<RightOutlined />}></Button>} />;
             }
-            return <Input bordered={false} readOnly={true} size="large" value={player.name} />;
+            return <Input bordered={false} readOnly={true} size="large" />;
         }
 
-        return <Input onChange={(event: ChangeEvent<HTMLInputElement>) => setPlayer(event.currentTarget.value, isPlayableColour, playableColours, colour)} size="large" placeholder="Your pseudo" prefix={<UserOutlined />} suffix={
-            <Button disabled={!isPlayableColour} onClick={goToGame} type="primary" icon={<RightOutlined />}></Button>
+        const key = `nickname[${colour}]`;
+        return <Input size="large" placeholder="Your pseudo" prefix={<UserOutlined />} suffix={
+            <Button htmlType="submit" disabled={!(savedColours && key in savedColours && savedColours[key])} type="primary" icon={<RightOutlined />}></Button>
         } />;
     };
 
@@ -74,10 +67,14 @@ const LoginComponent = (props: IProps): ReactElement => {
 
     return <Form
         onFinish={onLogin}
+        initialValues={props.players}
+        onValuesChange={(values: Record<string, string>) => {
+            setSavedColours({ ...savedColours, ...values });
+        }}
         className="login-component"
     >
         {error}
-        {renderPlayerPlaces(playableColours, props.players)}
+        {renderPlayerPlaces(props.players, savedColours)}
         <Button size="large" onClick={goToGame}>Watcher mode</Button>
     </Form>;
 };
