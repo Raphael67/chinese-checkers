@@ -1,40 +1,27 @@
-import jwt from 'jsonwebtoken';
 import { ActionTypes, Type } from 'redux/actions/types';
 
 export interface ISessionState {
-    token?: string;
-    error?: any;
-    user?: IUser;
+    player?: IPlayer;
 }
 
 const defaultState: ISessionState = {
-    token: undefined,
-    error: undefined,
-    user: undefined,
+    player: undefined
 };
 
 const savedState: ISessionState = defaultState;
 
 if (localStorage.getItem('sessionState')) {
     const sessionStateSaved = JSON.parse(localStorage.getItem('sessionState') as string);
-    if ('accessToken' in sessionStateSaved) {
-        const accessToken = sessionStateSaved.accessToken;
-        const tokenInfo = jwt.decode(accessToken);
-        if (tokenInfo && typeof (tokenInfo) === 'object' && 'exp' in tokenInfo && tokenInfo.exp > Date.now() / 1000) {
-            savedState.token = accessToken;
-            savedState.user = sessionStateSaved.user || undefined;
-        }
+    if ('player' in sessionStateSaved) {
+        savedState.player = sessionStateSaved.player;
     }
 }
 
 const session = (state: ISessionState = savedState, action: ActionTypes) => {
     let temporaryState: ISessionState = { ...state };
     switch (action.type) {
-        case Type.INIT_SESSION:
-            temporaryState = { ...temporaryState, ...action.payload };
-            break;
-        case Type.SET_USER:
-            temporaryState.user = action.payload.user;
+        case Type.SET_PLAYER:
+            temporaryState.player = action.payload;
             break;
         default:
     }
