@@ -1,5 +1,5 @@
 import { Controller, Get, Request, UseGuards } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GameGuard } from '../game/game.guard';
 import { Board, Cell } from './board';
 
@@ -12,6 +12,9 @@ export class BoardController {
         type: String
     })
     @UseGuards(GameGuard)
+    @ApiOperation({
+        summary: 'Return all pawns position for a game',
+    })
     public async getBoard(@Request() request: Request): Promise<Cell[]> {
         const board = new Board();
         return board.getCells();

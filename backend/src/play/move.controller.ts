@@ -1,20 +1,24 @@
 import { Body, Controller, Get, Inject, Param, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GameGuard, RequestWithGame } from '../game/game.guard';
 import { IMoves } from '../game/move.entity';
 import { MoveService } from './move.service';
 
-@Controller()
+@Controller('board')
+@ApiTags('Board')
 export class MoveController {
     @Inject(MoveService)
     private readonly moveService: MoveService;
 
-    @Get('/game/:gameId/move')
+    @Get('/:gameId/move')
     @ApiParam({
         name: 'gameId',
         type: String
     })
     @UseGuards(GameGuard)
+    @ApiOperation({
+        summary: 'Return a list of all moves for a game to replay',
+    })
     public async move(
         @Request() request: RequestWithGame
     ): Promise<IMoves[]> {
@@ -22,12 +26,15 @@ export class MoveController {
         return moves.map((move) => move.moves);
     }
 
-    @Post('/game/:gameId/player/:playerIndex/move')
+    @Post('/:gameId/player/:playerIndex/move')
     @ApiParam({
         name: 'playerIndex',
         type: Number,
     })
     @UseGuards(GameGuard)
+    @ApiOperation({
+        summary: 'Add a move for a player to a game',
+    })
     public async addMove(
         @Body() move: number[][],
         @Param() playerIndex: number,

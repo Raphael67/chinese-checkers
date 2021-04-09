@@ -1,5 +1,5 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from './player.service';
 
 @Controller('player')
@@ -10,6 +10,9 @@ export class PlayerController {
 
 
     @Get('/')
+    @ApiOperation({
+        summary: 'Return a list of players orederd by ratings',
+    })
     public getPlayers() {
         return this.playerService.findByRating();
     }
