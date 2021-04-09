@@ -56,4 +56,9 @@ export class Board {
     public getCells() {
         return [...this.cells.values()].filter((cell) => cell.getPawn() !== undefined);
     }
+
+    public getCell(x: number, y: number): Cell {
+        const cell = new Cell(x, y);
+        return this.cells.get(cell.getIndex());
+    }
 }
