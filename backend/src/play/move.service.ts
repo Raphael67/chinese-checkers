@@ -30,13 +30,30 @@ export class MoveService {
             order: { moveIndex: 'ASC' }
         });
         moves.forEach((move) => {
-            const from = board.getCell(move.path[0][0], move.path[0][1]);
-            const to = board.getCell(move.path[move.path.length - 1][0], move.path[move.path.length - 1][1]);
-            to.setPawn(from.getPawn());
-            from.setPawn(undefined);
+            this.playPath(board, move.path);
         });
         this.boards.set(game.id, board);
         return board;
+    }
+
+    public playPath(board: Board, path: number[][]): Board {
+        const from = board.getCell(path[0][0], path[0][1]);
+        const to = board.getCell(path[path.length - 1][0], path[path.length - 1][1]);
+        to.setPawn(from.getPawn());
+        from.setPawn(undefined);
+        board.nextPlayer();
+        return board;
+    }
+
+    public async saveMove(game: Game, path: number[][]): Promise<Move> {
+        const numberOfMove = await this.moveRepository.count({
+            where: { gameId: game.id }
+        });
+        const move = new Move();
+        move.gameId = game.id;
+        move.moveIndex = numberOfMove;
+        move.path = path;
+        return this.moveRepository.save(move);
     }
 
     public async getBoard(game: Game): Promise<Board> {
@@ -61,23 +78,35 @@ export class MoveService {
     }
 
     public isValidPath(board: Board, player: number, path: number[][]): boolean {
+        // is player turn
+        if (board.getCurrentPlayer() !== player) throw new Error(`Current player is ${board.getCurrentPlayer()}`);
         let moveIndex = 0;
         for (let move of path) {
             // Only valid cell in path
-            if (!board.getCell(move[0], move[1])) return false;
+            if (!board.getCell(move[0], move[1])) {
+                throw new Error(`Only valid cell in path: ${moveIndex}: ${move}`);
+            }
             // first cell should contain a pawn from specified player
-            if (moveIndex === 0 && board.getCell(move[0], move[1]).getPawn() !== player) return false;
+            if (moveIndex === 0 && board.getCell(move[0], move[1]).getPawn() !== player) {
+                throw new Error(`first cell should contain a pawn from specified player: ${moveIndex}: ${move}`);
+            }
             // Other cells should be free
-            if (moveIndex > 0 && board.getCell(move[0], move[1]).getPawn() !== undefined) return false;
+            if (moveIndex > 0 && board.getCell(move[0], move[1]).getPawn() !== undefined) {
+                throw new Error(`Other cells should be free: ${moveIndex}: ${move}`);
+            }
             moveIndex++;
         }
 
         if (this.isOneCellJump(path[0], path[1])) {
-            if (path.length !== 2) return false;
+            // One cell jump stop the path
+            if (path.length !== 2) {
+                throw new Error(`One cell jump stop the path`);
+            };
         } else {
             for (let i = 0; i < path.length - 1; i++) {
+                // Only multiple jump over allowed
                 if (!this.isJumpOver(board, path[i], path[i + 1])) {
-                    return false;
+                    throw new Error(`Only multiple jump over allowed`);
                 }
             }
         }

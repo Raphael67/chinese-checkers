@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GameGuard, RequestWithGame } from '../game/game.guard';
 import { MoveService } from './move.service';
@@ -27,6 +27,10 @@ export class MoveController {
 
     @Post('/:gameId/player/:playerIndex/move')
     @ApiParam({
+        name: 'gameId',
+        type: String,
+    })
+    @ApiParam({
         name: 'playerIndex',
         type: Number,
     })
@@ -35,11 +39,18 @@ export class MoveController {
         summary: 'Add a move for a player to a game',
     })
     public async addMove(
-        @Body() move: number[][],
-        @Param() playerIndex: number,
+        @Body() path: number[][],
+        @Param('playerIndex', new ParseIntPipe()) playerIndex: number,
         @Request() request: RequestWithGame,
     ): Promise<boolean> {
         const board = await this.moveService.getBoard(request.game);
-        return this.moveService.isValidPath(board, playerIndex, move);
+        try {
+            this.moveService.isValidPath(board, playerIndex, path);
+        } catch (ex) {
+            throw new BadRequestException(ex.message);
+        }
+        this.moveService.playPath(board, path);
+        this.moveService.saveMove(request.game, path);
+        return true;
     }
 }

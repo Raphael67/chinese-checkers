@@ -33,6 +33,7 @@ const playerPositions = [
 
 export class Board {
     private cells: Map<string, Cell> = new Map();
+    private currentPlayer: number = 0;
 
     constructor() {
         for (let row = 0; row < 17; row++) {
@@ -51,6 +52,14 @@ export class Board {
             }
             playerIndex++;
         }
+    }
+
+    public nextPlayer() {
+        this.currentPlayer = (this.currentPlayer + 1) % 6;
+    }
+
+    public getCurrentPlayer() {
+        return this.currentPlayer;
     }
 
     public getCells() {

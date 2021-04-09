@@ -32,14 +32,14 @@ describe('MoveService', () => {
             const player = 0;
             const path = [[0, 0], [1, 1]];
 
-            expect(service.isValidPath(board, player, path)).toBeFalsy();
+            expect(() => service.isValidPath(board, player, path)).toThrow();
         });
         it('should return false if pawn from anotehr player at origin', () => {
             const board = new Board();
             const player = 0;
             const path = [[6, 4], [8, 4]];
 
-            expect(service.isValidPath(board, player, path)).toBeFalsy();
+            expect(() => service.isValidPath(board, player, path)).toThrow();
         });
         it('should return false if any cell not free', () => {
             const board = new Board();
@@ -47,7 +47,7 @@ describe('MoveService', () => {
             const player = 0;
             const path = [[9, 3], [8, 4]];
 
-            expect(service.isValidPath(board, player, path)).toBeFalsy();
+            expect(() => service.isValidPath(board, player, path)).toThrow();
         });
 
 
@@ -57,7 +57,7 @@ describe('MoveService', () => {
             const player = 0;
             const path = [[15, 3], [14, 4]];
 
-            expect(service.isValidPath(board, player, path)).toBeTruthy();
+            expect(() => service.isValidPath(board, player, path)).toBeTruthy();
         });
     });
 
