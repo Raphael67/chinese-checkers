@@ -24,13 +24,25 @@ declare interface IUser {
 declare interface IGame {
     id: string;
     date: Date;
-    numberOfRounds: number;
-    players: IPlayer[];
+    gamePlayers?: IGamePlayer[];
+    createdAt: Date;
+    longestStreak?: number;
+    rounds?: number;
+    status: 'CREATED';
 }
 
 declare interface IPlayer {
+    createdAt: Date;
+    id: number;
+    lose?: number;
+    nickname: string;
+    rating?: number;
+    updatedAt?: Date;
+    win?: number;
+}
+
+declare interface IGamePlayer extends IPlayer {
     colour?: number;
-    name: string;
     status?: 'idle' | 'disconnected' | 'playing';
 }
 

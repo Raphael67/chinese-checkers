@@ -1,6 +1,7 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import pages from '../../pages';
+import Api from '../../services/api';
 import { Colour } from '../game/board';
 import LeaderBoardComponent from './component';
 import './index.less';
@@ -8,78 +9,50 @@ import './index.less';
 const LeaderBoard = (): ReactElement => {
     const history = useHistory();
 
-    const newGame = () => {
-        history.push(pages.login.path);
+    const [topPlayers, setTopPlayers] = useState<IPlayer[]>([]);
+
+    const newGame = async () => {
+        try {
+            const game = await Api.newGame();
+            history.push(pages.login.path.replace(':gameId', game.id));
+        }
+        catch (err) {
+            console.error(err);
+        }
     };
 
-    return <LeaderBoardComponent topPlayers={[{
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    {
-        name: 'dfgdf'
-    },
-    ]} gamesPlayed={[{
+    useEffect(() => {
+        (async () => {
+            try {
+                setTopPlayers(await Api.getPlayers());
+            }
+            catch (err) {
+                console.error(err);
+            }
+        })();
+    }, []);
+
+    return <LeaderBoardComponent topPlayers={topPlayers} gamesPlayed={[{
         date: new Date('2020-01-02'),
         id: 'fdg',
-        numberOfRounds: 6,
-        players: [{
-            name: 'yukjyu',
+        rounds: 6,
+        createdAt: new Date('2020-01-01'),
+        status: 'CREATED',
+        gamePlayers: [{
+            id: 1,
+            createdAt: new Date('2020-01-02'),
             colour: Colour.Blue,
-        },
-        {
-            name: 'ereze',
+            nickname: 'dfg',
+            status: 'idle'
+        }, {
+            id: 2,
+            createdAt: new Date('2020-01-03'),
             colour: Colour.Yellow,
-        },
-        {
-            name: 'yez',
-            colour: Colour.Green,
+            nickname: 'sdfsd',
+            status: 'disconnected'
         }]
     },
-    {
-        date: new Date('2020-01-02'),
-        id: 'fdfg',
-        numberOfRounds: 10,
-        players: [{
-            name: 'ghf',
-            colour: Colour.Red,
-        },
-        {
-            name: 'eresdsdfsdfsdffzsqefe',
-            colour: Colour.Black,
-        },
-        {
-            name: 'gg',
-            colour: Colour.Green,
-        },
-        {
-            name: 'qsdqd',
-            colour: Colour.Yellow,
-        }]
-    }]} newGame={newGame} />;
+    ]} newGame={newGame} />;
 };
 
 export default LeaderBoard;

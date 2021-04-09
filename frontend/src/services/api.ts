@@ -35,7 +35,7 @@ export default class Api {
 
     public static getGame(params: IGameParams): Promise<IGame> {
         return Api.fetch(
-            routes.newGame,
+            routes.game,
             params
         );
     }
@@ -120,14 +120,15 @@ export default class Api {
         return json;
     }
 
-    private static getApiHost() {
+    private static getApiHost(): string {
         return (
             config.api.protocol +
-            '//' +
+            '://' +
             (config.api.hostname
                 ? config.api.hostname
                 : document.location.hostname) +
-            (config.api.port ? ':' + config.api.port : '')
+            (config.api.port ? ':' + config.api.port : '') +
+            (config.api.path || '')
         );
     }
 
