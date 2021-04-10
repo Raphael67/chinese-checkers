@@ -1,12 +1,16 @@
 import pages from 'pages';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import Api from 'services/api';
 import { AppContext } from '../..';
+import { reset } from '../../redux/actions/session.action';
+import { WithLogged } from '../services';
 import GameComponent from './component';
 import './index.less';
 
 const Game = (): ReactElement => {
+    const dispatch = useDispatch();
     const { game } = useContext(AppContext);
 
     const history = useHistory();
@@ -39,10 +43,11 @@ const Game = (): ReactElement => {
     }, [game, gameParams.gameId]);
 
     const quitGame = () => {
+        reset(dispatch);
         history.push(pages.leaderBoard.path);
     };
 
     return <GameComponent quitGame={quitGame} game={currentGame} />;
 };
 
-export default Game;
+export default WithLogged(Game, ['game', 'player']);

@@ -1,21 +1,25 @@
 import { Colour } from 'core/board';
 import pages from 'pages';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
+import { newGame } from 'redux/actions/game.action';
 import Api from 'services/api';
 import LeaderBoardComponent from './component';
 import './index.less';
 
 const LeaderBoard = (): ReactElement => {
     const history = useHistory();
+    const dispatch = useDispatch();
 
     const [topPlayers, setTopPlayers] = useState<IPlayer[]>([]);
 
-    const newGame = async () => {
+    const createGame = async () => {
         try {
-            const game = await Api.newGame().catch((err) => {
+            const game = await newGame(dispatch).catch((err) => {
                 throw err;
             });
+
             history.push(pages.login.path.replace(':gameId', game.id));
         }
         catch (err) {
@@ -53,7 +57,7 @@ const LeaderBoard = (): ReactElement => {
             status: 'disconnected'
         }]
     },
-    ]} newGame={newGame} />;
+    ]} createGame={createGame} />;
 };
 
 export default LeaderBoard;

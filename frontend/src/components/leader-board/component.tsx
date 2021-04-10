@@ -6,7 +6,7 @@ import React, { ReactElement } from 'react';
 import './index.less';
 
 interface IProps {
-    newGame: () => void;
+    createGame: () => void;
     topPlayers: IPlayer[];
     gamesPlayed: IGame[];
 }
@@ -19,8 +19,8 @@ enum Sort {
 }
 
 const LeaderBoardComponent = (props: IProps): ReactElement => {
-    const newGame = () => {
-        props.newGame();
+    const createGame = () => {
+        props.createGame();
     };
 
     const renderTopPlayer = (player: IPlayer, index: number): ReactElement => {
@@ -61,7 +61,7 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
             <Card className="board-list" bordered={false} title="Leader board">
                 {renderTopPlayers(props.topPlayers)}
             </Card>
-            <Button type="primary" size="large" className="new-game-action" onClick={newGame}>New game</Button>
+            <Button type="primary" size="large" className="new-game-action" onClick={createGame}>New game</Button>
         </Sider>
         <Content className="games">
             <Card className="games-list" bordered={false} title="Games played">
