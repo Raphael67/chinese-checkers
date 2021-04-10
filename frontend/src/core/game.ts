@@ -1,8 +1,11 @@
 import { Store } from 'redux';
 import { setPath, setPawnPlace, setPossiblePlaces } from 'redux/actions/game.action';
+import Api from '../services/api';
 import Board from './board';
 
 export default class Game {
+    private id?: string;
+    private playerId?: number;
     private board: Board = new Board();
     private pawnTaken?: string;
     private possiblePlaces?: IPath[];
@@ -10,15 +13,45 @@ export default class Game {
 
     constructor(private store: Store<any, any>) { }
 
+    public setId(id: string) {
+        this.id = id;
+    }
+
+    public setPlayerId(playerId: number) {
+        this.playerId = playerId;
+    }
+
+    public async getBoard(gameId: string): Promise<IBoard> {
+        const board: IBoard = {};
+        const rawBoard = await Api.getBoard({
+            gameId
+        }).catch((err) => {
+            throw err;
+        });
+
+        rawBoard.forEach((rawPawn: IRawPawn) => {
+            const pawnPlace = this.board.getPawnFromRaw(rawPawn);
+            board[pawnPlace.pawn] = pawnPlace.place;
+        });
+
+        return board;
+    }
+
     public takePawn(pawn: string) {
         this.setPawn(this.board.getPossiblePlacesForPawn(pawn), pawn);
     }
 
     public placePawn(place: string) {
-        if (this.pawnTaken) {
+        if (this.pawnTaken && this.id && this.playerId) {
             this.board.placePawn(this.pawnTaken, place);
             setPawnPlace(this.store.dispatch, this.pawnTaken, place);
             this.setPawn([]);
+
+            Api.newMove({
+                gameId: this.id,
+                playerIndex: this.playerId,
+                moves: [[10, 3], [9, 4]]
+            });
         }
     }
 

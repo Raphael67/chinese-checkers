@@ -83,4 +83,11 @@ export default class Board {
         this.pawnsMap[place] = pawn;
     }
 
+    public getPawnFromRaw(rawPawn: IRawPawn): IPawnPlace {
+        return {
+            pawn: 'pawn1',
+            place: 'p1'
+        };
+    }
+
 }
