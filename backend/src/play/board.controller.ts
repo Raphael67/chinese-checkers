@@ -4,7 +4,7 @@ import { GameGuard, RequestWithGame } from '../game/game.guard';
 import { Cell } from './board';
 import { MoveService } from './move.service';
 
-@Controller('board')
+@Controller('/api/board')
 @ApiTags('Board')
 export class BoardController {
     @Inject(MoveService)

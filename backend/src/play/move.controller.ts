@@ -3,7 +3,7 @@ import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GameGuard, RequestWithGame } from '../game/game.guard';
 import { MoveService } from './move.service';
 
-@Controller('board')
+@Controller('/api/board')
 @ApiTags('Board')
 export class MoveController {
     @Inject(MoveService)

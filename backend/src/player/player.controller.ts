@@ -2,7 +2,7 @@ import { Controller, Get, Inject } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from './player.service';
 
-@Controller('player')
+@Controller('/api/player')
 @ApiTags('Player')
 export class PlayerController {
     @Inject(PlayerService)

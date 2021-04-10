@@ -7,7 +7,7 @@ import { Game } from './game.entity';
 import { GameGuard, RequestWithGame } from './game.guard';
 import { GameService } from './game.service';
 
-@Controller('game')
+@Controller('/api/game')
 @ApiTags('Game')
 @UseInterceptors(ClassSerializerInterceptor)
 export class GameController {
