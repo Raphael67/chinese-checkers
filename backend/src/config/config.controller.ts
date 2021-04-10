@@ -4,7 +4,7 @@ import { ConfigService } from './config.service';
 
 
 @ApiTags('Config')
-@Controller('config')
+@Controller('/api/config')
 @UseInterceptors(ClassSerializerInterceptor)
 export class ConfigController {
     @Inject(ConfigService)
