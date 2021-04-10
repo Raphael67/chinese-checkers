@@ -14,7 +14,8 @@ declare interface IGameParams {
 
 declare interface IMoveParams {
     gameId: string;
-    playerIndex: string;
+    playerIndex: number;
+    moves: number[][];
 }
 
 declare interface IUser {
@@ -24,7 +25,7 @@ declare interface IUser {
 declare interface IGame {
     id: string;
     date: Date;
-    gamePlayers?: IGamePlayer[];
+    players?: IGamePlayer[];
     createdAt: Date;
     longestStreak?: number;
     rounds?: number;
@@ -55,9 +56,16 @@ declare interface IPath {
     place: string;
     fromOverPawn: boolean;
 }
-declare interface IBoard {
-    pawns: string[];
+
+declare type IBoard = Record<string, string>;
+
+declare interface IRawPawn {
+    x: number;
+    y: number;
+    pawn: number;
 }
+
+declare type IRawBoard = IRawPawn[];
 
 declare interface IMove {
     from: string;
