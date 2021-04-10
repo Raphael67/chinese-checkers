@@ -32,11 +32,13 @@ const Login = (): ReactElement => {
 
     }, [gameParams.gameId]);
 
-    const login = (playerName: string, colour: Colour): void => {
+    const login = async (playerName: string, colour: Colour) => {
         try {
-            register(dispatch, gameParams, {
+            await register(dispatch, gameParams, {
                 nickname: playerName,
                 color: ColourMapReverse[colour]
+            }).catch((err) => {
+                throw err;
             });
 
             goToGame();
@@ -50,7 +52,7 @@ const Login = (): ReactElement => {
         history.push(pages.game.path.replace(':gameId', gameParams.gameId));
     };
 
-    return <LoginComponent players={game?.players || []} login={login} goToGame={goToGame} errorMessage={errorMessage} />;
+    return <LoginComponent game={game} login={login} goToGame={goToGame} errorMessage={errorMessage} />;
 };
 
 export default Login;
