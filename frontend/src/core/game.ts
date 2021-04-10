@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { setPath, setPawnPlace, setPossiblePlaces } from '../redux/actions/game.action';
+import { setPath, setPawnPlace, setPossiblePlaces } from 'redux/actions/game.action';
 import Board from './board';
 
 export default class Game {
@@ -40,21 +40,16 @@ export default class Game {
             this.path = this.path.reduce((newPath: IPath[], pathPart: IPath) => {
                 return !newPath.find((newPathPart: IPath) => newPathPart.place === place) ? newPath.concat([pathPart]) : newPath;
             }, []);
-            this.setPathAndPossiblePlaces(place, this.getPath(this.path));
+
+            this.setPathAndPossiblePlaces(place, this.path);
+
         }
         else if (this.pawnTaken) {
             const possiblePlace = this.possiblePlaces?.find((pathPart: IPath) => pathPart.place === place);
             if (possiblePlace) {
                 this.path.push(possiblePlace);
 
-                // If first move does not come from over pawn
-                if (this.path.length > 0 && !this.path[0].fromOverPawn) {
-                    setPossiblePlaces(this.store.dispatch, []);
-                    setPath(this.store.dispatch, this.getPath(this.path));
-                }
-                else {
-                    this.setPathAndPossiblePlaces(place, this.getPath(this.path));
-                }
+                this.setPathAndPossiblePlaces(place, this.path);
             }
         }
     }
@@ -65,12 +60,20 @@ export default class Game {
         }
     }
 
-    private setPathAndPossiblePlaces(place: string, path: string[]) {
-        // Remove entries from path and store it
-        this.possiblePlaces = this.board.getPossiblePlacesForPlace(place);
-        setPossiblePlaces(this.store.dispatch, this.possiblePlaces
-            .filter((possiblePlace: IPath) => !path.includes(possiblePlace.place))
-            .map((possiblePlace: IPath) => possiblePlace.place));
-        setPath(this.store.dispatch, path);
+    private setPathAndPossiblePlaces(place: string, path: IPath[]) {
+        // If first move does not come from over pawn
+        if (path.length > 0 && !path[0].fromOverPawn) {
+            setPossiblePlaces(this.store.dispatch, []);
+            setPath(this.store.dispatch, this.getPath(path));
+        }
+        else {
+            const pathPlaces = this.getPath(path);
+            // Remove entries from path and store it
+            this.possiblePlaces = this.board.getPossiblePlacesForPlace(place);
+            setPossiblePlaces(this.store.dispatch, this.possiblePlaces
+                .filter((possiblePlace: IPath) => !pathPlaces.includes(possiblePlace.place))
+                .map((possiblePlace: IPath) => possiblePlace.place));
+            setPath(this.store.dispatch, pathPlaces);
+        }
     }
 }

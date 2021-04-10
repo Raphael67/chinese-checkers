@@ -1,9 +1,9 @@
 import App from 'components/app';
+import Game from 'core/game';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import store from 'redux/store';
-import Game from './core/game';
 
 const contextValue = {
     game: new Game(store),

@@ -1,14 +1,26 @@
 import { Button, Card } from 'antd';
-import { ReactElement } from 'react';
-import Board from './board';
+import Board from 'components/game/board';
+import React, { ReactElement } from 'react';
 
 interface IProps {
     quitGame: () => void;
+    game?: IGame;
 }
 
 const GameComponent = (props: IProps): ReactElement => {
     const quitGame = () => {
         props.quitGame();
+    };
+
+    const renderPlayers = (players: IGamePlayer[]): ReactElement[] => {
+        return players.map((player: IGamePlayer) => <p>{player.nickname}</p>);
+    };
+
+    const renderGameInfo = (game: IGame): ReactElement => {
+        return <>
+            <p>Round #{game.rounds}</p>
+            <p>Longest streak: {game.longestStreak}</p>
+        </>;
     };
 
     return <div className="game">
@@ -18,19 +30,10 @@ const GameComponent = (props: IProps): ReactElement => {
         <div className="info-container">
             <div className="info">
                 <Card bordered={false} title="Current game" className="current-game">
-                    <p>Round #6</p>
-                    <p>Longest streak: 50</p>
+                    {props.game && renderGameInfo(props.game)}
                 </Card>
                 <Card bordered={false} title="Players" className="players">
-                    <p>Raph</p>
-                    <p>Joe</p>
-                    <p>Michou-misalade</p>
-                    <p>Michou-misalade</p>
-                    <p>Michou-misalade</p>
-                    <p>Michou-misalade</p>
-                    <p>Michou-misalade</p>
-                    <p>Michou-misalade</p>
-
+                    {props.game && renderPlayers(props.game.gamePlayers || [])}
                 </Card>
             </div>
             <div className="actions">

@@ -1,6 +1,6 @@
+import { Colour } from 'core/board';
 import React, { useContext } from 'react';
 import { AppContext } from '../../..';
-import { Colour } from '../board';
 import './index.less';
 
 interface IProps {

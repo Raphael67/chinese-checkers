@@ -32,18 +32,18 @@ declare interface IGame {
 }
 
 declare interface IPlayer {
-    createdAt: Date;
-    id: number;
-    lose?: number;
     nickname: string;
-    rating?: number;
-    updatedAt?: Date;
-    win?: number;
+    colour?: number;
+    status?: 'idle' | 'disconnected' | 'playing';
 }
 
 declare interface IGamePlayer extends IPlayer {
-    colour?: number;
-    status?: 'idle' | 'disconnected' | 'playing';
+    createdAt: Date;
+    id: number;
+    lose?: number;
+    rating?: number;
+    updatedAt?: Date;
+    win?: number;
 }
 
 declare interface IPawnPlace {

@@ -1,6 +1,6 @@
+import Pawn from 'components/game/pawn';
+import { Colour } from 'core/board';
 import React, { useEffect, useState } from 'react';
-import { Colour } from '.';
-import Pawn from '../pawn';
 import './index.less';
 
 interface IProps {
