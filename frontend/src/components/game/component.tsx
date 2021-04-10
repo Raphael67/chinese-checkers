@@ -1,6 +1,8 @@
 import { Button, Card } from 'antd';
 import Board from 'components/game/board';
+import { Colour } from 'core/board';
 import React, { ReactElement } from 'react';
+import Pawn from './pawn';
 
 interface IProps {
     quitGame: () => void;
@@ -13,7 +15,12 @@ const GameComponent = (props: IProps): ReactElement => {
     };
 
     const renderPlayers = (players: IGamePlayer[]): ReactElement[] => {
-        return players.map((player: IGamePlayer) => <p>{player.nickname}</p>);
+        return players.map((player: IGamePlayer, index: number) => {
+            return <div className="player" key={`p${index}`}>
+                <Pawn colour={player.colour || Colour.Black} r={10} alone={true} />
+                <div>{player.nickname}</div>
+            </div>;
+        });
     };
 
     const renderGameInfo = (game: IGame): ReactElement => {
@@ -33,7 +40,7 @@ const GameComponent = (props: IProps): ReactElement => {
                     {props.game && renderGameInfo(props.game)}
                 </Card>
                 <Card bordered={false} title="Players" className="players">
-                    {props.game && renderPlayers(props.game.gamePlayers || [])}
+                    {props.game && renderPlayers(props.game.players || [])}
                 </Card>
             </div>
             <div className="actions">
