@@ -26,7 +26,7 @@ export class GamePlayer {
     @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
     public player: Player;
 
-    @ManyToOne(() => Game, game => game.gamePlayers)
+    @ManyToOne(() => Game, game => game.gamePlayers, { cascade: false })
     @JoinColumn({ name: 'game_id', referencedColumnName: 'id' })
     public game: Game;
 }
