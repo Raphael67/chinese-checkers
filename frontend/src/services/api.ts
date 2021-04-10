@@ -54,7 +54,7 @@ export default class Api {
         );
     }
 
-    public static getBoard(params: IGameParams): Promise<IBoard> {
+    public static getBoard(params: IGameParams): Promise<IRawBoard> {
         return Api.fetch(
             routes.board,
             params
@@ -79,7 +79,6 @@ export default class Api {
         route: IRoute,
         params: any = {},
         optionsSupp: Partial<RequestInit> = {},
-        accessToken?: string,
     ): Promise<any> {
         const routeReplaced = {
             ...route,
@@ -100,7 +99,9 @@ export default class Api {
             response = await fetch(
                 this.getApiHost() + routeReplaced.path,
                 options,
-            );
+            ).catch((err) => {
+                throw err;
+            });
         } catch (ex) {
             // tslint:disable-next-line:no-console
             console.error(ex);
@@ -108,7 +109,9 @@ export default class Api {
         }
 
         try {
-            json = await response.json();
+            json = await response.json().catch((err) => {
+                throw err;
+            });
         } catch (ex) {
             // tslint:disable-next-line:no-console
             console.warn(ex);
