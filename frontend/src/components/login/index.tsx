@@ -21,6 +21,8 @@ const Login = (): ReactElement => {
             try {
                 setGame(await Api.getGame({
                     gameId: gameParams.gameId
+                }).catch((err) => {
+                    throw err;
                 }));
             }
             catch (err) {
@@ -36,6 +38,8 @@ const Login = (): ReactElement => {
                 nickname: playerName,
                 color: ColourMapReverse[colour]
             });
+
+            goToGame();
         }
         catch (err) {
             console.error(err);
@@ -46,7 +50,7 @@ const Login = (): ReactElement => {
         history.push(pages.game.path.replace(':gameId', gameParams.gameId));
     };
 
-    return <LoginComponent players={game?.gamePlayers || []} login={login} goToGame={goToGame} errorMessage={errorMessage} />;
+    return <LoginComponent players={game?.players || []} login={login} goToGame={goToGame} errorMessage={errorMessage} />;
 };
 
 export default Login;
