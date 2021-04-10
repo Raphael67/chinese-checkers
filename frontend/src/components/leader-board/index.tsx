@@ -13,7 +13,9 @@ const LeaderBoard = (): ReactElement => {
 
     const newGame = async () => {
         try {
-            const game = await Api.newGame();
+            const game = await Api.newGame().catch((err) => {
+                throw err;
+            });
             history.push(pages.login.path.replace(':gameId', game.id));
         }
         catch (err) {
@@ -23,13 +25,12 @@ const LeaderBoard = (): ReactElement => {
 
     useEffect(() => {
         (async () => {
-            try {
-                setTopPlayers(await Api.getPlayers());
-            }
-            catch (err) {
-                console.error(err);
-            }
-        })();
+            setTopPlayers(await Api.getPlayers().catch((err) => {
+                throw err;
+            }) || []);
+        })().catch((err) => {
+            console.error(err);
+        });
     }, []);
 
     return <LeaderBoardComponent topPlayers={topPlayers} gamesPlayed={[{
@@ -38,7 +39,7 @@ const LeaderBoard = (): ReactElement => {
         rounds: 6,
         createdAt: new Date('2020-01-01'),
         status: 'CREATED',
-        gamePlayers: [{
+        players: [{
             id: 1,
             createdAt: new Date('2020-01-02'),
             colour: Colour.Blue,

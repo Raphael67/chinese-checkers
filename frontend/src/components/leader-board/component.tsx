@@ -41,7 +41,7 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
 
     const renderGamePlayed = (game: IGame, index: number): ReactElement => {
         return <List.Item key={`game${index}`}>
-            <div className="game-players">{renderGamePlayers(game.gamePlayers || [])}</div>
+            <div className="game-players">{renderGamePlayers(game.players || [])}</div>
             <div>Played on {game.date.toUTCString()}</div>
             <Button className="play-game-action" size="large" icon={<CaretRightOutlined />} />
 
@@ -49,7 +49,7 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
     };
 
     const renderTopPlayers = (players: IPlayer[]): ReactElement => {
-        return players.length > 0 ? <List dataSource={players} renderItem={renderTopPlayer} /> : <Empty />;
+        return players.length > 0 ? <List dataSource={players} renderItem={renderTopPlayer} /> : <Empty className="empty" />;
     };
 
     const renderGamesPlayed = (games: IGame[]): ReactElement => {
