@@ -87,6 +87,9 @@ export default class Api {
         };
 
         const options = {
+            headers: {
+                'Content-Type': 'application/json',
+            },
             method: route.method,
             ...optionsSupp,
         };
