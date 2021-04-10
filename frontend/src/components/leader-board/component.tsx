@@ -1,5 +1,5 @@
 import { CaretRightOutlined } from '@ant-design/icons';
-import { Button, Card, Empty, Form, Input, Layout, List, Radio } from 'antd';
+import { Button, Card, DatePicker, Empty, Form, Input, Layout, List, Radio } from 'antd';
 import Pawn from 'components/game/pawn';
 import { Colour } from 'core/board';
 import React, { ReactElement } from 'react';
@@ -9,14 +9,10 @@ interface IProps {
     createGame: () => void;
     topPlayers: IPlayer[];
     gamesPlayed: IGame[];
+    onSearch: (values: ISearchGameParams) => void;
 }
 
 const { Sider, Content } = Layout;
-
-enum Sort {
-    Date,
-    NumberOfRounds
-}
 
 const LeaderBoardComponent = (props: IProps): ReactElement => {
     const createGame = () => {
@@ -42,7 +38,7 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
     const renderGamePlayed = (game: IGame, index: number): ReactElement => {
         return <List.Item key={`game${index}`}>
             <div className="game-players">{renderGamePlayers(game.players || [])}</div>
-            <div>Played on {game.date.toUTCString()}</div>
+            <div>Played on {game.createdAt.toUTCString()}</div>
             <Button className="play-game-action" size="large" icon={<CaretRightOutlined />} />
 
         </List.Item>;
@@ -56,6 +52,10 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
         return games.length > 0 ? <List size="large" dataSource={games} renderItem={renderGamePlayed} /> : <Empty />;
     };
 
+    const onSearch = (values: ISearchGameParams) => {
+        props.onSearch(values);
+    };
+
     return <div className="leader-board">
         <Sider className="leader-board-container">
             <Card className="board-list" bordered={false} title="Leader board">
@@ -65,25 +65,27 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
         </Sider>
         <Content className="games">
             <Card className="games-list" bordered={false} title="Games played">
-                <Form className="search-form" layout="inline">
-                    <Form.Item label="Player">
+                <Form className="search-form" layout="inline" initialValues={{
+                    orderBy: 'rounds'
+                } as ISearchGameParams} onFinish={onSearch}>
+                    <Form.Item label="Player" name="player">
                         <Input />
                     </Form.Item>
-                    <Form.Item label="Date">
-                        <Input />
+                    <Form.Item label="Date" name="date">
+                        <DatePicker />
                     </Form.Item>
-                    <Form.Item label="Sort">
+                    <Form.Item label="Sort" name="orderBy">
                         <Radio.Group>
-                            <Radio value={Sort.Date}>
+                            <Radio value='created_at'>
                                 Date
                             </Radio>
-                            <Radio value={Sort.NumberOfRounds}>
+                            <Radio value='rounds'>
                                 Number of rounds
                             </Radio>
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary">Search</Button>
+                        <Button htmlType="submit" type="primary">Search</Button>
                     </Form.Item>
                 </Form>
                 {renderGamesPlayed(props.gamesPlayed)}

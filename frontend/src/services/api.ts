@@ -28,10 +28,27 @@ export default class Api {
         );
     }
 
-    public static getGames(params: ISearchGameParams): Promise<IGame[]> {
+    public static getGames(params: ISearchGameParams): Promise<IRawGame[]> {
+        const { orderBy, date, player } = params;
+        const newParams: any = {
+            orderBy
+        };
+        if (date) {
+            newParams.date = Intl.DateTimeFormat('en', { year: 'numeric', month: 'numeric', day: 'numeric' })
+                .formatToParts(date)
+                .filter((datePart: Intl.DateTimeFormatPart) => ['day', 'month', 'year'].includes(datePart.type))
+                .sort(((a: Intl.DateTimeFormatPart, b: Intl.DateTimeFormatPart) => a.type.localeCompare(b.type)))
+                .reverse()
+                .map((datePart: Intl.DateTimeFormatPart) => datePart.value)
+                .join('-');
+        }
+        if (player) {
+            newParams.player = player;
+        }
+
         return Api.fetch(
             routes.games,
-            params,
+            newParams,
         );
     }
 

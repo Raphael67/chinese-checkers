@@ -4,8 +4,8 @@ declare interface IRegisterParams {
 }
 
 declare interface ISearchGameParams {
-    player: name;
-    date: Date;
+    player?: name;
+    date?: Date;
     orderBy: 'created_at' | 'rounds';
 }
 declare interface IGameParams {
@@ -22,14 +22,25 @@ declare interface IUser {
     token: string;
 }
 
+declare interface IRawGame {
+    game_id: string;
+    players: IRawGamePlayer[];
+    created_at: Date;
+    longest_streak?: number;
+    rounds: number;
+}
+
+declare interface IRawGamePlayer {
+    nickname: string;
+    color: string;
+}
+
 declare interface IGame {
     id: string;
-    date: Date;
     players?: IGamePlayer[];
     createdAt: Date;
     longestStreak?: number;
     rounds?: number;
-    status: 'CREATED';
 }
 
 declare interface IPlayer {
@@ -39,8 +50,8 @@ declare interface IPlayer {
 }
 
 declare interface IGamePlayer extends IPlayer {
-    createdAt: Date;
-    id: number;
+    createdAt?: Date;
+    id?: number;
     lose?: number;
     rating?: number;
     updatedAt?: Date;

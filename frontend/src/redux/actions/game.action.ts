@@ -1,3 +1,4 @@
+import { ColourMap } from 'core/board';
 import { Dispatch } from 'react';
 import { ISetGame, ISetPath, ISetPawnPlace, ISetPossiblePlaces, Type } from 'redux/actions/types';
 import Api from 'services/api';
@@ -30,9 +31,32 @@ export const newGame = async (dispatch: Dispatch<ISetGame>): Promise<IGame> => {
     const game = await Api.newGame().catch((err) => {
         throw err;
     });
+
     dispatch({
         payload: game.id,
         type: Type.SET_GAME
     });
+
     return game;
+};
+
+export const getGames = async (values: ISearchGameParams): Promise<IGame[]> => {
+    return (await Api.getGames(values).catch((err) => {
+        throw err;
+    })).map((game: IRawGame) => {
+        const { created_at, game_id, longest_streak, players, rounds } = game;
+        return {
+            id: game_id,
+            createdAt: new Date(created_at),
+            longestStreak: longest_streak,
+            players: players.map((player: IRawGamePlayer): IGamePlayer => {
+                const { color, nickname } = player;
+                return {
+                    nickname,
+                    colour: ColourMap[color as IRegisterParams['color']]
+                };
+            }),
+            rounds
+        };
+    });
 };
