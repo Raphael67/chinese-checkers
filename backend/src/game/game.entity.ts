@@ -5,9 +5,9 @@ import { Player } from '../player/player.entity';
 import { GamePlayer } from './game-player.entity';
 
 export enum GameStatus {
-    CREATED = "CREATED",
-    IN_PROGRESS = "IN_PROGRESS",
-    TERMINATED = "TERMINATED",
+    CREATED = 'CREATED',
+    IN_PROGRESS = 'IN_PROGRESS',
+    TERMINATED = 'TERMINATED',
 }
 
 @Entity()
@@ -33,14 +33,14 @@ export class Game {
     @ManyToOne(() => Player, player => player.winnedGames)
     @JoinColumn({
         name: 'winner',
-        referencedColumnName: 'id'
+        referencedColumnName: 'id',
     })
     public winner: Player;
 
     @ManyToOne(() => Player, player => player.createdGames)
     @JoinColumn({
         name: 'creator',
-        referencedColumnName: 'id'
+        referencedColumnName: 'id',
     })
     public creator: Player;
 
