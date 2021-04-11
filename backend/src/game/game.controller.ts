@@ -1,8 +1,9 @@
-import { Body, ClassSerializerInterceptor, Controller, ForbiddenException, Get, Inject, Param, Post, Query, Request, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, ForbiddenException, Get, Inject, Param, Patch, Post, Query, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
+import { GameStatus } from './game.entity';
 import { GameGuard, RequestWithGame } from './game.guard';
 import { GameService } from './game.service';
 
@@ -76,6 +77,27 @@ export class GameController {
     public async createGame(): Promise<String> {
         const game = await this.gameService.createGame();
         return game.id;
+    }
+
+    @Patch('/:gameId')
+    @ApiParam({
+        name: 'gameId',
+        type: String
+    })
+    @ApiOperation({
+        summary: 'Start a game',
+    })
+    @ApiResponse({
+        status: 201,
+        description: 'Game has been successfuly started'
+    })
+    @UseGuards(GameGuard)
+    @ApiBody({
+        schema: { example: { status: GameStatus.IN_PROGRESS } }
+    })
+    public async startGame(@Body('status') status: GameStatus, @Request() request: RequestWithGame): Promise<void> {
+        if (status !== GameStatus.IN_PROGRESS) throw new BadRequestException('Accepted status is ' + GameStatus.IN_PROGRESS);
+        await this.gameService.start(request.game);
     }
 
     @ApiParam({

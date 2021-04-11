@@ -1,11 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Move } from '../play/move.entity';
 import { Player } from '../player/player.entity';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { Color, GamePlayer } from './game-player.entity';
-import { Game } from './game.entity';
+import { Game, GameStatus } from './game.entity';
 import { GameRepository } from './game.repository';
 
 @Injectable()
@@ -37,6 +37,12 @@ export class GameService {
         return await this.gameRepository.findOne(gameId, {
             relations: ['gamePlayers', 'gamePlayers.player'],
         });
+    }
+
+    public async start(game: Game): Promise<void> {
+        if (game.status !== GameStatus.CREATED) throw new BadRequestException('Game can not be started due to its current state: ' + game.status);
+        game.status = GameStatus.IN_PROGRESS;
+        await this.gameRepository.update({ id: game.id }, { status: game.status });
     }
 
     public isColorAvailable(game: Game, color: Color): boolean {
