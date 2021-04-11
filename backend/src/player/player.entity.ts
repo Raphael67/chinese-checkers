@@ -2,6 +2,15 @@ import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 't
 import { GamePlayer } from '../game/game-player.entity';
 import { Game } from '../game/game.entity';
 
+export const botNicknames = [
+    'BLACK_AI',
+    'BLUE_AI',
+    'PURPLE_AI',
+    'YELLOW_AI',
+    'GREEN_AI',
+    'RED_AI',
+];
+
 @Entity()
 export class Player {
     @PrimaryGeneratedColumn()

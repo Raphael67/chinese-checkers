@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Player } from './player.entity';
+import { botNicknames, Player } from './player.entity';
 
 @Injectable()
 export class PlayerService {
@@ -23,9 +23,10 @@ export class PlayerService {
         });
     }
 
-    public createPlayer(nickname: string): Promise<Player> {
+    public async createPlayer(nickname: string): Promise<Player> {
+        if (botNicknames.includes(nickname)) throw new BadRequestException('This nickname is reserved');
         const player = new Player();
         player.nickname = nickname;
-        return this.playerRepository.save(player);
+        return await this.playerRepository.save(player);
     }
 }
