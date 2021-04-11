@@ -18,27 +18,11 @@ export class GameController {
     private readonly playerService: PlayerService;
 
     @Get('/')
-    @ApiQuery({
-        name: 'player',
-        required: false
-    })
-    @ApiQuery({
-        name: 'date',
-        required: false,
-        type: Date
-    })
-    @ApiQuery({
-        name: 'orderBy',
-        enum: ['createdAt', 'rounds']
-    })
-    @ApiOperation({
-        summary: 'Return a list of finished games for replay',
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'Lise of games',
-        type: [GameDetailsDto],
-    })
+    @ApiOperation({ summary: 'Return a list of finished games for replay', })
+    @ApiQuery({ name: 'player', required: false })
+    @ApiQuery({ name: 'date', required: false, type: Date })
+    @ApiQuery({ name: 'orderBy', enum: ['createdAt', 'rounds'] })
+    @ApiResponse({ status: 200, description: 'Lise of games', type: [GameDetailsDto], })
     public async getGames(
         @Query('player') player?: string,
         @Query('date') date?: string,
@@ -48,81 +32,39 @@ export class GameController {
     }
 
     @Get('/:gameId')
-    @ApiParam({
-        name: 'gameId',
-        type: String
-    })
-    @ApiOperation({
-        summary: 'Return a game and its players',
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'Game with players',
-        type: GameDetailsDto
-    })
+    @ApiOperation({ summary: 'Return a game and its players', })
+    @ApiParam({ name: 'gameId', type: String })
+    @ApiResponse({ status: 200, description: 'Game with players', type: GameDetailsDto })
     @UseGuards(GameGuard)
     public async getGame(@Request() request: RequestWithGame): Promise<GameDetailsDto> {
         return new GameDetailsDto(request.game);
     }
 
     @Post('/')
-    @ApiOperation({
-        summary: 'Create a new game and return its id',
-    })
-    @ApiResponse({
-        status: 201,
-        description: 'Return the new created game',
-        type: Game
-    })
+    @ApiOperation({ summary: 'Create a new game and return its id', })
+    @ApiResponse({ status: 201, description: 'Return the new created game', type: Game })
     public async createGame(): Promise<Game> {
         return await this.gameService.createGame();
     }
 
     @Patch('/:gameId')
-    @ApiParam({
-        name: 'gameId',
-        type: String
-    })
-    @ApiOperation({
-        summary: 'Start a game',
-    })
-    @ApiResponse({
-        status: 201,
-        description: 'Game has been successfuly started'
-    })
+    @ApiOperation({ summary: 'Start a game', })
+    @ApiParam({ name: 'gameId', type: String })
+    @ApiBody({ schema: { example: { status: GameStatus.IN_PROGRESS } } })
+    @ApiResponse({ status: 201, description: 'Game has been successfuly started' })
     @UseGuards(GameGuard)
-    @ApiBody({
-        schema: { example: { status: GameStatus.IN_PROGRESS } }
-    })
     public async startGame(@Body('status') status: GameStatus, @Request() request: RequestWithGame): Promise<void> {
         if (status !== GameStatus.IN_PROGRESS) throw new BadRequestException('Accepted status is ' + GameStatus.IN_PROGRESS);
         await this.gameService.start(request.game);
     }
 
-    @ApiParam({
-        name: 'gameId',
-        type: String
-    })
-    @ApiBody({
-        type: GamePlayerDto,
-        required: true,
-        schema: {
-            example: { nickname: 'Test', color: 'RED' }
-        }
-    })
     @Post('/:gameId/player')
+    @ApiOperation({ summary: 'Add a new player to the game and create the player if necessary', })
+    @ApiParam({ name: 'gameId', type: String })
+    @ApiBody({ type: GamePlayerDto, required: true, schema: { example: { nickname: 'Test', color: 'RED' } } })
+    @ApiResponse({ status: 403, description: 'An object with a message property describing the error' })
+    @ApiResponse({ status: 201, description: 'Player has been successfuly linked to the game' })
     @UseGuards(GameGuard)
-    @ApiOperation({
-        summary: 'Add a new player to the game and create the player if necessary',
-    })
-    @ApiResponse({
-        status: 403,
-        description: 'An object with a message property describing the error'
-    })
-    @ApiResponse({
-        status: 201,
-        description: 'Player has been successfuly linked to the game'
-    })
     public async upsertPlayerToGame(
         @Body() gamePlayerDto: GamePlayerDto,
         @Request() request: RequestWithGame,
