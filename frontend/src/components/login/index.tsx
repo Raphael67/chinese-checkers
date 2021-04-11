@@ -4,8 +4,8 @@ import pages from 'pages';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
+import { getGame } from 'redux/actions/game.action';
 import { register } from 'redux/actions/session.action';
-import Api from 'services/api';
 
 const Login = (): ReactElement => {
     const dispatch = useDispatch();
@@ -19,9 +19,7 @@ const Login = (): ReactElement => {
     useEffect(() => {
         (async () => {
             try {
-                setGame(await Api.getGame({
-                    gameId: gameParams.gameId
-                }).catch((err) => {
+                setGame(await getGame(dispatch, gameParams.gameId).catch((err) => {
                     throw err;
                 }));
             }
@@ -30,7 +28,7 @@ const Login = (): ReactElement => {
             }
         })();
 
-    }, [gameParams.gameId]);
+    }, [gameParams.gameId, dispatch]);
 
     const login = async (playerName: string, colour: Colour) => {
         try {

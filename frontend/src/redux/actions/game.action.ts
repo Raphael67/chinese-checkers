@@ -27,13 +27,15 @@ export const setPawnPlace = async (dispatch: Dispatch<ISetPawnPlace>, pawn: stri
     });
 };
 
-export const newGame = async (dispatch: Dispatch<ISetGame>): Promise<IGame> => {
-    const game = await Api.newGame().catch((err) => {
+export const getGame = async (dispatch: Dispatch<ISetGame>, id: string): Promise<IGame> => {
+    const game = await Api.getGame({
+        gameId: id
+    }).catch((err) => {
         throw err;
     });
 
     dispatch({
-        payload: game.id,
+        payload: id,
         type: Type.SET_GAME
     });
 

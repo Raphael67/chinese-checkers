@@ -29,6 +29,7 @@ const session = (state: ISessionState = savedState, action: ActionTypes) => {
             temporaryState.player = action.payload;
             break;
         case Type.SET_GAME:
+            temporaryState.player = undefined;
             temporaryState.game = action.payload;
             break;
         case Type.RESET_SESSION:

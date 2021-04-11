@@ -1,8 +1,7 @@
 import pages from 'pages';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
-import { getGames, newGame } from 'redux/actions/game.action';
+import { getGames } from 'redux/actions/game.action';
 import Api from 'services/api';
 import LeaderBoardComponent from './component';
 import './index.less';
@@ -14,18 +13,15 @@ export enum Sort {
 
 const LeaderBoard = (): ReactElement => {
     const history = useHistory();
-    const dispatch = useDispatch();
 
     const [topPlayers, setTopPlayers] = useState<IPlayer[]>([]);
     const [gamesPlayed, setGamesPlayed] = useState<IGame[]>([]);
 
     const createGame = async () => {
         try {
-            const game = await newGame(dispatch).catch((err) => {
+            history.push(pages.login.path.replace(':gameId', (await Api.newGame().catch((err) => {
                 throw err;
-            });
-
-            history.push(pages.login.path.replace(':gameId', game.id));
+            })).id));
         }
         catch (err) {
             console.error(err);
