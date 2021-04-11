@@ -4,8 +4,8 @@ declare interface IRegisterParams {
 }
 
 declare interface ISearchGameParams {
-    player: name;
-    date: Date;
+    player?: name;
+    date?: Date;
     orderBy: 'created_at' | 'rounds';
 }
 declare interface IGameParams {
@@ -14,21 +14,33 @@ declare interface IGameParams {
 
 declare interface IMoveParams {
     gameId: string;
-    playerIndex: string;
+    playerIndex: number;
+    moves: number[][];
 }
 
 declare interface IUser {
     token: string;
 }
 
+declare interface IRawGame {
+    game_id: string;
+    players: IRawGamePlayer[];
+    created_at: Date;
+    longest_streak?: number;
+    rounds: number;
+}
+
+declare interface IRawGamePlayer {
+    nickname: string;
+    color: string;
+}
+
 declare interface IGame {
     id: string;
-    date: Date;
-    gamePlayers?: IGamePlayer[];
+    players?: IGamePlayer[];
     createdAt: Date;
     longestStreak?: number;
     rounds?: number;
-    status: 'CREATED';
 }
 
 declare interface IPlayer {
@@ -38,8 +50,8 @@ declare interface IPlayer {
 }
 
 declare interface IGamePlayer extends IPlayer {
-    createdAt: Date;
-    id: number;
+    createdAt?: Date;
+    id?: number;
     lose?: number;
     rating?: number;
     updatedAt?: Date;
@@ -55,9 +67,16 @@ declare interface IPath {
     place: string;
     fromOverPawn: boolean;
 }
-declare interface IBoard {
-    pawns: string[];
+
+declare type IBoard = Record<string, string>;
+
+declare interface IRawPawn {
+    x: number;
+    y: number;
+    pawn: number;
 }
+
+declare type IRawBoard = IRawPawn[];
 
 declare interface IMove {
     from: string;

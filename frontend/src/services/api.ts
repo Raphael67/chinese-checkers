@@ -14,6 +14,7 @@ let config: IConfig = {
         hostname: window.location.host,
         port: window.location.port,
         protocol: window.location.protocol,
+        path: '/api'
     },
 };
 
@@ -28,10 +29,27 @@ export default class Api {
         );
     }
 
-    public static getGames(params: ISearchGameParams): Promise<IGame[]> {
+    public static getGames(params: ISearchGameParams): Promise<IRawGame[]> {
+        const { orderBy, date, player } = params;
+        const newParams: any = {
+            orderBy
+        };
+        if (date) {
+            newParams.date = Intl.DateTimeFormat('en', { year: 'numeric', month: 'numeric', day: 'numeric' })
+                .formatToParts(date)
+                .filter((datePart: Intl.DateTimeFormatPart) => ['day', 'month', 'year'].includes(datePart.type))
+                .sort(((a: Intl.DateTimeFormatPart, b: Intl.DateTimeFormatPart) => a.type.localeCompare(b.type)))
+                .reverse()
+                .map((datePart: Intl.DateTimeFormatPart) => datePart.value)
+                .join('-');
+        }
+        if (player) {
+            newParams.player = player;
+        }
+
         return Api.fetch(
             routes.games,
-            params,
+            newParams,
         );
     }
 
@@ -54,7 +72,7 @@ export default class Api {
         );
     }
 
-    public static getBoard(params: IGameParams): Promise<IBoard> {
+    public static getBoard(params: IGameParams): Promise<IRawBoard> {
         return Api.fetch(
             routes.board,
             params
@@ -69,9 +87,16 @@ export default class Api {
     }
 
     public static newMove(params: IMoveParams): Promise<IMove> {
+        const { gameId, moves, playerIndex } = params;
         return Api.fetch(
             routes.newMove,
-            params
+            {
+                gameId,
+                playerIndex
+            },
+            {
+                body: JSON.stringify(moves),
+            },
         );
     }
 
@@ -79,7 +104,6 @@ export default class Api {
         route: IRoute,
         params: any = {},
         optionsSupp: Partial<RequestInit> = {},
-        accessToken?: string,
     ): Promise<any> {
         const routeReplaced = {
             ...route,
@@ -100,7 +124,9 @@ export default class Api {
             response = await fetch(
                 this.getApiHost() + routeReplaced.path,
                 options,
-            );
+            ).catch((err) => {
+                throw err;
+            });
         } catch (ex) {
             // tslint:disable-next-line:no-console
             console.error(ex);
@@ -108,7 +134,9 @@ export default class Api {
         }
 
         try {
-            json = await response.json();
+            json = await response.json().catch((err) => {
+                throw err;
+            });
         } catch (ex) {
             // tslint:disable-next-line:no-console
             console.warn(ex);

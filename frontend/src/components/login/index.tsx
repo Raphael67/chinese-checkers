@@ -4,8 +4,8 @@ import pages from 'pages';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
+import { getGame } from 'redux/actions/game.action';
 import { register } from 'redux/actions/session.action';
-import Api from 'services/api';
 
 const Login = (): ReactElement => {
     const dispatch = useDispatch();
@@ -19,8 +19,8 @@ const Login = (): ReactElement => {
     useEffect(() => {
         (async () => {
             try {
-                setGame(await Api.getGame({
-                    gameId: gameParams.gameId
+                setGame(await getGame(dispatch, gameParams.gameId).catch((err) => {
+                    throw err;
                 }));
             }
             catch (err) {
@@ -28,14 +28,18 @@ const Login = (): ReactElement => {
             }
         })();
 
-    }, [gameParams.gameId]);
+    }, [gameParams.gameId, dispatch]);
 
-    const login = (playerName: string, colour: Colour): void => {
+    const login = async (playerName: string, colour: Colour) => {
         try {
-            register(dispatch, gameParams, {
+            await register(dispatch, gameParams, {
                 nickname: playerName,
                 color: ColourMapReverse[colour]
+            }).catch((err) => {
+                throw err;
             });
+
+            goToGame();
         }
         catch (err) {
             console.error(err);
@@ -46,7 +50,7 @@ const Login = (): ReactElement => {
         history.push(pages.game.path.replace(':gameId', gameParams.gameId));
     };
 
-    return <LoginComponent players={game?.gamePlayers || []} login={login} goToGame={goToGame} errorMessage={errorMessage} />;
+    return <LoginComponent game={game} login={login} goToGame={goToGame} errorMessage={errorMessage} />;
 };
 
 export default Login;

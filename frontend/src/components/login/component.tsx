@@ -2,19 +2,26 @@ import { RightOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Button, Form, Input } from 'antd';
 import Pawn from 'components/game/pawn';
 import { Colour } from 'core/board';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import './index.less';
 
 interface IProps {
     errorMessage?: string;
     login: (playerName: string, colour: Colour) => void;
     goToGame: () => void;
-    players: IGamePlayer[];
+    game?: IGame;
 }
 
 const colours = [Colour.Black, Colour.Blue, Colour.Green, Colour.Red, Colour.Yellow, Colour.Purple];
 
 const LoginComponent = (props: IProps): ReactElement => {
+
+    const [form] = Form.useForm<IGamePlayer[]>();
+
+    useEffect(() => {
+        form.setFieldsValue((props.game && props.game.players) || []);
+    }, [props.game, form]);
+
     const getPlayableColours = (players: IGamePlayer[]): Colour[] => {
         return colours.map((colour: Colour) => {
             if (players.find((player: IGamePlayer) => player.colour === colour && ['idle', 'disconnected', undefined].includes(player.status))) {
@@ -38,7 +45,7 @@ const LoginComponent = (props: IProps): ReactElement => {
             return <div key={colour} className="player">
                 <Pawn colour={colour} r={20} alone={true} />
                 <Form.Item name={`nickname[${colour}]`} initialValue={player?.nickname}>
-                    {renderPlayerPlace(getPlayableColours(props.players), colour, player, savedColours)}
+                    {renderPlayerPlace(getPlayableColours(players), colour, player, savedColours)}
                 </Form.Item>
             </div>;
         });
@@ -66,14 +73,14 @@ const LoginComponent = (props: IProps): ReactElement => {
     const error = props.errorMessage ? <Alert type="error" message={props.errorMessage} /> : undefined;
 
     return <Form
-        initialValues={props.players}
+        form={form}
         onValuesChange={(values: Record<string, string>) => {
             setSavedColours({ ...savedColours, ...values });
         }}
         className="login-component"
     >
         {error}
-        {renderPlayerPlaces(props.players, savedColours)}
+        {renderPlayerPlaces((props.game && props.game.players) || [], savedColours)}
         <Button size="large" onClick={goToGame}>Watcher mode</Button>
     </Form>;
 };

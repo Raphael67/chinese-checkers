@@ -20,13 +20,15 @@ const Pawn = (props: IProps) => {
     const dimension = (defaultPosition * 2);
 
     const clickPawn = (event: React.MouseEvent<SVGGeometryElement>) => {
-        game.takePawn(event.currentTarget.id);
+        if (props.canMove) {
+            game.takePawn(event.currentTarget.id);
+        }
     };
 
     const renderPawn = () => {
         return <circle
             onClick={clickPawn}
-            className={`pawn ${Colour[props.colour].toLowerCase()}`}
+            className={`pawn ${Colour[props.colour].toLowerCase()} ${props.canMove ? 'pointer' : ''}`}
             id={props.id}
             cx={props.x || defaultPosition}
             cy={props.y || defaultPosition}

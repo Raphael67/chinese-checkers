@@ -5,7 +5,7 @@ import './index.less';
 
 interface IProps {
     canMove: {
-        [key in Colour]: boolean
+        [key in Colour]?: boolean
     };
     clickPlace: (place: string) => void;
     doubleClickPlace: (place: string) => void;
