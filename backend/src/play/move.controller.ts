@@ -13,19 +13,10 @@ export class MoveController {
     private readonly moveService: MoveService;
 
     @Get('/:gameId/move')
-    @ApiParam({
-        name: 'gameId',
-        type: String
-    })
+    @ApiParam({ name: 'gameId', type: String })
     @UseGuards(GameGuard)
-    @ApiOperation({
-        summary: 'Return a list of all moves for a game to replay',
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'List of all moves. A move is an array of Cell.',
-        type: [MoveDto],
-    })
+    @ApiOperation({ summary: 'Return a list of all moves for a game to replay' })
+    @ApiResponse({ status: 200, description: 'List of all moves. A move is an array of Cell.', type: [MoveDto] })
     public async move(
         @Request() request: RequestWithGame
     ): Promise<MoveDto[]> {
@@ -34,29 +25,13 @@ export class MoveController {
     }
 
     @Post('/:gameId/player/:playerIndex/move')
-    @ApiParam({
-        name: 'gameId',
-        type: String,
-    })
-    @ApiParam({
-        name: 'playerIndex',
-        type: Number,
-    })
-    @ApiBody({
-        type: [Cell]
-    })
+    @ApiParam({ name: 'gameId', type: String })
+    @ApiParam({ name: 'playerIndex', type: Number })
+    @ApiBody({ type: [Cell] })
     @UseGuards(GameGuard)
-    @ApiOperation({
-        summary: 'Add a move for a player to a game',
-    })
-    @ApiResponse({
-        status: 403,
-        description: 'BadRequest with details in message property'
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'Move successfuly played'
-    })
+    @ApiOperation({ summary: 'Add a move for a player to a game' })
+    @ApiResponse({ status: 403, description: 'BadRequest with details in message property' })
+    @ApiResponse({ status: 200, description: 'Move successfuly played' })
     public async addMove(
         @Body() path: Cell[],
         @Param('playerIndex', new ParseIntPipe()) playerIndex: number,
