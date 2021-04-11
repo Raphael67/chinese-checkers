@@ -1,11 +1,11 @@
 import { Store } from 'redux';
 import { setPath, setPawnPlace, setPossiblePlaces } from 'redux/actions/game.action';
-import Api from '../services/api';
-import Board from './board';
+import Api from 'services/api';
+import Board, { Colour } from './board';
 
 export default class Game {
     private id?: string;
-    private playerId?: number;
+    private playerColour?: Colour;
     private board: Board = new Board();
     private pawnTaken?: string;
     private possiblePlaces?: IPath[];
@@ -17,8 +17,8 @@ export default class Game {
         this.id = id;
     }
 
-    public setPlayerId(playerId: number) {
-        this.playerId = playerId;
+    public setPlayerColour(playerColour: number) {
+        this.playerColour = playerColour;
     }
 
     public async getBoard(gameId: string): Promise<IBoard> {
@@ -42,14 +42,14 @@ export default class Game {
     }
 
     public placePawn(place: string) {
-        if (this.pawnTaken && this.id && this.playerId) {
+        if (this.pawnTaken && this.id && this.playerColour) {
             this.board.placePawn(this.pawnTaken, place);
             setPawnPlace(this.store.dispatch, this.pawnTaken, place);
             this.setPawn([]);
 
             Api.newMove({
                 gameId: this.id,
-                playerIndex: this.playerId,
+                playerIndex: this.playerColour,
                 moves: [[10, 3], [9, 4]]
             });
         }
@@ -68,14 +68,21 @@ export default class Game {
     }
 
     public clickPlace(place: string) {
-        // If click on a place already clicked, reset path to this place
-        if (this.getPath(this.path).includes(place)) {
-            this.path = this.path.reduce((newPath: IPath[], pathPart: IPath) => {
-                return !newPath.find((newPathPart: IPath) => newPathPart.place === place) ? newPath.concat([pathPart]) : newPath;
-            }, []);
+        const path = this.getPath(this.path);
+        // If click on a place already clicked
+        if (path.includes(place)) {
+            // And it's the last place clicked, we place the pawn
+            if (place === path[path.length - 1]) {
+                this.doubleClickPlace(place);
+            }
+            // Else, reset path to this place
+            else {
+                this.path = this.path.reduce((newPath: IPath[], pathPart: IPath) => {
+                    return !newPath.find((newPathPart: IPath) => newPathPart.place === place) ? newPath.concat([pathPart]) : newPath;
+                }, []);
 
-            this.setPathAndPossiblePlaces(place, this.path);
-
+                this.setPathAndPossiblePlaces(place, this.path);
+            }
         }
         else if (this.pawnTaken) {
             const possiblePlace = this.possiblePlaces?.find((pathPart: IPath) => pathPart.place === place);
