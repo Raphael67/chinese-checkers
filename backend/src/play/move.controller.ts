@@ -68,7 +68,7 @@ export class MoveController {
             throw new BadRequestException(ex.message);
         }
         this.moveService.playPath(board, path);
-        this.moveService.saveMove(request.game, path);
+        await this.moveService.saveMove(request.game, path);
         return;
     }
 }
