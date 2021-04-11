@@ -60,6 +60,7 @@ export class GameService {
     }
 
     public async linkPlayerToGame(game: Game, player: Player, color: Color): Promise<Game> {
+        if (game.status !== GameStatus.CREATED) throw new BadRequestException('Game can not be started due to its current state: ' + game.status);
         const gamePlayer = new GamePlayer();
         gamePlayer.gameId = game.id;
         gamePlayer.player = player;
