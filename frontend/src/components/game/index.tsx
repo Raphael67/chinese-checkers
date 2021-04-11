@@ -1,5 +1,5 @@
 import pages from 'pages';
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import Api from 'services/api';
@@ -18,6 +18,8 @@ const Game = (): ReactElement => {
 
     const [currentGame, setCurrentGame] = useState<IGame>();
 
+    const timer = useRef<NodeJS.Timeout>();
+
     /*const mapStateToObj = useSelector((state: AppState) => {
         const { player } = state.session;
         return {
@@ -27,19 +29,22 @@ const Game = (): ReactElement => {
 
     useEffect(() => {
         (async () => {
+            clearInterval(Number(timer.current));
             const gameId = gameParams.gameId;
-            setCurrentGame(await Api.getGame({
-                gameId
-            }).catch((err) => {
-                throw err;
-            }));
-
             game.setId(gameId);
             //game.setPlayerId(mapStateToObj.player.id);
+            timer.current = setInterval(async () => {
+                setCurrentGame(await Api.getGame({
+                    gameId
+                }).catch((err) => {
+                    throw err;
+                }));
+            }, 2000);
+        })();
 
-        })().catch((err) => {
-            console.error(err);
-        });
+        return () => {
+            clearInterval(Number(timer.current));
+        };
     }, [game, gameParams.gameId]);
 
     const quitGame = () => {
