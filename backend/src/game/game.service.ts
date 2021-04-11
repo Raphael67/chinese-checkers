@@ -27,7 +27,7 @@ export class GameService {
         return gameDetailsDtos;
     }
 
-    public async createGame() {
+    public async createGame(): Promise<Game> {
         const game = new Game();
         await this.gameRepository.save(game);
         return game;
@@ -73,6 +73,12 @@ export class GameService {
             await this.gameRepository.update({ id: game.id }, { creator: player });
         }
         return game;
+    }
+
+    public async setWinner(game: Game, player: Player): Promise<void> {
+        game.winner = player;
+        game.status = GameStatus.TERMINATED;
+        await this.gameRepository.update({ id: game.id }, { ...game });
     }
 
     private async fillGameWithBots(game: Game): Promise<void> {

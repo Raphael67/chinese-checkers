@@ -10,8 +10,7 @@ class MoveRepositoryMock extends Repository<Move> { }
 
 describe('MoveService', () => {
     let service: MoveService;
-    let moveRepository: Repository<Move> = new MoveRepositoryMock();
-
+    const moveRepository: Repository<Move> = new MoveRepositoryMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -19,8 +18,8 @@ describe('MoveService', () => {
                 MoveService,
                 {
                     provide: getRepositoryToken(Move),
-                    useValue: moveRepository
-                }
+                    useValue: moveRepository,
+                },
             ],
         }).compile();
 
@@ -49,8 +48,6 @@ describe('MoveService', () => {
 
             expect(() => service.isValidPath(board, player, path)).toThrow();
         });
-
-
 
         it('should return true for one cell move', () => {
             const board = new Board();

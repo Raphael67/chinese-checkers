@@ -15,11 +15,11 @@ export class MoveService {
     public findByGame(game: Game): Promise<Move[]> {
         return this.moveRepository.find({
             where: {
-                gameId: game.id
+                gameId: game.id,
             },
             order: {
-                moveIndex: 'ASC'
-            }
+                moveIndex: 'ASC',
+            },
         });
     }
 
@@ -27,27 +27,33 @@ export class MoveService {
         const board = new Board();
         const moves = await this.moveRepository.find({
             where: { gameId: game.id },
-            order: { moveIndex: 'ASC' }
+            order: { moveIndex: 'ASC' },
         });
-        moves.forEach((move) => {
-            this.playPath(board, move.path);
-        });
+        for (const move of moves) {
+            await this.playPath(board, move.path);
+        }
         this.boards.set(game.id, board);
         return board;
     }
 
-    public playPath(board: Board, path: Cell[]): Board {
+    public async playPath(board: Board, path: Cell[]): Promise<void> {
         const from = board.getCell(path[0][0], path[0][1]);
         const to = board.getCell(path[path.length - 1][0], path[path.length - 1][1]);
         to.setPawn(from.getPawn());
         from.setPawn(undefined);
+    }
+
+    public isWinner(board: Board, player: number): boolean {
+        return board.isWinner(player);
+    }
+
+    public nextPlayer(board: Board): void {
         board.nextPlayer();
-        return board;
     }
 
     public async saveMove(game: Game, path: Cell[]): Promise<Move> {
         const numberOfMove = await this.moveRepository.count({
-            where: { gameId: game.id }
+            where: { gameId: game.id },
         });
         const move = new Move();
         move.gameId = game.id;
@@ -81,7 +87,7 @@ export class MoveService {
         // is player turn
         if (board.getCurrentPlayer() !== player) throw new Error(`Current player is ${board.getCurrentPlayer()}`);
         let moveIndex = 0;
-        for (let move of path) {
+        for (const move of path) {
             // Only valid cell in path
             if (!board.getCell(move[0], move[1])) {
                 throw new Error(`Only valid cell in path: ${moveIndex}: ${move}`);
@@ -100,13 +106,13 @@ export class MoveService {
         if (this.isOneCellJump(path[0], path[1])) {
             // One cell jump stop the path
             if (path.length !== 2) {
-                throw new Error(`One cell jump stop the path`);
-            };
+                throw new Error('One cell jump stop the path');
+            }
         } else {
             for (let i = 0; i < path.length - 1; i++) {
                 // Only multiple jump over allowed
                 if (!this.isJumpOver(board, path[i], path[i + 1])) {
-                    throw new Error(`Only multiple jump over allowed`);
+                    throw new Error('Only multiple jump over allowed');
                 }
             }
         }

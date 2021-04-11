@@ -1,7 +1,9 @@
 import { BadRequestException, Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Color } from '../game/game-player.entity';
 import { GameStatus } from '../game/game.entity';
 import { GameGuard, RequestWithGame } from '../game/game.guard';
+import { GameService } from '../game/game.service';
 import { Cell } from './board';
 import { MoveDto } from './dto/move.dto';
 import { MoveService } from './move.service';
@@ -11,6 +13,9 @@ import { MoveService } from './move.service';
 export class MoveController {
     @Inject(MoveService)
     private readonly moveService: MoveService;
+
+    @Inject(GameService)
+    private readonly gameService: GameService;
 
     @Get('/:gameId/move')
     @ApiParam({ name: 'gameId', type: String })
@@ -44,8 +49,13 @@ export class MoveController {
         } catch (ex) {
             throw new BadRequestException(ex.message);
         }
-        this.moveService.playPath(board, path);
+        await this.moveService.playPath(board, path);
         await this.moveService.saveMove(request.game, path);
+        if (this.moveService.isWinner(board, board.getCurrentPlayer())) {
+            await this.gameService.setWinner(request.game, request.game.gamePlayers.find(player => player.color === Color[board.getCurrentPlayer()]).player);
+        } else {
+            this.moveService.nextPlayer(board);
+        }
         return;
     }
 }

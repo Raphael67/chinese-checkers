@@ -45,7 +45,7 @@ const playerPositions = [
 
 export class Board {
     private cells: Map<string, Cell> = new Map();
-    private currentPlayer: number = 0;
+    private currentPlayer: number = -1;
 
     public constructor() {
         for (let row = 0; row < 17; row++) {
@@ -64,6 +64,14 @@ export class Board {
             }
             playerIndex++;
         }
+    }
+
+    public isWinner(player: number): boolean {
+        const opponent = (player + 3) % 6;
+        for (const position of playerPositions[opponent]) {
+            if (this.cells.get(position).getPawn() !== player) return false;
+        }
+        return true;
     }
 
     public nextPlayer(): void {
