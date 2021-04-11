@@ -1,5 +1,5 @@
 export interface IRoute {
-    method: 'POST' | 'GET' | 'PUT' | 'DELETE';
+    method: 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH';
     path: string;
 }
 
@@ -35,5 +35,9 @@ export const routes: Record<string, IRoute> = {
     newMove: {
         method: 'POST',
         path: '/board/{gameId}/player/{playerIndex}/move'
+    },
+    gameStart: {
+        method: 'PATCH',
+        path: '/game/{gameId}'
     }
 };

@@ -6,7 +6,9 @@ import Pawn from './pawn';
 
 interface IProps {
     quitGame: () => void;
+    startGame: () => void;
     game?: IGame;
+    player?: IPlayer;
 }
 
 const GameComponent = (props: IProps): ReactElement => {
@@ -14,9 +16,13 @@ const GameComponent = (props: IProps): ReactElement => {
         props.quitGame();
     };
 
+    const startGame = () => {
+        props.startGame();
+    };
+
     const renderPlayers = (players: IGamePlayer[]): ReactElement[] => {
         return players.map((player: IGamePlayer, index: number) => {
-            return <div className="player" key={`p${index}`}>
+            return <div className={`player ${props.player && props.player.colour === player.colour ? 'me' : ''}`} key={`p${index}`}>
                 <Pawn colour={player.colour || Colour.Black} r={10} alone={true} />
                 <div>{player.nickname}</div>
             </div>;
@@ -44,7 +50,7 @@ const GameComponent = (props: IProps): ReactElement => {
                 </Card>
             </div>
             <div className="actions">
-                <Button type="primary" size="large">Start game</Button>
+                <Button type="primary" size="large" onClick={startGame}>Start game</Button>
                 <Button type="primary" size="large">Invite friend</Button>
                 <Button type="primary" danger size="large" onClick={quitGame}>Quit game</Button>
             </div>

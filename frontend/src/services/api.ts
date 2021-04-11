@@ -59,7 +59,7 @@ export default class Api {
         );
     }
 
-    public static getGame(params: IGameParams): Promise<IGame> {
+    public static getGame(params: IGameParams): Promise<IRawGame> {
         return Api.fetch(
             routes.game,
             params
@@ -96,6 +96,20 @@ export default class Api {
             },
             {
                 body: JSON.stringify(moves),
+            },
+        );
+    }
+
+    public static startGame(params: IGameParams) {
+        return Api.fetch(
+            routes.gameStart,
+            {
+                gameId: params.gameId
+            },
+            {
+                body: JSON.stringify({
+                    status: 'IN_PROGRESS'
+                }),
             },
         );
     }
