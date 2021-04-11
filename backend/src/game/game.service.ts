@@ -6,7 +6,7 @@ import { Player } from '../player/player.entity';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { Color, GamePlayer } from './game-player.entity';
 import { Game } from './game.entity';
-import { GameRepository, IFinishedGamesWithPlayers } from './game.repository';
+import { GameRepository } from './game.repository';
 
 @Injectable()
 export class GameService {
@@ -18,26 +18,13 @@ export class GameService {
     public async listGames(
         player?: string,
         date?: Date,
-        orderBy?: 'created_at' | 'rounds'
+        orderBy?: 'createdAt' | 'rounds'
     ): Promise<GameDetailsDto[]> {
-        const gameDetails = await this.gameRepository.findFinishedGamesWithPlayers(player, date, orderBy);
-        const gameMap = gameDetails.reduce((previous: Map<string, GameDetailsDto>, current: IFinishedGamesWithPlayers) => {
-            let entry = previous.get(current.game_id);
-            if (!entry) {
-                entry = new GameDetailsDto();
-                entry.created_at = current.created_at;
-                entry.game_id = current.game_id;
-                entry.longest_streak = current.longest_streak;
-                entry.rounds = current.rounds;
-                previous.set(current.game_id, entry);
-            }
-            entry.players.push({
-                color: current.color,
-                nickname: current.nickname,
-            });
-            return previous;
-        }, new Map());
-        return [...gameMap].map(([key, value]) => value);
+        const games = await this.gameRepository.findFinishedGamesWithPlayers(player, date, orderBy);
+        const gameDetailsDtos = games.map((game): GameDetailsDto => {
+            return new GameDetailsDto(game);
+        });
+        return gameDetailsDtos;
     }
 
     public async createGame() {
@@ -46,9 +33,9 @@ export class GameService {
         return game;
     }
 
-    public findOne(gameId: string): Promise<Game> {
-        return this.gameRepository.findOne(gameId, {
-            relations: ['gamePlayers', 'players'],
+    public async findOne(gameId: string): Promise<Game> {
+        return await this.gameRepository.findOne(gameId, {
+            relations: ['gamePlayers', 'gamePlayers.player'],
         });
     }
 
@@ -60,7 +47,7 @@ export class GameService {
     }
 
     public isNicknameAvailable(game: Game, nickname: string): boolean {
-        if (game.players.find((p) => p.nickname === nickname)) {
+        if (game.gamePlayers.find((gamePlayer) => gamePlayer.player.nickname === nickname)) {
             return false;
         }
         return true;
@@ -71,8 +58,13 @@ export class GameService {
         gamePlayer.gameId = game.id;
         gamePlayer.player = player;
         gamePlayer.color = color;
-        game.gamePlayers.push(gamePlayer);
-        game.creator = player;
-        return await this.gameRepository.save(game);
-    }
+        await this.gamePlayerRepository.save(gamePlayer);
+        if (game.gamePlayers.length === 0) {
+            console.log(game.gamePlayers);
+            game.gamePlayers.push(gamePlayer);
+            game.creator = player;
+            await this.gameRepository.update({ id: game.id }, { creator: player });
+        }
+        return game;
+    };
 }

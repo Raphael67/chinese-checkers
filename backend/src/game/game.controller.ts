@@ -1,9 +1,8 @@
 import { Body, ClassSerializerInterceptor, Controller, ForbiddenException, Get, Inject, Param, Post, Query, Request, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
-import { Game } from './game.entity';
 import { GameGuard, RequestWithGame } from './game.guard';
 import { GameService } from './game.service';
 
@@ -29,15 +28,20 @@ export class GameController {
     })
     @ApiQuery({
         name: 'orderBy',
-        enum: ['created_at', 'rounds']
+        enum: ['createdAt', 'rounds']
     })
     @ApiOperation({
         summary: 'Return a list of finished games for replay',
     })
+    @ApiResponse({
+        status: 200,
+        description: 'Lise of games',
+        type: [GameDetailsDto],
+    })
     public async getGames(
         @Query('player') player?: string,
         @Query('date') date?: string,
-        @Query('orderBy') orderBy: 'created_at' | 'rounds' = 'created_at'
+        @Query('orderBy') orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<GameDetailsDto[]> {
         return this.gameService.listGames(player, date ? new Date(date) : undefined, orderBy);
     }
@@ -50,16 +54,28 @@ export class GameController {
     @ApiOperation({
         summary: 'Return a game and its players',
     })
-    public async getGame(@Param('gameId') gameId: string): Promise<Game> {
-        return this.gameService.findOne(gameId);
+    @ApiResponse({
+        status: 200,
+        description: 'Game with players',
+        type: GameDetailsDto
+    })
+    public async getGame(@Param('gameId') gameId: string): Promise<GameDetailsDto> {
+        const game = await this.gameService.findOne(gameId);
+        return new GameDetailsDto(game);
     }
 
     @Post('/')
     @ApiOperation({
         summary: 'Create a new game and return its id',
     })
-    public createGame(): Promise<Game> {
-        return this.gameService.createGame();
+    @ApiResponse({
+        status: 201,
+        description: 'Game id',
+        type: String
+    })
+    public async createGame(): Promise<String> {
+        const game = await this.gameService.createGame();
+        return game.id;
     }
 
     @ApiParam({
@@ -77,6 +93,14 @@ export class GameController {
     @UseGuards(GameGuard)
     @ApiOperation({
         summary: 'Add a new player to the game and create the player if necessary',
+    })
+    @ApiResponse({
+        status: 403,
+        description: 'An object with a message property describing the error'
+    })
+    @ApiResponse({
+        status: 201,
+        description: 'Player has been successfuly linked to the game'
     })
     public async upsertPlayerToGame(
         @Body() gamePlayerDto: GamePlayerDto,

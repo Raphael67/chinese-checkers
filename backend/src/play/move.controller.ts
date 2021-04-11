@@ -1,6 +1,8 @@
 import { BadRequestException, Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GameGuard, RequestWithGame } from '../game/game.guard';
+import { Cell } from './board';
+import { MoveDto } from './dto/move.dto';
 import { MoveService } from './move.service';
 
 @Controller('/api/board')
@@ -18,11 +20,16 @@ export class MoveController {
     @ApiOperation({
         summary: 'Return a list of all moves for a game to replay',
     })
+    @ApiResponse({
+        status: 200,
+        description: 'List of all moves. A move is an array of Cell.',
+        type: [MoveDto],
+    })
     public async move(
         @Request() request: RequestWithGame
-    ): Promise<number[][][]> {
+    ): Promise<MoveDto[]> {
         const moves = await this.moveService.findByGame(request.game);
-        return moves.map((move) => move.path);
+        return moves.map((move) => new MoveDto(move));
     }
 
     @Post('/:gameId/player/:playerIndex/move')
@@ -34,15 +41,26 @@ export class MoveController {
         name: 'playerIndex',
         type: Number,
     })
+    @ApiBody({
+        type: [Cell]
+    })
     @UseGuards(GameGuard)
     @ApiOperation({
         summary: 'Add a move for a player to a game',
     })
+    @ApiResponse({
+        status: 403,
+        description: 'BadRequest with details in message property'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Move successfuly played'
+    })
     public async addMove(
-        @Body() path: number[][],
+        @Body() path: Cell[],
         @Param('playerIndex', new ParseIntPipe()) playerIndex: number,
         @Request() request: RequestWithGame,
-    ): Promise<boolean> {
+    ): Promise<void> {
         const board = await this.moveService.getBoard(request.game);
         try {
             this.moveService.isValidPath(board, playerIndex, path);
@@ -51,6 +69,6 @@ export class MoveController {
         }
         this.moveService.playPath(board, path);
         this.moveService.saveMove(request.game, path);
-        return true;
+        return;
     }
 }

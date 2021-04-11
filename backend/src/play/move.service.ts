@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Game } from '../game/game.entity';
-import { Board } from './board';
+import { Board, Cell } from './board';
 import { Move } from './move.entity';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class MoveService {
         return board;
     }
 
-    public playPath(board: Board, path: number[][]): Board {
+    public playPath(board: Board, path: Cell[]): Board {
         const from = board.getCell(path[0][0], path[0][1]);
         const to = board.getCell(path[path.length - 1][0], path[path.length - 1][1]);
         to.setPawn(from.getPawn());
@@ -45,7 +45,7 @@ export class MoveService {
         return board;
     }
 
-    public async saveMove(game: Game, path: number[][]): Promise<Move> {
+    public async saveMove(game: Game, path: Cell[]): Promise<Move> {
         const numberOfMove = await this.moveRepository.count({
             where: { gameId: game.id }
         });
@@ -64,20 +64,20 @@ export class MoveService {
         return board;
     }
 
-    private isOneCellJump(from: number[], to: number[]): boolean {
-        if (Math.abs(to[0] - from[0]) <= 2 && Math.abs(to[1] - from[1]) <= 1) return true;
+    private isOneCellJump(from: Cell, to: Cell): boolean {
+        if (Math.abs(to.x - from.x) <= 2 && Math.abs(to.y - from.y) <= 1) return true;
         return false;
     }
 
-    private isJumpOver(board: Board, from: number[], to: number[]): boolean {
-        if (Math.abs(to[0] - from[0]) <= 4 && Math.abs(to[1] - from[1]) <= 2) {
-            const between = board.getCell(from[0] + (to[0] - from[0]) / 2, from[1] + (to[1] - from[1]) / 2);
+    private isJumpOver(board: Board, from: Cell, to: Cell): boolean {
+        if (Math.abs(to.x - from.x) <= 4 && Math.abs(to.y - from.y) <= 2) {
+            const between = board.getCell(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2);
             if (between.getPawn()) return true;
         }
         return false;
     }
 
-    public isValidPath(board: Board, player: number, path: number[][]): boolean {
+    public isValidPath(board: Board, player: number, path: Cell[]): boolean {
         // is player turn
         if (board.getCurrentPlayer() !== player) throw new Error(`Current player is ${board.getCurrentPlayer()}`);
         let moveIndex = 0;

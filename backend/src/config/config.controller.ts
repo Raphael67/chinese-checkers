@@ -1,5 +1,5 @@
 import { ClassSerializerInterceptor, Controller, Get, Inject, UseInterceptors } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConfigService } from './config.service';
 
 
@@ -13,6 +13,11 @@ export class ConfigController {
     @Get('version')
     @ApiOperation({
         summary: 'Get project version',
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Current version of the project',
+        type: String,
     })
     public getVersion(): string {
         return this.configService.getVersion();

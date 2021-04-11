@@ -1,11 +1,23 @@
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 
 export class Cell {
+    @ApiProperty()
+    @ApiResponseProperty()
     private pawn?: number;
+    @ApiProperty()
+    @ApiResponseProperty()
+    public x: number;
+    @ApiProperty()
+    @ApiResponseProperty()
+    public y: number;
 
     constructor(
-        private x: number,
-        private y: number,
-    ) { }
+        x: number,
+        y: number,
+    ) {
+        this.x = x;
+        this.y = y;
+    }
 
     getIndex(): string {
         return this.x + '-' + this.y;
