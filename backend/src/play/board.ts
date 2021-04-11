@@ -11,7 +11,7 @@ export class Cell {
     @ApiResponseProperty()
     public y: number;
 
-    constructor(
+    public constructor(
         x: number,
         y: number,
     ) {
@@ -19,15 +19,15 @@ export class Cell {
         this.y = y;
     }
 
-    getIndex(): string {
+    public getIndex(): string {
         return this.x + '-' + this.y;
     }
 
-    setPawn(player?: number) {
+    public setPawn(player?: number): void {
         this.pawn = player;
     }
 
-    getPawn() {
+    public getPawn(): number {
         return this.pawn;
     }
 }
@@ -40,14 +40,14 @@ const playerPositions = [
     ['18-12', '20-12', '22-12', '24-12', '19-11', '17-11', '15-11', '20-10', '22-10', '21-9'],
     ['12-16', '11-15', '13-15', '10-14', '12-14', '14-14', '9-13', '11-13', '13-13', '15-13'],
     ['0-12', '2-12', '4-12', '6-12', '1-11', '3-11', '5-11', '2-10', '4-10', '3-9'],
-    ['0-4', '2-4', '4-4', '6-4', '1-5', '3-5', '5-5', '2-6', '4-6', '3-7']
+    ['0-4', '2-4', '4-4', '6-4', '1-5', '3-5', '5-5', '2-6', '4-6', '3-7'],
 ];
 
 export class Board {
     private cells: Map<string, Cell> = new Map();
     private currentPlayer: number = 0;
 
-    constructor() {
+    public constructor() {
         for (let row = 0; row < 17; row++) {
             let column = Math.ceil(25 / 2) - Math.floor(holes[row]);
             for (let hole = 0; hole < holes[row]; hole++) {
@@ -57,8 +57,8 @@ export class Board {
             }
         }
         let playerIndex = 0;
-        for (let player of playerPositions) {
-            for (let pawn of player) {
+        for (const player of playerPositions) {
+            for (const pawn of player) {
                 const cell = this.cells.get(pawn);
                 cell.setPawn(playerIndex);
             }
@@ -66,15 +66,15 @@ export class Board {
         }
     }
 
-    public nextPlayer() {
+    public nextPlayer(): void {
         this.currentPlayer = (this.currentPlayer + 1) % 6;
     }
 
-    public getCurrentPlayer() {
+    public getCurrentPlayer(): number {
         return this.currentPlayer;
     }
 
-    public getCells() {
+    public getCells(): Cell[] {
         return [...this.cells.values()].filter((cell) => cell.getPawn() !== undefined);
     }
 
