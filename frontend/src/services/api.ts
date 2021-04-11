@@ -87,9 +87,16 @@ export default class Api {
     }
 
     public static newMove(params: IMoveParams): Promise<IMove> {
+        const { gameId, moves, playerIndex } = params;
         return Api.fetch(
             routes.newMove,
-            params
+            {
+                gameId,
+                playerIndex
+            },
+            {
+                body: JSON.stringify(moves),
+            },
         );
     }
 
