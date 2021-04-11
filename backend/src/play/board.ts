@@ -66,6 +66,14 @@ export class Board {
         }
     }
 
+    public isWinner(player: number): boolean {
+        const opponent = (player + 3) % 6;
+        for (const position of playerPositions[opponent]) {
+            if (this.cells.get(position).getPawn() !== player) return false;
+        }
+        return true;
+    }
+
     public nextPlayer(): void {
         this.currentPlayer = (this.currentPlayer + 1) % 6;
     }
