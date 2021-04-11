@@ -3,7 +3,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from 
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
-import { GameStatus } from './game.entity';
+import { Game, GameStatus } from './game.entity';
 import { GameGuard, RequestWithGame } from './game.guard';
 import { GameService } from './game.service';
 
@@ -71,12 +71,11 @@ export class GameController {
     })
     @ApiResponse({
         status: 201,
-        description: 'Game id',
-        type: String
+        description: 'Return the new created game',
+        type: Game
     })
-    public async createGame(): Promise<String> {
-        const game = await this.gameService.createGame();
-        return game.id;
+    public async createGame(): Promise<Game> {
+        return await this.gameService.createGame();
     }
 
     @Patch('/:gameId')
