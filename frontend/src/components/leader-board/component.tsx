@@ -10,6 +10,7 @@ interface IProps {
     topPlayers: IPlayer[];
     gamesPlayed: IGame[];
     onSearch: (values: ISearchGameParams) => void;
+    replayGame: (id: string) => void;
 }
 
 const { Sider, Content } = Layout;
@@ -37,9 +38,14 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
 
     const renderGamePlayed = (game: IGame, index: number): ReactElement => {
         return <List.Item key={`game${index}`}>
-            <div className="game-players">{renderGamePlayers(game.players || [])}</div>
-            <div>Played on {game.createdAt.toUTCString()}</div>
-            <Button className="play-game-action" size="large" icon={<CaretRightOutlined />} />
+            <div>
+                <div className="game-info">
+                    <div>Played on: <strong>{game.createdAt.toUTCString()}</strong></div>
+                    <div>Number of rounds: <strong>{game.rounds}</strong></div>
+                </div>
+                <div className="game-players">{renderGamePlayers(game.players || [])}</div>
+            </div>
+            <Button onClick={() => props.replayGame(game.id)} className="play-game-action" size="large" icon={<CaretRightOutlined />} />
 
         </List.Item>;
     };

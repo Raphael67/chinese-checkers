@@ -39,6 +39,10 @@ const LeaderBoard = (): ReactElement => {
         }
     };
 
+    const replayGame = (id: string) => {
+        history.push(pages.game.path.replace(':gameId', id));
+    };
+
     useEffect(() => {
         (async () => {
             setTopPlayers(await Api.getPlayers().catch((err) => {
@@ -49,7 +53,7 @@ const LeaderBoard = (): ReactElement => {
         });
     }, []);
 
-    return <LeaderBoardComponent onSearch={searchGames} topPlayers={topPlayers} gamesPlayed={gamesPlayed} createGame={createGame} />;
+    return <LeaderBoardComponent onSearch={searchGames} topPlayers={topPlayers} gamesPlayed={gamesPlayed} createGame={createGame} replayGame={replayGame} />;
 };
 
 export default LeaderBoard;
