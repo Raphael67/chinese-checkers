@@ -39,7 +39,7 @@ import { PlayerModule } from './player/player.module';
                         Move,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
-                    logging: ['query', 'error']
+                    logging: ['error']
                 };
             },
         }),

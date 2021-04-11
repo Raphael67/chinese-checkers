@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Move } from '../play/move.entity';
 import { Player } from '../player/player.entity';
@@ -44,17 +44,9 @@ export class Game {
     })
     public creator: Player;
 
-    @ManyToMany(() => Player, player => player.games)
-    @JoinTable({
-        name: 'game_player',
-        joinColumn: { name: 'game_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'player_id', referencedColumnName: 'id' }
-    })
-    public players: Player[];
-
-    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game, { cascade: true })
+    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game)
     public gamePlayers: GamePlayer[];
 
-    @OneToOne(() => Move, gameMoves => gameMoves.game, { cascade: true })
+    @OneToOne(() => Move, gameMoves => gameMoves.game)
     public moves: Move;
 }

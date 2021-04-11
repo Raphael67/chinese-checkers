@@ -4,11 +4,11 @@ import { Repository } from 'typeorm';
 import { Player } from './player.entity';
 import { PlayerService } from './player.service';
 
-class PlayerRepositoryMock extends Repository<Player> { };
+class PlayerRepositoryMock extends Repository<Player> { }
 
 describe('PlayerService', () => {
     let service: PlayerService;
-    let playerRepository: Repository<Player> = new PlayerRepositoryMock();
+    const playerRepository: Repository<Player> = new PlayerRepositoryMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -24,7 +24,11 @@ describe('PlayerService', () => {
         service = module.get<PlayerService>(PlayerService);
     });
 
-    it('should be defined', () => {
-        expect(service).toBeDefined();
+    describe('createPlayer', () => {
+        it('should throw if nickkname reserved', async () => {
+            const nickname = 'BLACK_AI';
+
+            await expect(() => service.createPlayer(nickname)).rejects.toThrow();
+        });
     });
 });

@@ -1,9 +1,22 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { GamePlayer } from '../game/game-player.entity';
 import { Game } from '../game/game.entity';
 
+export const botNicknames = [
+    'BLACK_AI',
+    'BLUE_AI',
+    'PURPLE_AI',
+    'YELLOW_AI',
+    'GREEN_AI',
+    'RED_AI',
+];
+
 @Entity()
 export class Player {
+    public constructor(nickname: string) {
+        this.nickname = nickname;
+    }
+
     @PrimaryGeneratedColumn()
     public readonly id: number;
 
@@ -32,22 +45,14 @@ export class Player {
     @OneToMany(() => Game, game => game.winner)
     @JoinColumn({
         name: 'winner',
-        referencedColumnName: 'id'
+        referencedColumnName: 'id',
     })
     public winnedGames: Game[];
-
-    @ManyToMany(() => Game, game => game.players)
-    @JoinTable({
-        name: 'game_player',
-        joinColumn: { name: 'player_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'game_id', referencedColumnName: 'id' },
-    })
-    public games: Game[];
 
     @OneToMany(() => Game, game => game.creator)
     @JoinColumn({
         name: 'creator',
-        referencedColumnName: 'id'
+        referencedColumnName: 'id',
     })
     public createdGames: Game[];
 }
