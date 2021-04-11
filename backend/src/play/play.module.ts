@@ -5,7 +5,6 @@ import { Game } from '../game/game.entity';
 import { GameModule } from '../game/game.module';
 import { GameRepository } from '../game/game.repository';
 import { Player } from '../player/player.entity';
-import { AccessService } from './access.service';
 import { BoardController } from './board.controller';
 import { EventsGateway } from './events/events.gateway';
 import { MoveController } from './move.controller';
@@ -25,12 +24,11 @@ import { MoveService } from './move.service';
             Player,
             Move,
         ]),
-        forwardRef(() => GameModule)
+        forwardRef(() => GameModule),
     ],
     providers: [
         EventsGateway,
-        AccessService,
         MoveService,
-    ]
+    ],
 })
 export class PlayModule { }
