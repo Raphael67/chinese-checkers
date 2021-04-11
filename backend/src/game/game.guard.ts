@@ -15,6 +15,7 @@ export class GameGuard implements CanActivate {
     ): Promise<boolean> {
         const req = context.switchToHttp().getRequest<RequestWithGame>();
         const game = await this.gameService.findOne(req.params.gameId);
+        if (!game.gamePlayers) game.gamePlayers = [];
         if (!game) throw new NotFoundException('Game does not exist');
         req.game = game;
         return true;
