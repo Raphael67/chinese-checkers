@@ -14,6 +14,7 @@ let config: IConfig = {
         hostname: window.location.host,
         port: window.location.port,
         protocol: window.location.protocol,
+        path: '/api'
     },
 };
 
