@@ -9,7 +9,7 @@ interface IProps {
     errorMessage?: string;
     login: (playerName: string, colour: Colour) => void;
     goToGame: () => void;
-    game?: IGame;
+    game: IGame;
 }
 
 const colours = [Colour.Black, Colour.Blue, Colour.Green, Colour.Red, Colour.Yellow, Colour.Purple];
@@ -19,7 +19,7 @@ const LoginComponent = (props: IProps): ReactElement => {
     const [form] = Form.useForm<IGamePlayer[]>();
 
     useEffect(() => {
-        form.setFieldsValue((props.game && props.game.players) || []);
+        form.setFieldsValue(props.game.players || []);
     }, [props.game, form]);
 
     const getPlayableColours = (players: IGamePlayer[]): Colour[] => {
@@ -80,7 +80,7 @@ const LoginComponent = (props: IProps): ReactElement => {
         className="login-component"
     >
         {error}
-        {renderPlayerPlaces((props.game && props.game.players) || [], savedColours)}
+        {renderPlayerPlaces(props.game.players || [], savedColours)}
         <Button size="large" onClick={goToGame}>Watcher mode</Button>
     </Form>;
 };

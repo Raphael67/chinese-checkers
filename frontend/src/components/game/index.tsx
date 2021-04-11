@@ -1,9 +1,9 @@
 import { WithLogged } from 'components/services';
-import { Colour } from 'core/board';
 import pages from 'pages';
-import React, { ReactElement, useContext, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
+import { getGame } from 'redux/actions/game.action';
 import { reset } from 'redux/actions/session.action';
 import { AppState } from 'redux/reducers';
 import Api from 'services/api';
@@ -29,32 +29,44 @@ const Game = (): ReactElement => {
         };
     });
 
+    const refresh = useCallback(async (gameId: string) => {
+        setCurrentGame(await getGame(gameId).catch((err) => {
+            throw err;
+        }));
+    }, []);
+
     useEffect(() => {
         (async () => {
-            clearInterval(Number(timer.current));
             const gameId = gameParams.gameId;
+            const player = mapStateToObj.player;
             game.setId(gameId);
-            game.setPlayerColour(mapStateToObj.player!.colour || Colour.Black);
+            if (player && player.colour) {
+                game.setPlayerColour(player.colour);
+            }
+            await refresh(gameId);
+            clearInterval(Number(timer.current));
             timer.current = setInterval(async () => {
-                setCurrentGame(await Api.getGame({
-                    gameId
-                }).catch((err) => {
-                    throw err;
-                }));
+                await refresh(gameId);
             }, 2000);
         })();
 
         return () => {
             clearInterval(Number(timer.current));
         };
-    }, [game, gameParams.gameId, mapStateToObj.player]);
+    }, [game, gameParams.gameId, mapStateToObj.player, refresh]);
 
     const quitGame = () => {
         reset(dispatch);
         history.push(pages.leaderBoard.path);
     };
 
-    return <GameComponent quitGame={quitGame} game={currentGame} />;
+    const startGame = () => {
+        Api.startGame({
+            gameId: gameParams.gameId
+        });
+    };
+
+    return <GameComponent quitGame={quitGame} startGame={startGame} game={currentGame} player={mapStateToObj.player} />;
 };
 
-export default WithLogged(Game, ['game', 'player']);
+export default WithLogged(Game, ['game']);

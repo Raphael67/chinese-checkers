@@ -1,5 +1,5 @@
 import { Colour } from 'core/board';
-import { ReactElement, useContext, useEffect, useRef } from 'react';
+import { ReactElement, useCallback, useContext, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { AppState } from 'redux/reducers';
@@ -23,20 +23,25 @@ const Board = (): ReactElement => {
         };
     });
 
+    const refresh = useCallback(async () => {
+        await game.getBoard(gameParams.gameId).catch((err) => {
+            console.error(err);
+        });
+    }, [game, gameParams.gameId]);
+
     useEffect(() => {
         (async () => {
+            await refresh();
             clearInterval(Number(timer.current));
             timer.current = setInterval(async () => {
-                await game.getBoard(gameParams.gameId).catch((err) => {
-                    console.error(err);
-                });
+                await refresh();
             }, 2000);
         })();
 
         return () => {
             clearInterval(Number(timer.current));
         };
-    }, [game, gameParams.gameId]);
+    }, [refresh]);
 
     const clickPlace = (place: string) => {
         game.clickPlace(place);

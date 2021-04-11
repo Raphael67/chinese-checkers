@@ -27,38 +27,44 @@ export const setPawnPlace = async (dispatch: Dispatch<ISetPawnPlace>, pawn: stri
     });
 };
 
-export const getGame = async (dispatch: Dispatch<ISetGame>, id: string): Promise<IGame> => {
-    const game = await Api.getGame({
+export const getGame = async (id: string): Promise<IGame> => {
+    return convertRawGame(await Api.getGame({
         gameId: id
     }).catch((err) => {
         throw err;
-    });
+    }));
+};
 
+export const getAndStoreGame = async (dispatch: Dispatch<ISetGame>, id: string): Promise<IGame> => {
     dispatch({
         payload: id,
         type: Type.SET_GAME
     });
 
-    return game;
+    return getGame(id);
 };
 
 export const getGames = async (values: ISearchGameParams): Promise<IGame[]> => {
     return (await Api.getGames(values).catch((err) => {
         throw err;
-    })).map((game: IRawGame) => {
-        const { created_at, game_id, longest_streak, players, rounds } = game;
-        return {
-            id: game_id,
-            createdAt: new Date(created_at),
-            longestStreak: longest_streak,
-            players: players.map((player: IRawGamePlayer): IGamePlayer => {
-                const { color, nickname } = player;
-                return {
-                    nickname,
-                    colour: ColourMap[color as IRegisterParams['color']]
-                };
-            }),
-            rounds
-        };
+    })).map((rawGame: IRawGame) => {
+        return convertRawGame(rawGame);
     });
+};
+
+const convertRawGame = (rawGame: IRawGame): IGame => {
+    const { created_at, game_id, longest_streak, players, rounds } = rawGame;
+    return {
+        id: game_id,
+        createdAt: new Date(created_at),
+        longestStreak: longest_streak,
+        players: players.map((player: IRawGamePlayer): IGamePlayer => {
+            const { color, nickname } = player;
+            return {
+                nickname,
+                colour: ColourMap[color as IRegisterParams['color']]
+            };
+        }),
+        rounds
+    };
 };
