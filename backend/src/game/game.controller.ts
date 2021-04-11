@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ClassSerializerInterceptor, Controller, ForbiddenException, Get, Inject, Param, Patch, Post, Query, Request, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, ForbiddenException, Get, Inject, Patch, Post, Query, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
@@ -60,9 +60,9 @@ export class GameController {
         description: 'Game with players',
         type: GameDetailsDto
     })
-    public async getGame(@Param('gameId') gameId: string): Promise<GameDetailsDto> {
-        const game = await this.gameService.findOne(gameId);
-        return new GameDetailsDto(game);
+    @UseGuards(GameGuard)
+    public async getGame(@Request() request: RequestWithGame): Promise<GameDetailsDto> {
+        return new GameDetailsDto(request.game);
     }
 
     @Post('/')
