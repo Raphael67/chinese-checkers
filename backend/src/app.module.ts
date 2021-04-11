@@ -9,8 +9,7 @@ import { ConfigService } from './config/config.service';
 import { GamePlayer } from './game/game-player.entity';
 import { Game } from './game/game.entity';
 import { GameModule } from './game/game.module';
-import { Move } from './play/move.entity';
-import { PlayModule } from './play/play.module';
+import { Move } from './game/move.entity';
 import { Player } from './player/player.entity';
 import { PlayerModule } from './player/player.module';
 
@@ -39,13 +38,12 @@ import { PlayerModule } from './player/player.module';
                         Move,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
-                    logging: ['error']
+                    logging: ['error'],
                 };
             },
         }),
         GameModule,
         PlayerModule,
-        PlayModule,
     ],
     controllers: [AppController],
     providers: [AppService],

@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
-import { Move } from '../play/move.entity';
 import { Player } from '../player/player.entity';
 import { GamePlayer } from './game-player.entity';
+import { Move } from './move.entity';
 
 export enum GameStatus {
     CREATED = 'CREATED',

@@ -12,9 +12,9 @@ class MoveRepositoryMock extends Repository<Move> { }
 
 describe('MoveController', () => {
     let controller: MoveController;
-    let gameService: GameService = new GameServiceMock();
-    let moveService: MoveService = new MoveServiceMock();
-    let moveRepository: Repository<Move> = new MoveRepositoryMock();
+    const gameService: GameService = new GameServiceMock();
+    const moveService: MoveService = new MoveServiceMock();
+    const moveRepository: Repository<Move> = new MoveRepositoryMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -22,17 +22,17 @@ describe('MoveController', () => {
             providers: [
                 {
                     provide: GameService,
-                    useValue: gameService
+                    useValue: gameService,
                 },
                 {
                     provide: MoveService,
-                    useValue: moveService
+                    useValue: moveService,
                 },
                 {
                     provide: getRepositoryToken(Move),
-                    useValue: moveRepository
-                }
-            ]
+                    useValue: moveRepository,
+                },
+            ],
         }).compile();
 
         controller = module.get<MoveController>(MoveController);

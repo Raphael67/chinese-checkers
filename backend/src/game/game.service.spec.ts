@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Move } from '../play/move.entity';
 import { Player } from '../player/player.entity';
 import { Color, GamePlayer } from './game-player.entity';
 import { Game } from './game.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
+import { Move } from './move.entity';
 
 class GameRepositoryMock extends GameRepository { }
 class PlayerRepositoryMock extends Repository<Player> { }

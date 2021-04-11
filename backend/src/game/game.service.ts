@@ -1,12 +1,12 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Move } from '../play/move.entity';
 import { Player } from '../player/player.entity';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { Color, GamePlayer } from './game-player.entity';
 import { Game, GameStatus } from './game.entity';
 import { GameRepository } from './game.repository';
+import { Move } from './move.entity';
 
 @Injectable()
 export class GameService {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Game } from '../game/game.entity';
 import { Board, Cell } from './board';
+import { Game } from './game.entity';
 import { Move } from './move.entity';
 
 @Injectable()

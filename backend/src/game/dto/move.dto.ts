@@ -8,7 +8,7 @@ export class MoveDto {
     }
 
     @ApiResponseProperty({
-        type: [Cell]
+        type: [Cell],
     })
     public path: Cell[];
 }

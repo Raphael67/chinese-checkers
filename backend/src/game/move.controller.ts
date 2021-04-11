@@ -1,11 +1,11 @@
 import { BadRequestException, Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Color } from '../game/game-player.entity';
-import { GameStatus } from '../game/game.entity';
-import { GameGuard, RequestWithGame } from '../game/game.guard';
-import { GameService } from '../game/game.service';
 import { Cell } from './board';
 import { MoveDto } from './dto/move.dto';
+import { Color } from './game-player.entity';
+import { GameStatus } from './game.entity';
+import { GameGuard, RequestWithGame } from './game.guard';
+import { GameService } from './game.service';
 import { MoveService } from './move.service';
 
 @Controller('/api/board')
