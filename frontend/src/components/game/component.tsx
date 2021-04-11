@@ -1,17 +1,23 @@
-import { Button, Card } from 'antd';
+import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
+import { Button, Card, Input, Modal, Popover } from 'antd';
 import Board from 'components/game/board';
 import { Colour } from 'core/board';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import Pawn from './pawn';
 
 interface IProps {
     quitGame: () => void;
     startGame: () => void;
+    getInviteLink: () => string;
+    copyGameLink: () => void;
     game?: IGame;
     player?: IPlayer;
 }
 
 const GameComponent = (props: IProps): ReactElement => {
+    const [isInviteModalVisible, setInviteModaleVisible] = useState<boolean>(false);
+    const [isLinkTooltipVisible, setLinkTooltipVisible] = useState<boolean>(false);
+
     const quitGame = () => {
         props.quitGame();
     };
@@ -36,6 +42,32 @@ const GameComponent = (props: IProps): ReactElement => {
         </>;
     };
 
+    const copyGameLink = () => {
+        setLinkTooltipVisible(true);
+        props.copyGameLink();
+    };
+
+    const getInviteLink = (): string => {
+        return props.getInviteLink();
+    };
+
+    const closeInviteModale = () => {
+        setLinkTooltipVisible(false);
+        setTimeout(() => {
+            setInviteModaleVisible(false);
+        }, 100);
+    };
+
+    const openInviteModale = () => {
+        setInviteModaleVisible(true);
+    };
+
+    const onShowLinkTooltip = () => {
+        setTimeout(() => {
+            setLinkTooltipVisible(false);
+        }, 2000);
+    };
+
     return <div className="game">
         <div className="board-container">
             <Board />
@@ -51,10 +83,23 @@ const GameComponent = (props: IProps): ReactElement => {
             </div>
             <div className="actions">
                 <Button type="primary" size="large" onClick={startGame}>Start game</Button>
-                <Button type="primary" size="large">Invite friend</Button>
+                <Button type="primary" size="large" onClick={openInviteModale}>Invite friend</Button>
                 <Button type="primary" danger size="large" onClick={quitGame}>Quit game</Button>
             </div>
         </div>
+        <Modal title="Invite friend" visible={isInviteModalVisible} onCancel={closeInviteModale} onOk={closeInviteModale} footer={null}>
+            <p>Copy the link below and send it to your friends</p>
+            <Input id="copy-link" readOnly value={getInviteLink()} size="large" prefix={<LinkOutlined />} suffix={
+                <Popover
+                    content="Link copied!"
+                    visible={isLinkTooltipVisible}
+                    onVisibleChange={onShowLinkTooltip}
+                    destroyTooltipOnHide={true}
+                >
+                    <Button onClick={copyGameLink} icon={<CopyOutlined />}></Button>
+                </Popover>
+            } />
+        </Modal>
     </div>;
 };
 

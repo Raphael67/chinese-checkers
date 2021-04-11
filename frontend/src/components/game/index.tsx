@@ -1,4 +1,3 @@
-import { WithLogged } from 'components/services';
 import pages from 'pages';
 import React, { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -66,7 +65,21 @@ const Game = (): ReactElement => {
         });
     };
 
-    return <GameComponent quitGame={quitGame} startGame={startGame} game={currentGame} player={mapStateToObj.player} />;
+    const copyGameLink = () => {
+        const copyLinkElement = document.getElementById('copy-link') as HTMLInputElement;
+        if (copyLinkElement) {
+            copyLinkElement.focus();
+            copyLinkElement.select();
+            document.execCommand('copy');
+        }
+    };
+
+    const getInviteLink = (): string => {
+        const { protocol, port, hostname } = document.location;
+        return protocol + '//' + hostname + (port !== '' ? ':' + port : '') + pages.login.path.replace(':gameId', gameParams.gameId);
+    };
+
+    return <GameComponent copyGameLink={copyGameLink} getInviteLink={getInviteLink} quitGame={quitGame} startGame={startGame} game={currentGame} player={mapStateToObj.player} />;
 };
 
-export default WithLogged(Game, ['game']);
+export default Game;
