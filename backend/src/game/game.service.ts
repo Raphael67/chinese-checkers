@@ -41,6 +41,7 @@ export class GameService {
 
     public async start(game: Game): Promise<void> {
         if (game.status !== GameStatus.CREATED) throw new BadRequestException('Game can not be started due to its current state: ' + game.status);
+        await this.fillGameWithBots(game);
         game.status = GameStatus.IN_PROGRESS;
         await this.gameRepository.update({ id: game.id }, { status: game.status });
     }
@@ -66,12 +67,25 @@ export class GameService {
         gamePlayer.player = player;
         gamePlayer.color = color;
         await this.gamePlayerRepository.save(gamePlayer);
+        game.gamePlayers.push(gamePlayer);
         if (game.gamePlayers.length === 0) {
-            console.log(game.gamePlayers);
-            game.gamePlayers.push(gamePlayer);
             game.creator = player;
             await this.gameRepository.update({ id: game.id }, { creator: player });
         }
         return game;
-    };
+    }
+
+    private async fillGameWithBots(game: Game): Promise<void> {
+        const colors: Color[] = [Color.BLACK, Color.BLUE, Color.GREEN, Color.PURPLE, Color.RED, Color.YELLOW];
+        for (const color of colors) {
+            if (!game.gamePlayers.find((gamePlayer: GamePlayer) => {
+                return gamePlayer.color === color;
+            })) {
+                const player = await this.playerRepository.findOne({
+                    where: { nickname: `${color}_AI` },
+                });
+                await this.linkPlayerToGame(game, player, color);
+            }
+        }
+    }
 }

@@ -11,22 +11,21 @@ export class PlayerService {
         return this.playerRepository.find({
             order: {
                 rating: 'DESC',
-            }
+            },
         });
     }
 
     public findOneByNickname(nickname: string): Promise<Player> {
         return this.playerRepository.findOne({
             where: {
-                nickname
-            }
+                nickname,
+            },
         });
     }
 
     public async createPlayer(nickname: string): Promise<Player> {
         if (botNicknames.includes(nickname)) throw new BadRequestException('This nickname is reserved');
-        const player = new Player();
-        player.nickname = nickname;
+        const player = new Player(nickname);
         return await this.playerRepository.save(player);
     }
 }

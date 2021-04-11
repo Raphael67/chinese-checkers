@@ -13,6 +13,10 @@ export const botNicknames = [
 
 @Entity()
 export class Player {
+    public constructor(nickname: string) {
+        this.nickname = nickname;
+    }
+
     @PrimaryGeneratedColumn()
     public readonly id: number;
 
@@ -41,14 +45,14 @@ export class Player {
     @OneToMany(() => Game, game => game.winner)
     @JoinColumn({
         name: 'winner',
-        referencedColumnName: 'id'
+        referencedColumnName: 'id',
     })
     public winnedGames: Game[];
 
     @OneToMany(() => Game, game => game.creator)
     @JoinColumn({
         name: 'creator',
-        referencedColumnName: 'id'
+        referencedColumnName: 'id',
     })
     public createdGames: Game[];
 }

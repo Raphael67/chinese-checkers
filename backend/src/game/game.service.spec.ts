@@ -8,17 +8,17 @@ import { Game } from './game.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
 
-class GameRepositoryMock extends GameRepository { };
-class PlayerRepositoryMock extends Repository<Player> { };
-class GamePlayerRepositoryMock extends Repository<GamePlayer> { };
-class GameMovesRepositoryMock extends Repository<Move> { };
+class GameRepositoryMock extends GameRepository { }
+class PlayerRepositoryMock extends Repository<Player> { }
+class GamePlayerRepositoryMock extends Repository<GamePlayer> { }
+class GameMovesRepositoryMock extends Repository<Move> { }
 
 describe('GameService', () => {
     let service: GameService;
-    let gameRepository: GameRepository = new GameRepositoryMock;
-    let playerRepository: Repository<Player> = new PlayerRepositoryMock;
-    let gamePlayerRepository: Repository<GamePlayer> = new GamePlayerRepositoryMock;
-    let gameMovesRepository: Repository<Move> = new GameMovesRepositoryMock;
+    const gameRepository: GameRepository = new GameRepositoryMock;
+    const playerRepository: Repository<Player> = new PlayerRepositoryMock;
+    const gamePlayerRepository: Repository<GamePlayer> = new GamePlayerRepositoryMock;
+    const gameMovesRepository: Repository<Move> = new GameMovesRepositoryMock;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -53,5 +53,20 @@ describe('GameService', () => {
         game.gamePlayers = [gamePlayer];
 
         expect(service.isColorAvailable(game, Color.RED)).toBeFalsy();
+    });
+    describe('start', () => {
+        it('should fill a game with bots', async () => {
+            const game = new Game();
+            game.gamePlayers = [];
+
+            let playerIndex = 0;
+            playerRepository.findOne = jest.fn(async () => new Player((playerIndex++).toString()));
+            gameRepository.save = jest.fn();
+            gameRepository.update = jest.fn();
+            gamePlayerRepository.save = jest.fn();
+
+            await service.start(game);
+            expect(game.gamePlayers).toHaveLength(6);
+        });
     });
 });
