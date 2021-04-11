@@ -1,5 +1,6 @@
 import { BadRequestException, Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GameStatus } from '../game/game.entity';
 import { GameGuard, RequestWithGame } from '../game/game.guard';
 import { Cell } from './board';
 import { MoveDto } from './dto/move.dto';
@@ -61,6 +62,7 @@ export class MoveController {
         @Param('playerIndex', new ParseIntPipe()) playerIndex: number,
         @Request() request: RequestWithGame,
     ): Promise<void> {
+        if (request.game.status !== GameStatus.IN_PROGRESS) throw new BadRequestException('Game can not be started due to its current state: ' + request.game.status);
         const board = await this.moveService.getBoard(request.game);
         try {
             this.moveService.isValidPath(board, playerIndex, path);
