@@ -70,7 +70,7 @@ export class GameController {
         @Request() request: RequestWithGame,
     ): Promise<void> {
         const game = request.game;
-        if (!this.gameService.isColorAvailable(game, gamePlayerDto.color)) {
+        if (!this.gameService.isPositionAvailable(game, gamePlayerDto.position)) {
             throw new ForbiddenException('This color is already taken in this game');
         }
         if (!this.gameService.isNicknameAvailable(game, gamePlayerDto.nickname)) {
@@ -81,7 +81,7 @@ export class GameController {
         if (!player) {
             player = await this.playerService.createPlayer(gamePlayerDto.nickname);
         }
-        await this.gameService.linkPlayerToGame(game, player, gamePlayerDto.color);
+        await this.gameService.linkPlayerToGame(game, player, gamePlayerDto.position);
     }
 
 }

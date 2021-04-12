@@ -45,7 +45,6 @@ const playerPositions = [
 
 export class Board {
     private cells: Map<string, Cell> = new Map();
-    private currentPlayer: number = -1;
 
     public constructor() {
         for (let row = 0; row < 17; row++) {
@@ -72,14 +71,6 @@ export class Board {
             if (this.cells.get(position).getPawn() !== player) return false;
         }
         return true;
-    }
-
-    public nextPlayer(): void {
-        this.currentPlayer = (this.currentPlayer + 1) % 6;
-    }
-
-    public getCurrentPlayer(): number {
-        return this.currentPlayer;
     }
 
     public getCells(): Cell[] {

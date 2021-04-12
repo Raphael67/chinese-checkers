@@ -1,12 +1,11 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { Color } from '../game-player.entity';
 import { Game } from '../game.entity';
 
 class GamePlayer {
     @ApiResponseProperty()
     public nickname: string;
     @ApiResponseProperty()
-    public color: Color;
+    public position: number;
 }
 
 export class GameDetailsDto {
@@ -20,7 +19,7 @@ export class GameDetailsDto {
         this.players = game.gamePlayers.map((gamePlayer) => {
             return {
                 nickname: gamePlayer.player.nickname,
-                color: gamePlayer.color,
+                position: gamePlayer.position,
             };
         });
     }
@@ -38,6 +37,6 @@ export class GameDetailsDto {
     })
     public players: {
         nickname: string;
-        color: Color;
+        position: number;
     }[] = [];
 }

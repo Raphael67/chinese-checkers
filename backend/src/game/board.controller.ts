@@ -16,7 +16,7 @@ export class BoardController {
     @ApiOperation({ summary: 'Return all pawns position for a game' })
     @ApiResponse({ status: 200, description: 'List of cells containing pawn', type: [Cell] })
     public async getBoard(@Request() request: RequestWithGame): Promise<Cell[]> {
-        const board = await this.moveService.getBoard(request.game);
+        const board = request.game.board;
         return board.getCells();
     }
 }

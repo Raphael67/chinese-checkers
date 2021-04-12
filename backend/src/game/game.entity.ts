@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Player } from '../player/player.entity';
+import { Board } from './board';
 import { GamePlayer } from './game-player.entity';
 import { Move } from './move.entity';
 
@@ -12,6 +13,9 @@ export enum GameStatus {
 
 @Entity()
 export class Game {
+    public board: Board = new Board();
+    public currentPlayer: number = -1;
+
     @PrimaryColumn('uuid')
     public readonly id: string = uuid();
 

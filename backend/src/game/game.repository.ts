@@ -1,5 +1,4 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { Color } from './game-player.entity';
 import { Game } from './game.entity';
 
 export interface IFinishedGamesWithPlayers {
@@ -8,7 +7,7 @@ export interface IFinishedGamesWithPlayers {
     longest_streak: number;
     created_at: Date;
     nickname: string;
-    color: Color;
+    position: number;
 }
 
 @EntityRepository(Game)
