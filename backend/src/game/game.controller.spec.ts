@@ -67,7 +67,7 @@ describe('GameController', () => {
         });
         it('should link player to game', async () => {
             const playerDto = { nickname: 'TEST', color: Color.BLACK };
-            const player = new Player();
+            const player = new Player('TEST');
             const game = new Game();
 
             const request: RequestWithGame = { game } as RequestWithGame;
