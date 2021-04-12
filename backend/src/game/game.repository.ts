@@ -21,7 +21,7 @@ export class GameRepository extends Repository<Game> {
         if (nickname) query.andWhere('player.nickname LIKE :nickname', { nickname: `${nickname}%` });
         if (date) query.andWhere('game.created_at BETWEEN :from AND :to', {
             from: new Date(date.setHours(0, 0, 0, 0)),
-            to: new Date(date.setHours(23, 59, 59, 999))
+            to: new Date(date.setHours(23, 59, 59, 999)),
         });
 
         if (orderBy === 'createdAt') {

@@ -3,12 +3,12 @@ import { Player } from '../player/player.entity';
 import { Game } from './game.entity';
 
 export enum Color {
-    BLACK = "BLACK",
-    BLUE = "BLUE",
-    PURPLE = "PURPLE",
-    YELLOW = "YELLOW",
-    GREEN = "GREEN",
-    RED = "RED",
+    BLACK = 'BLACK',
+    BLUE = 'BLUE',
+    PURPLE = 'PURPLE',
+    YELLOW = 'YELLOW',
+    GREEN = 'GREEN',
+    RED = 'RED',
 }
 
 @Entity({ name: 'game_player' })

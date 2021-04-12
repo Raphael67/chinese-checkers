@@ -4,13 +4,13 @@ import { Game } from '../game.entity';
 
 class GamePlayer {
     @ApiResponseProperty()
-    nickname: String;
+    public nickname: string;
     @ApiResponseProperty()
-    color: Color;
+    public color: Color;
 }
 
 export class GameDetailsDto {
-    constructor(
+    public constructor(
         game: Game,
     ) {
         this.created_at = game.createdAt;
@@ -20,7 +20,7 @@ export class GameDetailsDto {
         this.players = game.gamePlayers.map((gamePlayer) => {
             return {
                 nickname: gamePlayer.player.nickname,
-                color: gamePlayer.color
+                color: gamePlayer.color,
             };
         });
     }
@@ -34,7 +34,7 @@ export class GameDetailsDto {
     @ApiResponseProperty()
     public created_at: Date;
     @ApiResponseProperty({
-        type: [GamePlayer]
+        type: [GamePlayer],
     })
     public players: {
         nickname: string;
