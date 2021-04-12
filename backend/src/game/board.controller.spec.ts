@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardController } from './board.controller';
+import { MoveService } from './board.service';
 import { GameService } from './game.service';
-import { MoveService } from './move.service';
 
 class GameServiceMock extends GameService { }
 class MoveServiceMock extends MoveService { }
