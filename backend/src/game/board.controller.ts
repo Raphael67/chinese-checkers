@@ -12,11 +12,10 @@ import { GameService } from './game.service';
 export class BoardController {
     @Get('/:gameId')
     @ApiOperation({ summary: 'Return all pawns position for a game' })
-    @ApiResponse({ status: 200, description: 'List of cells containing pawn', type: [Cell] })
     public async getBoard(@Param('gameId') gameId: string): Promise<Cell[]> {
         const game = await this.gameService.loadGame(gameId);
         if (!game) throw new NotFoundException(`Game not found : ${gameId}`);
-        return game.board.getCells();
+        return game.board.getCells().filter((cell) => cell.getPawn() !== undefined);
     }
 
     @Get('/:gameId/move')
