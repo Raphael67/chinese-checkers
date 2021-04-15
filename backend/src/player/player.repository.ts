@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { Player } from './player.class';
 import { PlayerEntity } from './player.entity';
 
-@Injectable()
+@EntityRepository(PlayerEntity)
 export class PlayerRepository extends Repository<PlayerEntity> {
     public static fromEntityToPlayer(playerEntity: PlayerEntity): Player {
         const player = new Player();

@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Player } from '../player/player.class';
 import { AIService } from './ai.service';
 import { Board } from './board';
@@ -87,6 +87,8 @@ export class GameService implements IGameService {
         }
         if (game.board.isWinner(game.getCurrentPlayer())) {
             game.status = GameStatus.FINISHED;
+            this.databaseGameRepository.saveFinished(game)
+                .catch((err) => this.logger.error(err));
         } else {
             game.nextPlayer();
         }
@@ -103,6 +105,8 @@ export class GameService implements IGameService {
 
     @Inject(BoardService)
     private readonly boardService: BoardService;
+
+    private readonly logger: Logger = new Logger(GameService.name);
 
     private isPositionAvailable(game: Game, position: number): boolean {
         if (game.players[position]) {
