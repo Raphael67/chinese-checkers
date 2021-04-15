@@ -1,8 +1,5 @@
 import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PlayerEntity } from '../player/player.entity';
-import { PlayerRepository } from '../player/player.repository';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
@@ -80,8 +77,4 @@ export class GameController {
 
     @Inject(DatabaseGameRepository)
     private readonly databaseGameRepository: DatabaseGameRepository;
-
-    @InjectRepository(PlayerEntity)
-    private readonly playerRepository: PlayerRepository;
-
 }
