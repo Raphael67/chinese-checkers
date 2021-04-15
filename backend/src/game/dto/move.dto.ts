@@ -1,4 +1,3 @@
-import { ApiResponseProperty } from '@nestjs/swagger';
 import { Coords } from '../board';
 import { Move } from '../move.entity';
 
@@ -7,8 +6,5 @@ export class MoveDto {
         this.path = move.path;
     }
 
-    @ApiResponseProperty({
-        type: [Coords],
-    })
     public path: Coords[];
 }

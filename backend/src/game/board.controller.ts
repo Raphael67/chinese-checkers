@@ -20,7 +20,6 @@ export class BoardController {
 
     @Get('/:gameId/move')
     @ApiOperation({ summary: 'Return a list of all moves for a game to replay' })
-    @ApiResponse({ status: 200, description: 'List of all moves. A move is an array of Cell.', type: [MoveDto] })
     public async move(@Param('gameId') gameId: string): Promise<MoveDto[]> {
         const gameEntity = await this.databaseGameRepository.findOne(gameId);
         return gameEntity.moves;
