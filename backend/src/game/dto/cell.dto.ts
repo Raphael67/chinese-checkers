@@ -3,7 +3,7 @@ import { CoordsDto } from './coords.dto';
 
 export class CellDto {
     public constructor(cell: Cell) {
-        this.coords = cell.coords;
+        this.coords = new CoordsDto(cell.coords);
         this.pawn = cell.getPawn();
     }
     public readonly coords: CoordsDto;

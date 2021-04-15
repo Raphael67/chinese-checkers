@@ -94,11 +94,11 @@ export class Board {
     }
 
     public getCell(coords: Coords | string): Cell {
-        if (coords instanceof Coords) {
+        if (typeof coords === 'string') {
+            return this.cells.get(coords);
+        } else {
             const cell = new Cell(coords);
             return this.cells.get(cell.getIndex());
-        } else {
-            return this.cells.get(coords);
         }
     }
 

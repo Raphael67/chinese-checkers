@@ -26,7 +26,7 @@ export class BoardController {
             where: { status: GameStatus.FINISHED },
         });
         if (!gameEntity) throw new NotFoundException(`Can not find finished game ${gameId}`);
-        return gameEntity.moves.map((move) => move.path);
+        return gameEntity.moves.map((move) => move.path.map((coords) => new CoordsDto(coords)));
     }
 
     @Post('/:gameId/player/:playerIndex/move')
@@ -48,7 +48,6 @@ export class BoardController {
             throw new BadRequestException(ex.message);
         }
         this.gameService.playMove(game, moveDto);
-        await this.boardService.saveMove(game, moveDto);
     }
 
     @Inject(BoardService)
