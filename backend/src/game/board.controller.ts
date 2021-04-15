@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Cell, Coords } from './board';
 import { BoardService } from './board.service';
 import { MoveDto } from './dto/move.dto';
@@ -11,7 +11,6 @@ import { GameService } from './game.service';
 @ApiTags('Board')
 export class BoardController {
     @Get('/:gameId')
-    @ApiParam({ name: 'gameId', type: String })
     @ApiOperation({ summary: 'Return all pawns position for a game' })
     @ApiResponse({ status: 200, description: 'List of cells containing pawn', type: [Cell] })
     public async getBoard(@Param('gameId') gameId: string): Promise<Cell[]> {
@@ -21,7 +20,6 @@ export class BoardController {
     }
 
     @Get('/:gameId/move')
-    @ApiParam({ name: 'gameId', type: String })
     @ApiOperation({ summary: 'Return a list of all moves for a game to replay' })
     @ApiResponse({ status: 200, description: 'List of all moves. A move is an array of Cell.', type: [MoveDto] })
     public async move(@Param('gameId') gameId: string): Promise<MoveDto[]> {
@@ -30,9 +28,6 @@ export class BoardController {
     }
 
     @Post('/:gameId/player/:playerIndex/move')
-    @ApiParam({ name: 'gameId', type: String })
-    @ApiParam({ name: 'playerIndex', type: Number })
-    @ApiBody({ type: [Coords] })
     @ApiOperation({ summary: 'Add a move for a player to a game' })
     @ApiResponse({ status: 403, description: 'BadRequest with details in message property' })
     @ApiResponse({ status: 200, description: 'Move successfuly played' })

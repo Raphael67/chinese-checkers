@@ -1,5 +1,5 @@
 import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
@@ -35,7 +35,6 @@ export class GameController {
 
     @Get('/:gameId')
     @ApiOperation({ summary: 'Return a game and its players' })
-    @ApiParam({ name: 'gameId', type: String })
     @ApiResponse({ status: 200, description: 'Game with players', type: GameDetailsDto })
     public async getGame(@Param('gameId') gameId: string): Promise<GameDetailsDto> {
         const game = await this.gameService.loadGame(gameId);
@@ -52,7 +51,6 @@ export class GameController {
 
     @Patch('/:gameId/start')
     @ApiOperation({ summary: 'Start a game' })
-    @ApiParam({ name: 'gameId', type: String })
     @ApiResponse({ status: 201, description: 'Game has been successfuly started' })
     public async startGame(@Param('gameId') gameId: string): Promise<void> {
         const game = await this.gameService.loadGame(gameId);
@@ -62,8 +60,6 @@ export class GameController {
 
     @Post('/:gameId/player')
     @ApiOperation({ summary: 'Add a new player to the game and create the player if necessary' })
-    @ApiParam({ name: 'gameId', type: String })
-    @ApiBody({ type: GamePlayerDto, required: true, schema: { example: { nickname: 'Test', color: 'RED' } } })
     @ApiResponse({ status: 403, description: 'An object with a message property describing the error' })
     @ApiResponse({ status: 201, description: 'Player has been successfuly linked to the game' })
     public async upsertPlayerToGame(
