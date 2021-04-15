@@ -1,8 +1,7 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { Player } from '../../player/player.class';
 import { Game } from '../game.class';
 
-class GamePlayer {
+class GamePlayerDto {
     @ApiResponseProperty()
     public nickname: string;
     @ApiResponseProperty()
@@ -17,7 +16,13 @@ export class GameDetailsDto {
         this.id = game.id;
         this.longest_streak = game.longestStreak;
         this.turn = game.turn;
-        this.players = game.players;
+        this.currentPlayer = game.getCurrentPlayer();
+        this.players = game.players.map((player, index) => {
+            const gamePlayerDto = new GamePlayerDto();
+            gamePlayerDto.nickname = player.nickname;
+            gamePlayerDto.position = index;
+            return gamePlayerDto;
+        });
     }
 
     @ApiResponseProperty()
@@ -25,11 +30,13 @@ export class GameDetailsDto {
     @ApiResponseProperty()
     public turn: number;
     @ApiResponseProperty()
+    public currentPlayer: number;
+    @ApiResponseProperty()
     public longest_streak: number;
     @ApiResponseProperty()
     public created_at: Date;
     @ApiResponseProperty({
-        type: [GamePlayer],
+        type: [GamePlayerDto],
     })
-    public players: Player[];
+    public players: GamePlayerDto[];
 }
