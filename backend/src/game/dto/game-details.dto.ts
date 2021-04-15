@@ -14,14 +14,14 @@ export class GameDetailsDto {
         game: Game,
     ) {
         this.created_at = game.createdAt;
-        this.game_id = game.id;
+        this.id = game.id;
         this.longest_streak = game.longestStreak;
         this.turn = game.turn;
         this.players = game.players;
     }
 
     @ApiResponseProperty()
-    public game_id: string;
+    public id: string;
     @ApiResponseProperty()
     public turn: number;
     @ApiResponseProperty()
