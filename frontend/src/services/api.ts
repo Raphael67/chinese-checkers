@@ -3,7 +3,6 @@ import { IRoute, routes } from 'routes';
 interface IConfig {
     api: {
         hostname: string;
-        port: string;
         protocol: string;
         path?: string;
     };
@@ -12,7 +11,6 @@ interface IConfig {
 let config: IConfig = {
     api: {
         hostname: window.location.host,
-        port: window.location.port,
         protocol: window.location.protocol,
         path: '/api'
     },
@@ -174,7 +172,6 @@ export default class Api {
             (config.api.hostname
                 ? config.api.hostname
                 : document.location.hostname) +
-            (config.api.port ? ':' + config.api.port : '') +
             (config.api.path || '')
         );
     }
