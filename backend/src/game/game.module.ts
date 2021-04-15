@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Player } from '../player/player.entity';
+import { PlayerEntity } from '../player/player.entity';
 import { PlayerModule } from '../player/player.module';
+import { AIService } from './ai.service';
 import { BoardController } from './board.controller';
-import { MoveService } from './board.service';
+import { BoardService } from './board.service';
+import { CacheGameRepository } from './game-cache.repository';
+import { DatabaseGameRepository } from './game-database.repository';
 import { GamePlayer } from './game-player.entity';
 import { GameController } from './game.controller';
-import { Game } from './game.entity';
-import { GameRepository } from './game.repository';
+import { GameEntity } from './game.entity';
 import { GameService } from './game.service';
 import { Move } from './move.entity';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-            Game,
-            Player,
+            GameEntity,
+            PlayerEntity,
             GamePlayer,
             Move,
-            GameRepository,
+            DatabaseGameRepository,
         ]),
         PlayerModule,
     ],
@@ -28,7 +30,9 @@ import { Move } from './move.entity';
     ],
     providers: [
         GameService,
-        MoveService,
+        BoardService,
+        AIService,
+        CacheGameRepository,
     ],
 })
 export class GameModule { }

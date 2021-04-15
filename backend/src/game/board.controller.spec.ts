@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardController } from './board.controller';
-import { MoveService } from './board.service';
+import { BoardService } from './board.service';
 import { GameService } from './game.service';
 
 class GameServiceMock extends GameService { }
-class MoveServiceMock extends MoveService { }
+class BoardServiceMock extends BoardService { }
 
 
 describe('BoardController', () => {
     let controller: BoardController;
     const gameService: GameService = new GameServiceMock();
-    const moveService: MoveService = new MoveServiceMock();
+    const boardService: BoardService = new BoardServiceMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -21,8 +21,8 @@ describe('BoardController', () => {
                     useValue: gameService,
                 },
                 {
-                    provide: MoveService,
-                    useValue: moveService,
+                    provide: BoardService,
+                    useValue: boardService,
                 },
             ],
         }).compile();

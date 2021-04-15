@@ -1,16 +1,12 @@
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 
-export class Cell {
-    @ApiProperty()
-    @ApiResponseProperty()
-    private pawn?: number;
+export class Coords {
     @ApiProperty()
     @ApiResponseProperty()
     public x: number;
     @ApiProperty()
     @ApiResponseProperty()
     public y: number;
-
     public constructor(
         x: number,
         y: number,
@@ -19,8 +15,27 @@ export class Cell {
         this.y = y;
     }
 
+    public static dist(v1: Coords, v2: Coords): number {
+        return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
+    }
+}
+
+export class Cell {
+    @ApiProperty()
+    @ApiResponseProperty()
+    private pawn?: number;
+    @ApiProperty()
+    @ApiResponseProperty()
+    public coords: Coords;
+
+    public constructor(
+        coords: Coords,
+    ) {
+        this.coords = coords;
+    }
+
     public getIndex(): string {
-        return this.x + '-' + this.y;
+        return this.coords.x + '-' + this.coords.y;
     }
 
     public setPawn(player?: number): void {
@@ -34,15 +49,14 @@ export class Cell {
 
 const holes = [1, 2, 3, 4, 13, 12, 11, 10, 9, 10, 11, 12, 13, 4, 3, 2, 1];
 
-const playerPositions = [
+export const playerPositions = [
     ['12-0', '11-1', '13-1', '10-2', '12-2', '14-2', '9-3', '11-3', '13-3', '15-3'],
-    ['18-4', '20-4', '22-4', '24-4', '19-5', '21-5', '23-5', '20-6', '22-6', '21-7'],
-    ['18-12', '20-12', '22-12', '24-12', '19-11', '17-11', '15-11', '20-10', '22-10', '21-9'],
+    ['24-4', '18-4', '20-4', '22-4', '19-5', '21-5', '23-5', '20-6', '22-6', '21-7'],
+    ['24-12', '18-12', '20-12', '22-12', '19-11', '21-11', '23-11', '20-10', '22-10', '21-9'],
     ['12-16', '11-15', '13-15', '10-14', '12-14', '14-14', '9-13', '11-13', '13-13', '15-13'],
     ['0-12', '2-12', '4-12', '6-12', '1-11', '3-11', '5-11', '2-10', '4-10', '3-9'],
     ['0-4', '2-4', '4-4', '6-4', '1-5', '3-5', '5-5', '2-6', '4-6', '3-7'],
 ];
-
 export class Board {
     private cells: Map<string, Cell> = new Map();
 
@@ -50,7 +64,7 @@ export class Board {
         for (let row = 0; row < 17; row++) {
             let column = Math.ceil(25 / 2) - Math.floor(holes[row]);
             for (let hole = 0; hole < holes[row]; hole++) {
-                const cell = new Cell(column, row);
+                const cell = new Cell(new Coords(column, row));
                 this.cells.set(cell.getIndex(), cell);
                 column += 2;
             }
@@ -74,11 +88,34 @@ export class Board {
     }
 
     public getCells(): Cell[] {
-        return [...this.cells.values()].filter((cell) => cell.getPawn() !== undefined);
+        const cells = [];
+        this.cells.forEach(cell => cells.push(cell));
+        return cells;
     }
 
-    public getCell(x: number, y: number): Cell {
-        const cell = new Cell(x, y);
-        return this.cells.get(cell.getIndex());
+    public getCell(coords: Coords | string): Cell {
+        if (coords instanceof Coords) {
+            const cell = new Cell(coords);
+            return this.cells.get(cell.getIndex());
+        } else {
+            return this.cells.get(coords);
+        }
+    }
+
+    public print(): void {
+        for (let y = 0; y < 17; y++) {
+            process.stdout.clearLine(-1);
+        }
+        console.log('------------------------------------------------');
+        for (let y = 0; y < 17; y++) {
+            let row = '';
+            for (let x = 0; x < 25; x++) {
+                const cell = this.getCell(new Coords(x, y));
+                if (!cell) row += ' ';
+                else row += cell.getPawn() === undefined ? '.' : cell.getPawn();
+            }
+            console.log(row);
+        }
+        console.log('------------------------------------------------');
     }
 }

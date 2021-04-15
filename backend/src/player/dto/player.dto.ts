@@ -1,8 +1,8 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { Player } from '../player.entity';
+import { PlayerEntity } from '../player.entity';
 
 export class PlayerDto {
-    constructor(player: Player) {
+    constructor(player: PlayerEntity) {
         this.id = player.id;
         this.nickname = player.nickname;
         this.win = player.win;

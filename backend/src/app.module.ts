@@ -7,10 +7,10 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { GamePlayer } from './game/game-player.entity';
-import { Game } from './game/game.entity';
+import { GameEntity } from './game/game.entity';
 import { GameModule } from './game/game.module';
 import { Move } from './game/move.entity';
-import { Player } from './player/player.entity';
+import { PlayerEntity } from './player/player.entity';
 import { PlayerModule } from './player/player.module';
 
 @Module({
@@ -32,8 +32,8 @@ import { PlayerModule } from './player/player.module';
                     database: configService.getConfig().get('database').name,
                     autoLoadEntities: true,
                     entities: [
-                        Game,
-                        Player,
+                        GameEntity,
+                        PlayerEntity,
                         GamePlayer,
                         Move,
                     ],

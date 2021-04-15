@@ -1,27 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Player } from '../player/player.entity';
-import { MoveService } from './board.service';
+import { PlayerEntity } from '../player/player.entity';
+import { BoardService } from './board.service';
+import { GameRepository } from './game-database.repository';
 import { GamePlayer } from './game-player.entity';
-import { Game } from './game.entity';
-import { GameRepository } from './game.repository';
+import { GameEntity } from './game.entity';
 import { GameService } from './game.service';
 import { Move } from './move.entity';
 
 class GameRepositoryMock extends GameRepository { }
-class PlayerRepositoryMock extends Repository<Player> { }
+class PlayerRepositoryMock extends Repository<PlayerEntity> { }
 class GamePlayerRepositoryMock extends Repository<GamePlayer> { }
 class GameMovesRepositoryMock extends Repository<Move> { }
-class MoveServiceMock extends MoveService { }
+class BoardServiceMock extends BoardService { }
 
 describe('GameService', () => {
     let service: GameService;
     const gameRepository: GameRepository = new GameRepositoryMock;
-    const playerRepository: Repository<Player> = new PlayerRepositoryMock;
+    const playerRepository: Repository<PlayerEntity> = new PlayerRepositoryMock;
     const gamePlayerRepository: Repository<GamePlayer> = new GamePlayerRepositoryMock;
     const gameMovesRepository: Repository<Move> = new GameMovesRepositoryMock;
-    const moveService: MoveService = new MoveServiceMock();
+    const boardService: BoardService = new BoardServiceMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -32,7 +32,7 @@ describe('GameService', () => {
                     useValue: gameRepository,
                 },
                 {
-                    provide: getRepositoryToken(Player),
+                    provide: getRepositoryToken(PlayerEntity),
                     useValue: playerRepository,
                 },
                 {
@@ -44,8 +44,8 @@ describe('GameService', () => {
                     useValue: gameMovesRepository,
                 },
                 {
-                    provide: MoveService,
-                    useValue: moveService,
+                    provide: BoardService,
+                    useValue: boardService,
                 },
             ],
         }).compile();
@@ -54,7 +54,7 @@ describe('GameService', () => {
     });
 
     it('should test if color available', () => {
-        const game = new Game();
+        const game = new GameEntity();
         const gamePlayer = new GamePlayer();
         gamePlayer.position = 0;
         game.gamePlayers = [gamePlayer];
@@ -63,11 +63,11 @@ describe('GameService', () => {
     });
     describe('start', () => {
         it('should fill a game with bots', async () => {
-            const game = new Game();
+            const game = new GameEntity();
             game.gamePlayers = [];
 
             let playerIndex = 0;
-            playerRepository.findOne = jest.fn(async () => new Player((playerIndex++).toString()));
+            playerRepository.findOne = jest.fn(async () => new PlayerEntity((playerIndex++).toString()));
             gameRepository.save = jest.fn();
             gameRepository.update = jest.fn();
             gamePlayerRepository.save = jest.fn();

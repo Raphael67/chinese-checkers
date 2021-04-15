@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Player } from '../player/player.entity';
+import { PlayerEntity } from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
 import { GameController } from './game.controller';
-import { Game } from './game.entity';
+import { GameEntity } from './game.entity';
 import { RequestWithGame } from './game.guard';
 import { GameService } from './game.service';
 
@@ -35,7 +35,7 @@ describe('GameController', () => {
     describe('linkPlayerToGame', () => {
         it('should 403 if color already taken', async () => {
             const playerDto = { nickname: 'TEST', position: 0 };
-            const request: RequestWithGame = { game: new Game() } as RequestWithGame;
+            const request: RequestWithGame = { game: new GameEntity() } as RequestWithGame;
 
             gameService.isPositionAvailable = jest.fn(() => false);
 
@@ -43,7 +43,7 @@ describe('GameController', () => {
         });
         it('should 403 if nickname already taken', async () => {
             const playerDto = { nickname: 'TEST', position: 0 };
-            const request: RequestWithGame = { game: new Game() } as RequestWithGame;
+            const request: RequestWithGame = { game: new GameEntity() } as RequestWithGame;
 
             gameService.isPositionAvailable = jest.fn(() => true);
             gameService.isNicknameAvailable = jest.fn(() => false);
@@ -52,7 +52,7 @@ describe('GameController', () => {
         });
         it('should create player if it does not exist', async () => {
             const playerDto = { nickname: 'TEST', position: 0 };
-            const request: RequestWithGame = { game: new Game() } as RequestWithGame;
+            const request: RequestWithGame = { game: new GameEntity() } as RequestWithGame;
 
             gameService.isPositionAvailable = jest.fn(() => true);
             gameService.isNicknameAvailable = jest.fn(() => true);
@@ -66,8 +66,8 @@ describe('GameController', () => {
         });
         it('should link player to game', async () => {
             const playerDto = { nickname: 'TEST', position: 0 };
-            const player = new Player('TEST');
-            const game = new Game();
+            const player = new PlayerEntity('TEST');
+            const game = new GameEntity();
 
             const request: RequestWithGame = { game } as RequestWithGame;
 

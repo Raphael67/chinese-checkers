@@ -1,10 +1,10 @@
-import { BadRequestException, Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Cell } from './board';
-import { MoveService } from './board.service';
+import { Cell, Coords } from './board';
+import { BoardService } from './board.service';
 import { MoveDto } from './dto/move.dto';
-import { GameStatus } from './game.entity';
-import { GameGuard, RequestWithGame } from './game.guard';
+import { DatabaseGameRepository } from './game-database.repository';
+import { GameStatus } from './game.class';
 import { GameService } from './game.service';
 
 @Controller('/api/board')
@@ -12,53 +12,53 @@ import { GameService } from './game.service';
 export class BoardController {
     @Get('/:gameId')
     @ApiParam({ name: 'gameId', type: String })
-    @UseGuards(GameGuard)
     @ApiOperation({ summary: 'Return all pawns position for a game' })
     @ApiResponse({ status: 200, description: 'List of cells containing pawn', type: [Cell] })
-    public async getBoard(@Request() request: RequestWithGame): Promise<Cell[]> {
-        const board = request.game.board;
-        return board.getCells();
+    public async getBoard(@Param('gameId') gameId: string): Promise<Cell[]> {
+        const game = await this.gameService.loadGame(gameId);
+        if (!game) throw new NotFoundException(`Game not found : ${gameId}`);
+        return game.board.getCells();
     }
 
     @Get('/:gameId/move')
     @ApiParam({ name: 'gameId', type: String })
-    @UseGuards(GameGuard)
     @ApiOperation({ summary: 'Return a list of all moves for a game to replay' })
     @ApiResponse({ status: 200, description: 'List of all moves. A move is an array of Cell.', type: [MoveDto] })
-    public async move(
-        @Request() request: RequestWithGame
-    ): Promise<MoveDto[]> {
-        const moves = await this.moveService.findByGame(request.game);
-        return moves.map((move) => new MoveDto(move));
+    public async move(@Param('gameId') gameId: string): Promise<MoveDto[]> {
+        const gameEntity = await this.databaseGameRepository.findOne(gameId);
+        return gameEntity.moves;
     }
 
     @Post('/:gameId/player/:playerIndex/move')
     @ApiParam({ name: 'gameId', type: String })
     @ApiParam({ name: 'playerIndex', type: Number })
-    @ApiBody({ type: [Cell] })
-    @UseGuards(GameGuard)
+    @ApiBody({ type: [Coords] })
     @ApiOperation({ summary: 'Add a move for a player to a game' })
     @ApiResponse({ status: 403, description: 'BadRequest with details in message property' })
     @ApiResponse({ status: 200, description: 'Move successfuly played' })
     public async addMove(
-        @Body() path: Cell[],
+        @Body() path: Coords[],
+        @Param('gameId') gameId: string,
         @Param('playerIndex', new ParseIntPipe()) playerIndex: number,
-        @Request() request: RequestWithGame,
     ): Promise<void> {
-        if (request.game.status !== GameStatus.IN_PROGRESS) throw new BadRequestException('Game can not be started due to its current state: ' + request.game.status);
-        try {
-            this.moveService.isValidPath(request.game, playerIndex, path);
+        const game = await this.gameService.loadGame(gameId);
+        if (game.status !== GameStatus.STARTED) throw new BadRequestException('Game is not started');
+        /* try {
+            this.boardService.isValidMove(game.board, path);
         } catch (ex) {
             throw new BadRequestException(ex.message);
         }
-        await this.moveService.playPath(request.game, path);
-        await this.moveService.saveMove(request.game, path);
+        this.boardService.playMove(cachedGame.board, path);
+        await this.boardService.saveMove(cachedGame.game, path);*/
 
         return;
     }
 
-    @Inject(MoveService)
-    private readonly moveService: MoveService;
+    @Inject(BoardService)
+    private readonly boardService: BoardService;
+
+    @Inject(DatabaseGameRepository)
+    private readonly databaseGameRepository: DatabaseGameRepository;
 
     @Inject(GameService)
     private readonly gameService: GameService;

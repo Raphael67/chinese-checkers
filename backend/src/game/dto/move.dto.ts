@@ -1,14 +1,14 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { Cell } from '../board';
+import { Coords } from '../board';
 import { Move } from '../move.entity';
 
 export class MoveDto {
-    constructor(move: Move) {
+    public constructor(move: Move) {
         this.path = move.path;
     }
 
     @ApiResponseProperty({
-        type: [Cell],
+        type: [Coords],
     })
-    public path: Cell[];
+    public path: Coords[];
 }

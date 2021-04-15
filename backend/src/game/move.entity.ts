@@ -1,6 +1,6 @@
 import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
-import { Game } from '../game/game.entity';
-import { Cell } from './board';
+import { GameEntity } from '../game/game.entity';
+import { Coords } from './board';
 
 @Entity({ name: 'move' })
 export class Move {
@@ -11,8 +11,8 @@ export class Move {
     public moveIndex: number;
 
     @Column({ type: 'json' })
-    public path: Cell[];
+    public path: Coords[];
 
-    @OneToOne(() => Game, game => game.moves)
-    public game: Game;
+    @OneToOne(() => GameEntity, game => game.moves)
+    public game: GameEntity;
 }
