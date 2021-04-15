@@ -1,23 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Board, Coords } from './board';
 import { Game } from './game.class';
-import { Move } from './move.entity';
 
 export interface IBoardService {
     isWinner(board: Board, player: number): boolean;
-    playMove(board: number[][], move: Coords[]): void;
     isValidMove(game: Game, move: Coords[]): boolean;
 }
 
 @Injectable()
 export class BoardService implements IBoardService {
-
-    public playMove(board: number[][], move: Coords[]): void {
-        throw new Error('not implemented');
-    }
-
     public isValidMove(game: Game, move: Coords[]): boolean {
         let moveIndex = 0;
         for (const coords of move) {
@@ -27,7 +18,7 @@ export class BoardService implements IBoardService {
             }
             // first cell should contain a pawn from current player
             if (moveIndex === 0 && game.board.getCell(coords).getPawn() !== game.getCurrentPlayer()) {
-                throw new Error(`first cell should contain a pawn from specified player: ${moveIndex}: ${coords}`);
+                throw new Error(`first cell should contain a pawn from specified player: ${moveIndex}: ${coords.toString()}`);
             }
             // Other cells should be free
             if (moveIndex > 0 && game.board.getCell(coords).getPawn() !== undefined) {
@@ -56,17 +47,6 @@ export class BoardService implements IBoardService {
         return board.isWinner(player);
     }
 
-    public async saveMove(game: Game, path: Coords[]): Promise<Move> {
-        const numberOfMove = await this.moveRepository.count({
-            where: { gameId: game.id },
-        });
-        const move = new Move();
-        move.gameId = game.id;
-        move.moveIndex = numberOfMove;
-        move.path = path;
-        return this.moveRepository.save(move);
-    }
-
     private isOneCellJump(from: Coords, to: Coords): boolean {
         if (Math.abs(to.x - from.x) <= 2 && Math.abs(to.y - from.y) <= 1) return true;
         return false;
@@ -79,7 +59,4 @@ export class BoardService implements IBoardService {
         }
         return false;
     }
-
-    @InjectRepository(Move)
-    private readonly moveRepository: Repository<Move>;
 }
