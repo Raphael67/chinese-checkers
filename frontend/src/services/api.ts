@@ -1,5 +1,5 @@
 import { IRoute, routes } from 'routes';
-import { ColourMap } from '../core/board';
+import { ColourMap, ColourMapReverse, IndexedColourMap } from '../core/board';
 
 interface IConfig {
     api: {
@@ -61,11 +61,14 @@ export default class Api {
         );
     }
 
-    public static getGame(params: IGameParams): Promise<IRawGame> {
-        return Api.fetch(
+    public static async getGame(params: IGameParams): Promise<IRawGame> {
+        const game = await Api.fetch(
             routes.game,
             params
         );
+
+        game.players = game.players.map((player: { nickname: string, position: number; }): IRawGamePlayer => ({ nickname: player.nickname, color: ColourMapReverse[IndexedColourMap[player.position]] }));
+        return game;
     }
 
     public static getPlayers(): Promise<IPlayer[]> {

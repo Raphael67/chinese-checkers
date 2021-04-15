@@ -7,6 +7,8 @@ export enum Colour {
     Red
 }
 
+export const IndexedColourMap = [Colour.Black, Colour.Blue, Colour.Purple, Colour.Yellow, Colour.Green, Colour.Red];
+
 export const ColourMap: Record<IRegisterParams['color'], Colour> = {
     BLACK: Colour.Black,
     BLUE: Colour.Blue,
