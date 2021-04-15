@@ -103,12 +103,7 @@ export default class Api {
             routes.gameStart,
             {
                 gameId: params.gameId
-            },
-            {
-                body: JSON.stringify({
-                    status: 'IN_PROGRESS'
-                }),
-            },
+            }
         );
     }
 
