@@ -24,6 +24,7 @@ export class BoardController {
     public async move(@Param('gameId') gameId: string): Promise<CoordsDto[][]> {
         const gameEntity = await this.databaseGameRepository.findOne(gameId, {
             where: { status: GameStatus.FINISHED },
+            relations: ['moves'],
         });
         if (!gameEntity) throw new NotFoundException(`Can not find finished game ${gameId}`);
         return gameEntity.moves.map((move) => move.path.map((coords) => new CoordsDto(coords)));
@@ -47,7 +48,7 @@ export class BoardController {
         } catch (ex) {
             throw new BadRequestException(ex.message);
         }
-        this.gameService.playMove(game, moveDto);
+        await this.gameService.playMove(game, moveDto);
     }
 
     @Inject(BoardService)

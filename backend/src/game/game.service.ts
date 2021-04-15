@@ -1,10 +1,11 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Player } from '../player/player.class';
+import { PlayerService } from '../player/player.service';
 import { AIService } from './ai.service';
 import { Board } from './board';
-import { BoardService } from './board.service';
 import { CacheGameRepository } from './game-cache.repository';
 import { DatabaseGameRepository } from './game-database.repository';
+import { GamePlayer } from './game-player.entity';
 import { Game, GameStatus } from './game.class';
 import { GameEntity } from './game.entity';
 
@@ -79,20 +80,43 @@ export class GameService implements IGameService {
         throw new Error('Method not implemented.');
     }
 
-    public playMove(game: Game, move: ICoords[]): void {
+    public async playMove(game: Game, move: ICoords[]): Promise<void> {
         game.moves.push(move);
         if (move[0]) {
             game.board.getCell(move[0]).setPawn(undefined);
             game.board.getCell(move[move.length - 1]).setPawn(game.getCurrentPlayer());
         }
         if (game.board.isWinner(game.getCurrentPlayer())) {
-            game.status = GameStatus.FINISHED;
-            game.winner = game.getCurrentPlayer();
-            this.databaseGameRepository.saveFinished(game)
-                .catch((err) => this.logger.error(err));
+            await this.endGame(game);
         } else {
             game.nextPlayer();
         }
+    }
+
+    public async endGame(game: Game) {
+        game.status = GameStatus.FINISHED;
+        game.winner = game.getCurrentPlayer();
+        const playerEntities = [];
+        for (let i = 0; i < 6; i++) {
+            const player = game.players[i];
+            if (player.isBot) continue;
+            if (game.winner === i) {
+                player.wins++;
+            } else {
+                player.loses++;
+            }
+            const playerEntity = await this.playerService.updatePLayer(player);
+            playerEntities[i] = player;
+        }
+        const gameEntity = await this.databaseGameRepository.saveFinished(game);
+        gameEntity.gamePlayers = playerEntities.map((playerEntity, index) => {
+            const gamePlayer = new GamePlayer();
+            gamePlayer.game = gameEntity;
+            gamePlayer.player = playerEntity;
+            gamePlayer.position = index;
+            return gamePlayer;
+        });
+        await this.databaseGameRepository.save(gameEntity);
     }
 
     @Inject(DatabaseGameRepository)
@@ -104,8 +128,8 @@ export class GameService implements IGameService {
     @Inject(AIService)
     private readonly aiService: AIService;
 
-    @Inject(BoardService)
-    private readonly boardService: BoardService;
+    @Inject(PlayerService)
+    private readonly playerService: PlayerService;
 
     private readonly logger: Logger = new Logger(GameService.name);
 

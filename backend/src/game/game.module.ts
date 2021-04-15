@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlayerEntity } from '../player/player.entity';
 import { PlayerModule } from '../player/player.module';
+import { PlayerRepository } from '../player/player.repository';
 import { AIService } from './ai.service';
 import { BoardController } from './board.controller';
 import { BoardService } from './board.service';
@@ -21,6 +22,7 @@ import { Move } from './move.entity';
             GamePlayer,
             Move,
             DatabaseGameRepository,
+            PlayerRepository,
         ]),
         PlayerModule,
     ],

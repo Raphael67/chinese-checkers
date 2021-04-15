@@ -7,7 +7,7 @@ import { Move } from './move.entity';
 @Entity('game')
 export class GameEntity {
     @PrimaryColumn('uuid')
-    public readonly id: string;
+    public id: string;
 
     @Column('enum', { name: 'status', enum: GameStatus })
     public status: GameStatus = GameStatus.CREATED;
@@ -38,10 +38,11 @@ export class GameEntity {
     })
     public creator: PlayerEntity;
 
-    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game)
+    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game, { cascade: true })
     @JoinColumn({ name: 'game_id', referencedColumnName: 'id' })
     public gamePlayers: GamePlayer[];
 
-    @OneToMany(() => Move, gameMoves => gameMoves.game)
+    @OneToMany(() => Move, gameMoves => gameMoves.game, { cascade: true })
+    @JoinColumn({ name: 'game_id', referencedColumnName: 'id' })
     public moves: Move[];
 }

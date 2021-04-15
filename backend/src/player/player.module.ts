@@ -13,7 +13,7 @@ import { PlayerService } from './player.service';
         ]),
     ],
     controllers: [PlayerController],
-    providers: [PlayerService, PlayerRepository],
-    exports: [PlayerService, PlayerRepository],
+    providers: [PlayerService],
+    exports: [PlayerService],
 })
 export class PlayerModule { }

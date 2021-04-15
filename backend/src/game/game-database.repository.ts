@@ -1,8 +1,7 @@
-import { Inject } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { EntityRepository, Repository } from 'typeorm';
 import { Player } from '../player/player.class';
-import { PlayerRepository } from '../player/player.repository';
-import { GamePlayer } from './game-player.entity';
+import { PlayerEntity } from '../player/player.entity';
 import { Game } from './game.class';
 import { GameEntity } from './game.entity';
 import { Move } from './move.entity';
@@ -35,42 +34,25 @@ export class DatabaseGameRepository extends Repository<GameEntity> {
         return game;
     }
 
-    public async saveFinished(game: Game): Promise<void> {
-        const playerEntities = [];
-        for (let i = 0; i < 6; i++) {
-            const player = game.players[i];
-            if (player.isBot) continue;
-            const playerEntity = await this.playerRepository.findOne({ nickname: player.nickname });
-            if (game.winner === i) {
-                playerEntity.win++;
-            } else {
-                playerEntity.lose--;
-            }
-            playerEntities[i] = await this.playerRepository.save(playerEntity);
-        }
+    public async saveFinished(game: Game): Promise<GameEntity> {
         const gameEntity = new GameEntity();
-        gameEntity.creator = playerEntities[game.creator];
+        gameEntity.id = game.id;
+        // gameEntity.creator = playerEntities[game.creator];
         gameEntity.longestStreak = game.longestStreak;
         gameEntity.rounds = game.turn;
         gameEntity.status = game.status;
-        gameEntity.winner = playerEntities[game.winner];
-        gameEntity.gamePlayers = playerEntities.map((playerEntity, index) => {
-            const gamePlayer = new GamePlayer();
-            gamePlayer.game = gameEntity;
-            gamePlayer.player = playerEntity;
-            gamePlayer.position = index;
-            return gamePlayer;
-        });
+        // gameEntity.winner = playerEntities[game.winner];
+
         gameEntity.moves = game.moves.map((move, index) => {
             const moveEntity = new Move();
-            moveEntity.game = gameEntity;
+            moveEntity.gameId = gameEntity.id;
             moveEntity.moveIndex = index;
             moveEntity.path = move;
             return moveEntity;
         });
-        await this.save(gameEntity);
+        return await this.save(gameEntity);
     }
 
-    @Inject(PlayerRepository)
-    private readonly playerRepository: PlayerRepository;
+    @InjectRepository(PlayerEntity)
+    private readonly playerRepository: Repository<PlayerEntity>;
 }

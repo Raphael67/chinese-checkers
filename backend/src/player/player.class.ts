@@ -1,5 +1,8 @@
+import { PrimaryColumn } from 'typeorm';
 
 export class Player {
+    @PrimaryColumn()
+    public id: number;
     public nickname: string;
     public online: boolean;
     public isBot: boolean;

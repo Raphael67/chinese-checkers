@@ -1,5 +1,8 @@
 import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PlayerEntity } from '../player/player.entity';
+import { PlayerRepository } from '../player/player.repository';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
@@ -56,6 +59,17 @@ export class GameController {
         await this.gameService.startGame(game);
     }
 
+    @Patch('/:gameId/stop')
+    @ApiOperation({ summary: 'Stop a game' })
+    @ApiResponse({ status: 201, description: 'Game has been successfuly stopped' })
+    public async stopGame(@Param('gameId') gameId: string): Promise<void> {
+        const game = await this.gameService.loadGame(gameId);
+        if (game.status !== GameStatus.STARTED) throw new BadRequestException(`Game can not be stopped as it is in status: ${game.status}`);
+        game.status = GameStatus.FINISHED;
+        game.winner = game.getCurrentPlayer();
+        await this.databaseGameRepository.saveFinished(game);
+    }
+
     @Post('/:gameId/player')
     @ApiOperation({ summary: 'Add a new player to the game and create the player if necessary' })
     @ApiResponse({ status: 403, description: 'An object with a message property describing the error' })
@@ -77,5 +91,8 @@ export class GameController {
 
     @Inject(DatabaseGameRepository)
     private readonly databaseGameRepository: DatabaseGameRepository;
+
+    @InjectRepository(PlayerEntity)
+    private readonly playerRepository: PlayerRepository;
 
 }

@@ -18,7 +18,7 @@ export class PlayerEntity {
     }
 
     @PrimaryGeneratedColumn()
-    public readonly id: number;
+    public id: number;
 
     @Column({ length: 32, unique: true })
     public nickname: string;
