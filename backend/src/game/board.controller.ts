@@ -21,7 +21,10 @@ export class BoardController {
     @Get('/:gameId/move')
     @ApiOperation({ summary: 'Return a list of all moves for a game to replay' })
     public async move(@Param('gameId') gameId: string): Promise<MoveDto[]> {
-        const gameEntity = await this.databaseGameRepository.findOne(gameId);
+        const gameEntity = await this.databaseGameRepository.findOne(gameId, {
+            where: { status: GameStatus.FINISHED },
+        });
+        if (!gameEntity) throw new NotFoundException(`Can not find finished game ${gameId}`);
         return gameEntity.moves;
     }
 
