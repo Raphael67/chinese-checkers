@@ -1,18 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PlayerEntity } from '../player/player.entity';
+import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
+import { DatabaseGameRepository } from './game-database.repository';
+import { Game } from './game.class';
 import { GameController } from './game.controller';
-import { GameEntity } from './game.entity';
-import { RequestWithGame } from './game.guard';
 import { GameService } from './game.service';
 
 class GameServiceMock extends GameService { }
 class PlayerServiceMock extends PlayerService { }
+class DatabaseGameRepositoryMock extends DatabaseGameRepository { }
 
 describe('GameController', () => {
     let controller: GameController;
     const gameService: GameService = new GameServiceMock();
     const playerService: PlayerService = new PlayerServiceMock();
+    const databaseGameRepository: DatabaseGameRepository = new DatabaseGameRepositoryMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -26,59 +28,27 @@ describe('GameController', () => {
                     provide: PlayerService,
                     useValue: playerService,
                 },
+                {
+                    provide: DatabaseGameRepository,
+                    useValue: databaseGameRepository,
+                },
             ],
         }).compile();
 
         controller = module.get<GameController>(GameController);
     });
 
-    describe('linkPlayerToGame', () => {
-        it('should 403 if color already taken', async () => {
+    describe('addPlayerToGame', () => {
+        it('should add player to game', async () => {
+            const gameId = 'GAME_ID';
             const playerDto = { nickname: 'TEST', position: 0 };
-            const request: RequestWithGame = { game: new GameEntity() } as RequestWithGame;
+            const game = new Game();
 
-            gameService.isPositionAvailable = jest.fn(() => false);
 
-            await expect(controller.upsertPlayerToGame(playerDto, request)).rejects.toThrowError('This color is already taken in this game');
-        });
-        it('should 403 if nickname already taken', async () => {
-            const playerDto = { nickname: 'TEST', position: 0 };
-            const request: RequestWithGame = { game: new GameEntity() } as RequestWithGame;
+            gameService.loadGame = jest.fn(async () => game);
+            playerService.upsertPlayer = jest.fn(async () => new Player());
 
-            gameService.isPositionAvailable = jest.fn(() => true);
-            gameService.isNicknameAvailable = jest.fn(() => false);
-
-            await expect(controller.upsertPlayerToGame(playerDto, request)).rejects.toThrowError('This nickname is already taken in this game');
-        });
-        it('should create player if it does not exist', async () => {
-            const playerDto = { nickname: 'TEST', position: 0 };
-            const request: RequestWithGame = { game: new GameEntity() } as RequestWithGame;
-
-            gameService.isPositionAvailable = jest.fn(() => true);
-            gameService.isNicknameAvailable = jest.fn(() => true);
-            playerService.findOneByNickname = jest.fn(() => null);
-            playerService.createPlayer = jest.fn();
-            gameService.linkPlayerToGame = jest.fn();
-
-            await controller.upsertPlayerToGame(playerDto, request);
-
-            expect(playerService.createPlayer).toHaveBeenCalledTimes(1);
-        });
-        it('should link player to game', async () => {
-            const playerDto = { nickname: 'TEST', position: 0 };
-            const player = new PlayerEntity('TEST');
-            const game = new GameEntity();
-
-            const request: RequestWithGame = { game } as RequestWithGame;
-
-            gameService.isPositionAvailable = jest.fn(() => true);
-            gameService.isNicknameAvailable = jest.fn(() => true);
-            playerService.findOneByNickname = jest.fn(async () => player);
-            gameService.linkPlayerToGame = jest.fn();
-
-            await controller.upsertPlayerToGame(playerDto, request);
-
-            expect(gameService.linkPlayerToGame).toHaveBeenCalledWith(game, player, playerDto.position);
+            await expect(controller.upsertPlayerToGame(gameId, playerDto)).resolves;
         });
     });
 

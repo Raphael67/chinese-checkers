@@ -103,9 +103,6 @@ export class Board {
     }
 
     public print(): void {
-        for (let y = 0; y < 17; y++) {
-            process.stdout.clearLine(-1);
-        }
         console.log('------------------------------------------------');
         for (let y = 0; y < 17; y++) {
             let row = '';

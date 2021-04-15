@@ -12,12 +12,12 @@ export class PlayerController {
 
     @Get('/')
     @ApiOperation({
-        summary: 'Return a list of players orederd by ratings',
+        summary: 'Return a list of players ordered by ratings',
     })
     @ApiResponse({
         status: 201,
         description: 'List of players',
-        type: [PlayerDto]
+        type: [PlayerDto],
     })
     public async getPlayers(): Promise<PlayerDto[]> {
         const players = await this.playerService.findByRating();

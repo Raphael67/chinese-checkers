@@ -1,26 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PlayerEntity } from '../player/player.entity';
+import { Player } from '../player/player.class';
+import { AIService } from './ai.service';
 import { BoardService } from './board.service';
-import { GameRepository } from './game-database.repository';
-import { GamePlayer } from './game-player.entity';
-import { GameEntity } from './game.entity';
+import { CacheGameRepository } from './game-cache.repository';
+import { DatabaseGameRepository } from './game-database.repository';
+import { Game } from './game.class';
 import { GameService } from './game.service';
-import { Move } from './move.entity';
 
-class GameRepositoryMock extends GameRepository { }
-class PlayerRepositoryMock extends Repository<PlayerEntity> { }
-class GamePlayerRepositoryMock extends Repository<GamePlayer> { }
-class GameMovesRepositoryMock extends Repository<Move> { }
+class DatabaseGameRepositoryMock extends DatabaseGameRepository { }
+class CacheGameRepositoryMock extends CacheGameRepository { }
+class AIServiceMock extends AIService { }
 class BoardServiceMock extends BoardService { }
 
 describe('GameService', () => {
     let service: GameService;
-    const gameRepository: GameRepository = new GameRepositoryMock;
-    const playerRepository: Repository<PlayerEntity> = new PlayerRepositoryMock;
-    const gamePlayerRepository: Repository<GamePlayer> = new GamePlayerRepositoryMock;
-    const gameMovesRepository: Repository<Move> = new GameMovesRepositoryMock;
+    const gameRepository: DatabaseGameRepository = new DatabaseGameRepositoryMock;
+    const cacheGameRepository: CacheGameRepository = new CacheGameRepositoryMock;
+    const aiService: AIService = new AIServiceMock;
+
     const boardService: BoardService = new BoardServiceMock();
 
     beforeEach(async () => {
@@ -28,20 +25,16 @@ describe('GameService', () => {
             providers: [
                 GameService,
                 {
-                    provide: GameRepository,
+                    provide: DatabaseGameRepository,
                     useValue: gameRepository,
                 },
                 {
-                    provide: getRepositoryToken(PlayerEntity),
-                    useValue: playerRepository,
+                    provide: CacheGameRepository,
+                    useValue: cacheGameRepository,
                 },
                 {
-                    provide: getRepositoryToken(GamePlayer),
-                    useValue: gamePlayerRepository,
-                },
-                {
-                    provide: getRepositoryToken(Move),
-                    useValue: gameMovesRepository,
+                    provide: AIService,
+                    useValue: aiService,
                 },
                 {
                     provide: BoardService,
@@ -53,27 +46,23 @@ describe('GameService', () => {
         service = module.get<GameService>(GameService);
     });
 
-    it('should test if color available', () => {
-        const game = new GameEntity();
-        const gamePlayer = new GamePlayer();
-        gamePlayer.position = 0;
-        game.gamePlayers = [gamePlayer];
+    describe('addPlayerToGame', () => {
+        it('should test if color available', () => {
+            const game = new Game();
+            game.players[2] = new Player();
+            const player = new Player();
 
-        expect(service.isPositionAvailable(game, 0)).toBeFalsy();
+            expect(() => service.addPlayerToGame(game, player, 0)).toThrow();
+        });
     });
-    describe('start', () => {
+    describe('startGame', () => {
         it('should fill a game with bots', async () => {
-            const game = new GameEntity();
-            game.gamePlayers = [];
+            const game = new Game();
+            game.addListener = jest.fn();
 
-            let playerIndex = 0;
-            playerRepository.findOne = jest.fn(async () => new PlayerEntity((playerIndex++).toString()));
-            gameRepository.save = jest.fn();
-            gameRepository.update = jest.fn();
-            gamePlayerRepository.save = jest.fn();
-
-            await service.start(game);
-            expect(game.gamePlayers).toHaveLength(6);
+            service.startGame(game);
+            expect(game.players).toHaveLength(6);
         });
     });
 });
+

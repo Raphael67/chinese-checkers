@@ -90,7 +90,6 @@ export class GameService implements IGameService {
         } else {
             game.nextPlayer();
         }
-        game.board.print();
     }
 
     @Inject(DatabaseGameRepository)

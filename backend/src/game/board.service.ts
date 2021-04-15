@@ -1,9 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AIService } from './ai.service';
 import { Board, Coords } from './board';
-import { CacheGameRepository } from './game-cache.repository';
 import { Game } from './game.class';
 import { GameEntity } from './game.entity';
 import { Move } from './move.entity';
@@ -85,10 +83,4 @@ export class BoardService implements IBoardService {
 
     @InjectRepository(Move)
     private readonly moveRepository: Repository<Move>;
-
-    @Inject(CacheGameRepository)
-    private readonly gameRepository: CacheGameRepository;
-
-    @Inject(AIService)
-    private readonly aiService: AIService;
 }
