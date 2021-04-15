@@ -87,6 +87,7 @@ export class GameService implements IGameService {
         }
         if (game.board.isWinner(game.getCurrentPlayer())) {
             game.status = GameStatus.FINISHED;
+            game.winner = game.getCurrentPlayer();
             this.databaseGameRepository.saveFinished(game)
                 .catch((err) => this.logger.error(err));
         } else {
