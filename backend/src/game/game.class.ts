@@ -22,8 +22,8 @@ export class Game extends EventEmitter implements IGame {
     public status: GameStatus = GameStatus.CREATED;
     private currentPlayer: number = -1;
     public creator: number;
-    public turn: number;
-    public longestStreak: number;
+    public turn: number = 0;
+    public longestStreak: number = 0;
     public winner: number;
     public board: Board = new Board();
     public moves: ICoords[][] = [];
