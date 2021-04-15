@@ -4,7 +4,7 @@ import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
 import { DatabaseGameRepository } from './game-database.repository';
-import { Game, GameStatus } from './game.class';
+import { GameStatus } from './game.class';
 import { GameService } from './game.service';
 
 @Controller('/api/game')
@@ -35,7 +35,6 @@ export class GameController {
 
     @Get('/:gameId')
     @ApiOperation({ summary: 'Return a game and its players' })
-    @ApiResponse({ status: 200, description: 'Game with players', type: GameDetailsDto })
     public async getGame(@Param('gameId') gameId: string): Promise<GameDetailsDto> {
         const game = await this.gameService.loadGame(gameId);
         return new GameDetailsDto(game);
@@ -43,7 +42,6 @@ export class GameController {
 
     @Post('/')
     @ApiOperation({ summary: 'Create a new game and return its id' })
-    @ApiResponse({ status: 201, description: 'Return the new created game', type: Game })
     public async createGame(): Promise<GameDetailsDto> {
         const game = this.gameService.createGame();
         return new GameDetailsDto(game);

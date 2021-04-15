@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Board, Coords } from './board';
 import { Game } from './game.class';
-import { GameEntity } from './game.entity';
 import { Move } from './move.entity';
 
 export interface IBoardService {
@@ -57,7 +56,7 @@ export class BoardService implements IBoardService {
         return board.isWinner(player);
     }
 
-    public async saveMove(game: GameEntity, path: Coords[]): Promise<Move> {
+    public async saveMove(game: Game, path: Coords[]): Promise<Move> {
         const numberOfMove = await this.moveRepository.count({
             where: { gameId: game.id },
         });

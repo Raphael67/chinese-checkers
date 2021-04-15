@@ -1,11 +1,7 @@
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 
 export class Coords {
-    @ApiProperty()
-    @ApiResponseProperty()
     public x: number;
-    @ApiProperty()
-    @ApiResponseProperty()
     public y: number;
     public constructor(
         x: number,
@@ -17,6 +13,10 @@ export class Coords {
 
     public static dist(v1: Coords, v2: Coords): number {
         return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
+    }
+
+    public toString(): string {
+        return `{${this.x}, ${this.y}}`;
     }
 }
 
