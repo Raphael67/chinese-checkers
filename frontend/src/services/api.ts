@@ -1,4 +1,5 @@
 import { IRoute, routes } from 'routes';
+import { ColourMap } from '../core/board';
 
 interface IConfig {
     api: {
@@ -22,7 +23,10 @@ export default class Api {
             routes.register,
             gameParams,
             {
-                body: JSON.stringify(params),
+                body: JSON.stringify({
+                    nickname: params.nickname,
+                    position: Object.keys(ColourMap).indexOf(params.color)
+                }),
             },
         );
     }
