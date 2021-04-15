@@ -37,11 +37,9 @@ export class DatabaseGameRepository extends Repository<GameEntity> {
     public async saveFinished(game: Game): Promise<GameEntity> {
         const gameEntity = new GameEntity();
         gameEntity.id = game.id;
-        // gameEntity.creator = playerEntities[game.creator];
         gameEntity.longestStreak = game.longestStreak;
         gameEntity.rounds = game.turn;
         gameEntity.status = game.status;
-        // gameEntity.winner = playerEntities[game.winner];
 
         gameEntity.moves = game.moves.map((move, index) => {
             const moveEntity = new Move();

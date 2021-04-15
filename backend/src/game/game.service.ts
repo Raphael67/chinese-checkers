@@ -48,7 +48,7 @@ export class GameService implements IGameService {
     public addPlayerToGame(game: Game, player: Player, position: number): void {
         if (!this.isPositionAvailable(game, position)) throw new BadRequestException('Position not available');
         if (!this.isNicknameAvailable(game, player.nickname)) throw new BadRequestException('Nickname already taken');
-
+        if (!game.creator) game.creator = position;
         game.players[position] = player;
     }
 
@@ -105,10 +105,12 @@ export class GameService implements IGameService {
             } else {
                 player.loses++;
             }
-            const playerEntity = await this.playerService.updatePLayer(player);
+            await this.playerService.updatePLayer(player);
             playerEntities[i] = player;
         }
         const gameEntity = await this.databaseGameRepository.saveFinished(game);
+        gameEntity.creator = playerEntities[game.creator];
+        gameEntity.winner = playerEntities[game.winner];
         gameEntity.gamePlayers = playerEntities.map((playerEntity, index) => {
             const gamePlayer = new GamePlayer();
             gamePlayer.game = gameEntity;
