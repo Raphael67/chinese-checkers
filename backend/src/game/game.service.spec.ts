@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Player } from '../player/player.class';
+import { PlayerService } from '../player/player.service';
 import { AIService } from './ai.service';
 import { BoardService } from './board.service';
 import { CacheGameRepository } from './game-cache.repository';
@@ -11,13 +12,14 @@ class DatabaseGameRepositoryMock extends DatabaseGameRepository { }
 class CacheGameRepositoryMock extends CacheGameRepository { }
 class AIServiceMock extends AIService { }
 class BoardServiceMock extends BoardService { }
+class PlayerServiceMock extends PlayerService { }
 
 describe('GameService', () => {
     let service: GameService;
     const gameRepository: DatabaseGameRepository = new DatabaseGameRepositoryMock;
     const cacheGameRepository: CacheGameRepository = new CacheGameRepositoryMock;
     const aiService: AIService = new AIServiceMock;
-
+    const playerService: PlayerService = new PlayerServiceMock;
     const boardService: BoardService = new BoardServiceMock();
 
     beforeEach(async () => {
@@ -39,6 +41,10 @@ describe('GameService', () => {
                 {
                     provide: BoardService,
                     useValue: boardService,
+                },
+                {
+                    provide: PlayerService,
+                    useValue: playerService,
                 },
             ],
         }).compile();

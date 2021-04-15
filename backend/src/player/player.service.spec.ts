@@ -24,11 +24,7 @@ describe('PlayerService', () => {
         service = module.get<PlayerService>(PlayerService);
     });
 
-    describe('createPlayer', () => {
-        it('should throw if nickkname reserved', async () => {
-            const nickname = 'BLACK_AI';
-
-            await expect(() => service.createPlayer(nickname)).rejects.toThrow();
-        });
+    it('should be defined', async () => {
+        expect(PlayerService).toBeDefined();
     });
 });
