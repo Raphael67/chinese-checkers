@@ -5,6 +5,7 @@ import { PlayerRepository } from '../player/player.repository';
 import { GamePlayer } from './game-player.entity';
 import { Game } from './game.class';
 import { GameEntity } from './game.entity';
+import { Move } from './move.entity';
 
 export interface IFinishedGamesWithPlayers {
     game_id: string;
@@ -59,6 +60,13 @@ export class DatabaseGameRepository extends Repository<GameEntity> {
             gamePlayer.player = playerEntity;
             gamePlayer.position = index;
             return gamePlayer;
+        });
+        gameEntity.moves = game.moves.map((move, index) => {
+            const moveEntity = new Move();
+            moveEntity.game = gameEntity;
+            moveEntity.moveIndex = index;
+            moveEntity.path = move;
+            return moveEntity;
         });
         await this.save(gameEntity);
     }
