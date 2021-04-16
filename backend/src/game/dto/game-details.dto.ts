@@ -1,43 +1,31 @@
-import { ApiResponseProperty } from '@nestjs/swagger';
-import { Color } from '../game-player.entity';
-import { Game } from '../game.entity';
+import { Game } from '../game.class';
 
-class GamePlayer {
-    @ApiResponseProperty()
-    nickname: String;
-    @ApiResponseProperty()
-    color: Color;
+class GamePlayerDto {
+    public nickname: string;
+    public position: number;
 }
 
 export class GameDetailsDto {
-    constructor(
+    public constructor(
         game: Game,
     ) {
         this.created_at = game.createdAt;
-        this.game_id = game.id;
+        this.id = game.id;
         this.longest_streak = game.longestStreak;
-        this.rounds = game.rounds;
-        this.players = game.gamePlayers.map((gamePlayer) => {
-            return {
-                nickname: gamePlayer.player.nickname,
-                color: gamePlayer.color
-            };
+        this.turn = game.turn;
+        this.currentPlayer = game.getCurrentPlayer();
+        this.players = game.players.map((player, index) => {
+            const gamePlayerDto = new GamePlayerDto();
+            gamePlayerDto.nickname = player.nickname;
+            gamePlayerDto.position = index;
+            return gamePlayerDto;
         });
     }
 
-    @ApiResponseProperty()
-    public game_id: string;
-    @ApiResponseProperty()
-    public rounds: number;
-    @ApiResponseProperty()
+    public id: string;
+    public turn: number;
+    public currentPlayer: number;
     public longest_streak: number;
-    @ApiResponseProperty()
     public created_at: Date;
-    @ApiResponseProperty({
-        type: [GamePlayer]
-    })
-    public players: {
-        nickname: string;
-        color: Color;
-    }[] = [];
+    public players: GamePlayerDto[];
 }

@@ -38,6 +38,6 @@ export const routes: Record<string, IRoute> = {
     },
     gameStart: {
         method: 'PATCH',
-        path: '/game/{gameId}'
+        path: '/game/{gameId}/start'
     }
 };

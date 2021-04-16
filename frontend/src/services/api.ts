@@ -1,9 +1,9 @@
 import { IRoute, routes } from 'routes';
+import { ColourMap, ColourMapReverse, IndexedColourMap } from '../core/board';
 
 interface IConfig {
     api: {
         hostname: string;
-        port: string;
         protocol: string;
         path?: string;
     };
@@ -12,7 +12,6 @@ interface IConfig {
 let config: IConfig = {
     api: {
         hostname: window.location.host,
-        port: window.location.port,
         protocol: window.location.protocol,
         path: '/api'
     },
@@ -24,7 +23,10 @@ export default class Api {
             routes.register,
             gameParams,
             {
-                body: JSON.stringify(params),
+                body: JSON.stringify({
+                    nickname: params.nickname,
+                    position: Object.keys(ColourMap).indexOf(params.color)
+                }),
             },
         );
     }
@@ -59,11 +61,14 @@ export default class Api {
         );
     }
 
-    public static getGame(params: IGameParams): Promise<IRawGame> {
-        return Api.fetch(
+    public static async getGame(params: IGameParams): Promise<IRawGame> {
+        const game = await Api.fetch(
             routes.game,
             params
         );
+
+        game.players = game.players.map((player: { nickname: string, position: number; }): IRawGamePlayer => ({ nickname: player.nickname, color: ColourMapReverse[IndexedColourMap[player.position]] }));
+        return game;
     }
 
     public static getPlayers(): Promise<IPlayer[]> {
@@ -105,12 +110,7 @@ export default class Api {
             routes.gameStart,
             {
                 gameId: params.gameId
-            },
-            {
-                body: JSON.stringify({
-                    status: 'IN_PROGRESS'
-                }),
-            },
+            }
         );
     }
 
@@ -174,7 +174,6 @@ export default class Api {
             (config.api.hostname
                 ? config.api.hostname
                 : document.location.hostname) +
-            (config.api.port ? ':' + config.api.port : '') +
             (config.api.path || '')
         );
     }

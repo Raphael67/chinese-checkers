@@ -1,13 +1,25 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { botNicknames, Player } from './player.entity';
+import { Player } from './player.class';
+import { PlayerEntity } from './player.entity';
+import { PlayerRepository } from './player.repository';
 
+interface IPlayerService {
+    upsertPlayer(nickname: string): Promise<Player>;
+}
 @Injectable()
-export class PlayerService {
-    @InjectRepository(Player) private readonly playerRepository: Repository<Player>;
+export class PlayerService implements IPlayerService {
+    public async upsertPlayer(nickname: string): Promise<Player> {
+        let playerEntity = await this.playerRepository.findOne({ nickname });
+        if (!playerEntity) {
+            playerEntity = await this.playerRepository.save(new PlayerEntity(nickname));
+        }
+        const player = PlayerRepository.fromEntityToPlayer(playerEntity);
+        return player;
+    }
 
-    public findByRating(): Promise<Player[]> {
+    public findByRating(): Promise<PlayerEntity[]> {
         return this.playerRepository.find({
             order: {
                 rating: 'DESC',
@@ -15,17 +27,11 @@ export class PlayerService {
         });
     }
 
-    public findOneByNickname(nickname: string): Promise<Player> {
-        return this.playerRepository.findOne({
-            where: {
-                nickname,
-            },
-        });
+    public async updatePLayer(player: Player): Promise<PlayerEntity> {
+        const playerEntity = await this.playerRepository.preload(PlayerRepository.fromPlayerToEntity(player));
+        return await this.playerRepository.save(playerEntity);
     }
 
-    public async createPlayer(nickname: string): Promise<Player> {
-        if (botNicknames.includes(nickname)) throw new BadRequestException('This nickname is reserved');
-        const player = new Player(nickname);
-        return await this.playerRepository.save(player);
-    }
+    @InjectRepository(PlayerEntity)
+    private readonly playerRepository: Repository<PlayerEntity>;
 }

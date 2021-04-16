@@ -1,19 +1,13 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
-import { v4 as uuid } from 'uuid';
-import { Move } from '../play/move.entity';
-import { Player } from '../player/player.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { PlayerEntity } from '../player/player.entity';
 import { GamePlayer } from './game-player.entity';
+import { GameStatus } from './game.class';
+import { Move } from './move.entity';
 
-export enum GameStatus {
-    CREATED = 'CREATED',
-    IN_PROGRESS = 'IN_PROGRESS',
-    TERMINATED = 'TERMINATED',
-}
-
-@Entity()
-export class Game {
+@Entity('game')
+export class GameEntity {
     @PrimaryColumn('uuid')
-    public readonly id: string = uuid();
+    public id: string;
 
     @Column('enum', { name: 'status', enum: GameStatus })
     public status: GameStatus = GameStatus.CREATED;
@@ -30,23 +24,25 @@ export class Game {
     @Column({ name: 'longest_streak' })
     public longestStreak: number = 0;
 
-    @ManyToOne(() => Player, player => player.winnedGames)
+    @ManyToOne(() => PlayerEntity, player => player.winnedGames)
     @JoinColumn({
         name: 'winner',
         referencedColumnName: 'id',
     })
-    public winner: Player;
+    public winner: PlayerEntity;
 
-    @ManyToOne(() => Player, player => player.createdGames)
+    @ManyToOne(() => PlayerEntity, player => player.createdGames)
     @JoinColumn({
         name: 'creator',
         referencedColumnName: 'id',
     })
-    public creator: Player;
+    public creator: PlayerEntity;
 
-    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game)
+    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game, { cascade: true })
+    @JoinColumn({ name: 'game_id', referencedColumnName: 'id' })
     public gamePlayers: GamePlayer[];
 
-    @OneToOne(() => Move, gameMoves => gameMoves.game)
-    public moves: Move;
+    @OneToMany(() => Move, gameMoves => gameMoves.game, { cascade: true })
+    @JoinColumn({ name: 'game_id', referencedColumnName: 'id' })
+    public moves: Move[];
 }

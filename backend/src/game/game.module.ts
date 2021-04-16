@@ -1,33 +1,40 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Move } from '../play/move.entity';
-import { PlayModule } from '../play/play.module';
-import { Player } from '../player/player.entity';
+import { PlayerEntity } from '../player/player.entity';
 import { PlayerModule } from '../player/player.module';
+import { PlayerRepository } from '../player/player.repository';
+import { AIService } from './ai.service';
+import { BoardController } from './board.controller';
+import { BoardService } from './board.service';
+import { CacheGameRepository } from './game-cache.repository';
+import { DatabaseGameRepository } from './game-database.repository';
 import { GamePlayer } from './game-player.entity';
 import { GameController } from './game.controller';
-import { Game } from './game.entity';
-import { GameRepository } from './game.repository';
+import { GameEntity } from './game.entity';
 import { GameService } from './game.service';
+import { Move } from './move.entity';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-            Game,
-            Player,
+            GameEntity,
+            PlayerEntity,
             GamePlayer,
             Move,
-            GameRepository,
+            DatabaseGameRepository,
+            PlayerRepository,
         ]),
         PlayerModule,
-        forwardRef(() => PlayModule),
     ],
-    controllers: [GameController],
+    controllers: [
+        GameController,
+        BoardController,
+    ],
     providers: [
         GameService,
+        BoardService,
+        AIService,
+        CacheGameRepository,
     ],
-    exports: [
-        GameService,
-    ]
 })
 export class GameModule { }

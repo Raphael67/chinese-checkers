@@ -7,11 +7,10 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { GamePlayer } from './game/game-player.entity';
-import { Game } from './game/game.entity';
+import { GameEntity } from './game/game.entity';
 import { GameModule } from './game/game.module';
-import { Move } from './play/move.entity';
-import { PlayModule } from './play/play.module';
-import { Player } from './player/player.entity';
+import { Move } from './game/move.entity';
+import { PlayerEntity } from './player/player.entity';
 import { PlayerModule } from './player/player.module';
 
 @Module({
@@ -33,19 +32,18 @@ import { PlayerModule } from './player/player.module';
                     database: configService.getConfig().get('database').name,
                     autoLoadEntities: true,
                     entities: [
-                        Game,
-                        Player,
+                        GameEntity,
+                        PlayerEntity,
                         GamePlayer,
                         Move,
                     ],
                     scriptsFolder: join(__dirname, '..', 'migrations'),
-                    logging: ['error']
+                    logging: ['error'],
                 };
             },
         }),
         GameModule,
         PlayerModule,
-        PlayModule,
     ],
     controllers: [AppController],
     providers: [AppService],

@@ -7,7 +7,11 @@ import { ConfigService } from './config/config.service';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    }));
 
     const configSerice = app.get<ConfigService>(ConfigService);
     const databaseService = app.get<DatabaseService>(DatabaseService);

@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { GamePlayer } from '../game/game-player.entity';
-import { Game } from '../game/game.entity';
+import { GameEntity } from '../game/game.entity';
 
 export const botNicknames = [
     'BLACK_AI',
@@ -11,14 +11,14 @@ export const botNicknames = [
     'RED_AI',
 ];
 
-@Entity()
-export class Player {
+@Entity('player')
+export class PlayerEntity {
     public constructor(nickname: string) {
         this.nickname = nickname;
     }
 
     @PrimaryGeneratedColumn()
-    public readonly id: number;
+    public id: number;
 
     @Column({ length: 32, unique: true })
     public nickname: string;
@@ -42,17 +42,17 @@ export class Player {
     @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
     public gamePlayers: GamePlayer[];
 
-    @OneToMany(() => Game, game => game.winner)
+    @OneToMany(() => GameEntity, game => game.winner)
     @JoinColumn({
         name: 'winner',
         referencedColumnName: 'id',
     })
-    public winnedGames: Game[];
+    public winnedGames: GameEntity[];
 
-    @OneToMany(() => Game, game => game.creator)
+    @OneToMany(() => GameEntity, game => game.creator)
     @JoinColumn({
         name: 'creator',
         referencedColumnName: 'id',
     })
-    public createdGames: Game[];
+    public createdGames: GameEntity[];
 }

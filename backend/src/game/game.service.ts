@@ -1,97 +1,151 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Move } from '../play/move.entity';
-import { Player } from '../player/player.entity';
-import { GameDetailsDto } from './dto/game-details.dto';
-import { Color, GamePlayer } from './game-player.entity';
-import { Game, GameStatus } from './game.entity';
-import { GameRepository } from './game.repository';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Player } from '../player/player.class';
+import { PlayerService } from '../player/player.service';
+import { AIService } from './ai.service';
+import { Board } from './board';
+import { CacheGameRepository } from './game-cache.repository';
+import { DatabaseGameRepository } from './game-database.repository';
+import { GamePlayer } from './game-player.entity';
+import { Game, GameStatus } from './game.class';
+import { GameEntity } from './game.entity';
+
+export class CachedGame {
+    public board: Board = new Board();
+    public constructor(
+        public game: GameEntity,
+    ) { }
+}
+interface IGameService {
+    createGame(): Game;
+    addPlayerToGame(game: Game, player: Player, position: number): void;
+    startGame(game: Game): void;
+    nextPlayer(game: Game): void;
+    validateMove(move: ICoords[]): boolean;
+    playMove(gmae: Game, move: ICoords[]): void;
+}
 
 @Injectable()
-export class GameService {
-    @Inject(GameRepository) private readonly gameRepository: GameRepository;
-    @InjectRepository(Player) private readonly playerRepository: Repository<Player>;
-    @InjectRepository(GamePlayer) private readonly gamePlayerRepository: Repository<GamePlayer>;
-    @InjectRepository(Move) private readonly gameMovesRepository: Repository<Move>;
-
-    public async listGames(
-        player?: string,
-        date?: Date,
-        orderBy?: 'createdAt' | 'rounds'
-    ): Promise<GameDetailsDto[]> {
-        const games = await this.gameRepository.findFinishedGamesWithPlayers(player, date, orderBy);
-        const gameDetailsDtos = games.map((game): GameDetailsDto => {
-            return new GameDetailsDto(game);
-        });
-        return gameDetailsDtos;
+export class GameService implements IGameService {
+    public async loadGame(gameId: string): Promise<Game> {
+        let game = this.cacheGameRepository.findOne(gameId);
+        if (!game) {
+            const gameEntity = await this.databaseGameRepository.findOne(gameId, {
+                relations: ['gamePlayers', 'gamePlayers.player'],
+            });
+            if (!gameEntity) throw new NotFoundException(`No game found with id: ${gameId}`);
+            game = DatabaseGameRepository.fromEntityToGame(gameEntity);
+            this.cacheGameRepository.save(game);
+        }
+        return game;
     }
 
-    public async createGame(): Promise<Game> {
+    public createGame(): Game {
         const game = new Game();
-        await this.gameRepository.save(game);
+        this.cacheGameRepository.save(game);
         return game;
     }
 
-    public async findOne(gameId: string): Promise<Game> {
-        return await this.gameRepository.findOne(gameId, {
-            relations: ['gamePlayers', 'gamePlayers.player'],
-        });
+    public addPlayerToGame(game: Game, player: Player, position: number): void {
+        if (!this.isPositionAvailable(game, position)) throw new BadRequestException('Position not available');
+        if (!this.isNicknameAvailable(game, player.nickname)) throw new BadRequestException('Nickname already taken');
+        if (!game.creator) game.creator = position;
+        game.players[position] = player;
     }
 
-    public async start(game: Game): Promise<void> {
-        if (game.status !== GameStatus.CREATED) throw new BadRequestException('Game can not be started due to its current state: ' + game.status);
-        await this.fillGameWithBots(game);
-        game.status = GameStatus.IN_PROGRESS;
-        await this.gameRepository.update({ id: game.id }, { status: game.status });
-    }
-
-    public isColorAvailable(game: Game, color: Color): boolean {
-        if (game.gamePlayers.find((gamePlayer) => gamePlayer.color === color)) {
-            return false;
-        }
-        return true;
-    }
-
-    public isNicknameAvailable(game: Game, nickname: string): boolean {
-        if (game.gamePlayers.find((gamePlayer) => gamePlayer.player.nickname === nickname)) {
-            return false;
-        }
-        return true;
-    }
-
-    public async linkPlayerToGame(game: Game, player: Player, color: Color): Promise<Game> {
-        if (game.status !== GameStatus.CREATED) throw new BadRequestException('Game can not be started due to its current state: ' + game.status);
-        const gamePlayer = new GamePlayer();
-        gamePlayer.gameId = game.id;
-        gamePlayer.player = player;
-        gamePlayer.color = color;
-        await this.gamePlayerRepository.save(gamePlayer);
-        game.gamePlayers.push(gamePlayer);
-        if (game.gamePlayers.length === 0) {
-            game.creator = player;
-            await this.gameRepository.update({ id: game.id }, { creator: player });
-        }
-        return game;
-    }
-
-    public async setWinner(game: Game, player: Player): Promise<void> {
-        game.winner = player;
-        game.status = GameStatus.TERMINATED;
-        await this.gameRepository.update({ id: game.id }, { ...game });
-    }
-
-    private async fillGameWithBots(game: Game): Promise<void> {
-        const colors: Color[] = [Color.BLACK, Color.BLUE, Color.GREEN, Color.PURPLE, Color.RED, Color.YELLOW];
-        for (const color of colors) {
-            if (!game.gamePlayers.find((gamePlayer: GamePlayer) => {
-                return gamePlayer.color === color;
-            })) {
-                const player = await this.playerRepository.findOne({
-                    where: { nickname: `${color}_AI` },
-                });
-                await this.linkPlayerToGame(game, player, color);
+    public startGame(game: Game): void {
+        for (let i = 0; i < 6; i++) {
+            let player = game.players[i];
+            if (!player) {
+                player = new Player();
+                player.isBot = true;
+                player.nickname = 'AI';
+                player.online = true;
+                game.players[i] = player;
             }
         }
+        game.addListener('CURRENT_PLAYER', () => {
+            if (game.players[game.getCurrentPlayer()].isBot) {
+                setImmediate(() => this.playMove(game, this.aiService.play(game)));
+            }
+        });
+        game.status = GameStatus.STARTED;
+        game.nextPlayer();
+    }
+
+    public nextPlayer(game: Game): void {
+        throw new Error('Method not implemented.');
+    }
+
+    public validateMove(move: ICoords[]): boolean {
+        throw new Error('Method not implemented.');
+    }
+
+    public async playMove(game: Game, move: ICoords[]): Promise<void> {
+        game.moves.push(move);
+        if (move[0]) {
+            game.board.getCell(move[0]).setPawn(undefined);
+            game.board.getCell(move[move.length - 1]).setPawn(game.getCurrentPlayer());
+        }
+        if (game.board.isWinner(game.getCurrentPlayer())) {
+            await this.endGame(game);
+        } else {
+            game.nextPlayer();
+        }
+    }
+
+    public async endGame(game: Game) {
+        game.status = GameStatus.FINISHED;
+        game.winner = game.getCurrentPlayer();
+        const playerEntities = [];
+        for (let i = 0; i < 6; i++) {
+            const player = game.players[i];
+            if (player.isBot) continue;
+            if (game.winner === i) {
+                player.wins++;
+            } else {
+                player.loses++;
+            }
+            await this.playerService.updatePLayer(player);
+            playerEntities[i] = player;
+        }
+        const gameEntity = await this.databaseGameRepository.saveFinished(game);
+        gameEntity.creator = playerEntities[game.creator];
+        gameEntity.winner = playerEntities[game.winner];
+        gameEntity.gamePlayers = playerEntities.map((playerEntity, index) => {
+            const gamePlayer = new GamePlayer();
+            gamePlayer.game = gameEntity;
+            gamePlayer.player = playerEntity;
+            gamePlayer.position = index;
+            return gamePlayer;
+        });
+        await this.databaseGameRepository.save(gameEntity);
+    }
+
+    @Inject(DatabaseGameRepository)
+    private readonly databaseGameRepository: DatabaseGameRepository;
+
+    @Inject(CacheGameRepository)
+    private readonly cacheGameRepository: CacheGameRepository;
+
+    @Inject(AIService)
+    private readonly aiService: AIService;
+
+    @Inject(PlayerService)
+    private readonly playerService: PlayerService;
+
+    private readonly logger: Logger = new Logger(GameService.name);
+
+    private isPositionAvailable(game: Game, position: number): boolean {
+        if (game.players[position]) {
+            return false;
+        }
+        return true;
+    }
+
+    private isNicknameAvailable(game: Game, nickname: string): boolean {
+        if (game.players.find((player) => player.nickname === nickname)) {
+            return false;
+        }
+        return true;
     }
 }
