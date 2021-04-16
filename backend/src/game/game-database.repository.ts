@@ -31,6 +31,9 @@ export class DatabaseGameRepository extends Repository<GameEntity> {
             player.wins = gamePlayer.player.win;
             return player;
         });
+        game.moves = (gameEntity.moves || []).map((move) => {
+            return move.path;
+        });
         return game;
     }
 

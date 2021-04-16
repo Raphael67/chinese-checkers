@@ -1,8 +1,9 @@
-import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BoardService } from './board.service';
 import { CellDto } from './dto/cell.dto';
 import { CoordsDto } from './dto/coords.dto';
+import { CacheGameRepository } from './game-cache.repository';
 import { DatabaseGameRepository } from './game-database.repository';
 import { GameStatus } from './game.class';
 import { GameService } from './game.service';
@@ -19,15 +20,20 @@ export class BoardController {
     }
 
     @Get('/:gameId/move')
+    @ApiOperation({ summary: 'Return a list of all moves for a game' })
+    @ApiQuery({ name: 'offset', required: false, description: 'Starts at 0, return offset element included.' })
     @ApiOkResponse({ type: [CoordsDto] })
-    @ApiOperation({ summary: 'Return a list of all moves for a game to replay' })
-    public async move(@Param('gameId') gameId: string): Promise<CoordsDto[][]> {
-        const gameEntity = await this.databaseGameRepository.findOne(gameId, {
-            where: { status: GameStatus.FINISHED },
-            relations: ['moves'],
-        });
-        if (!gameEntity) throw new NotFoundException(`Can not find finished game ${gameId}`);
-        return gameEntity.moves.map((move) => move.path.map((coords) => new CoordsDto(coords)));
+    public async move(@Param('gameId') gameId: string, @Query('offset') offset?: number): Promise<CoordsDto[][]> {
+        let game = this.cacheGameRepository.findOne(gameId);
+        if (!game) {
+            const gameEntity = await this.databaseGameRepository.findOne(gameId, {
+                where: { status: GameStatus.FINISHED },
+                relations: ['moves'],
+            });
+            if (!gameEntity) throw new NotFoundException(`Can not find game ${gameId}`);
+            game = DatabaseGameRepository.fromEntityToGame(gameEntity);
+        }
+        return game.moves.slice(offset).map((move) => move.map((coords) => new CoordsDto(coords)));
     }
 
     @Post('/:gameId/player/:playerIndex/move')
@@ -56,6 +62,9 @@ export class BoardController {
 
     @Inject(DatabaseGameRepository)
     private readonly databaseGameRepository: DatabaseGameRepository;
+
+    @Inject(CacheGameRepository)
+    private readonly cacheGameRepository: CacheGameRepository;
 
     @Inject(GameService)
     private readonly gameService: GameService;
