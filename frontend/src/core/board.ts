@@ -641,6 +641,7 @@ export default class Board {
 
     public initBoard(pawns: IPawnPosition[]) {
         this.pawns = {};
+        this.pawnsMap = {};
         pawns.forEach((pawnPosition: IPawnPosition) => {
             const { pawn, position } = pawnPosition;
             const place = this.getPlaceByPosition(position);
