@@ -1,37 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Player } from './player.class';
-import { PlayerEntity } from './player.entity';
-import { PlayerRepository } from './player.repository';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { PlayerCacheRepository } from './player-cache.repository';
+import { Player } from './player.entity';
 
 interface IPlayerService {
     upsertPlayer(nickname: string): Promise<Player>;
 }
 @Injectable()
 export class PlayerService implements IPlayerService {
+
     public async upsertPlayer(nickname: string): Promise<Player> {
-        let playerEntity = await this.playerRepository.findOne({ nickname });
-        if (!playerEntity) {
-            playerEntity = await this.playerRepository.save(new PlayerEntity(nickname));
+        let player = await this.playerCacheRepository.findOneByNickname(nickname);
+        if (!player) {
+            player = new Player(nickname);
+            await this.playerCacheRepository.save(player);
         }
-        const player = PlayerRepository.fromEntityToPlayer(playerEntity);
         return player;
     }
 
-    public findByRating(): Promise<PlayerEntity[]> {
-        return this.playerRepository.find({
-            order: {
-                rating: 'DESC',
-            },
-        });
+    public async findByRating(): Promise<Player[]> {
+        return this.playerCacheRepository.find();
     }
 
-    public async updatePLayer(player: Player): Promise<PlayerEntity> {
-        const playerEntity = await this.playerRepository.preload(PlayerRepository.fromPlayerToEntity(player));
-        return await this.playerRepository.save(playerEntity);
+    public async updatePLayer(player: Player): Promise<Player> {
+        const existingPlayer = await this.playerCacheRepository
+            .update(player.id, player);
+
+        if (!existingPlayer) throw new NotFoundException(`Player ${existingPlayer.id} does not exist`);
+        return existingPlayer;
     }
 
-    @InjectRepository(PlayerEntity)
-    private readonly playerRepository: Repository<PlayerEntity>;
+    @Inject(PlayerCacheRepository)
+    private readonly playerCacheRepository: PlayerCacheRepository;
+
 }

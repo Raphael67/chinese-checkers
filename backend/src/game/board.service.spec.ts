@@ -1,26 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Coords } from './board';
 import { BoardService } from './board.service';
-import { Game } from './game.class';
-import { Move } from './move.entity';
-
-class MoveRepositoryMock extends Repository<Move> { }
-
+import { Game } from './game.entity';
 
 describe('BoardService', () => {
     let service: BoardService;
-    const moveRepository: Repository<Move> = new MoveRepositoryMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 BoardService,
-                {
-                    provide: getRepositoryToken(Move),
-                    useValue: moveRepository,
-                },
             ],
         }).compile();
 

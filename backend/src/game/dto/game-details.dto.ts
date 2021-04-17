@@ -1,4 +1,4 @@
-import { Game } from '../game.class';
+import { Game } from '../game.entity';
 
 class GamePlayerDto {
     public nickname: string;
@@ -13,13 +13,15 @@ export class GameDetailsDto {
         this.id = game.id;
         this.longest_streak = game.longestStreak;
         this.turn = game.turn;
-        this.currentPlayer = game.getCurrentPlayer();
-        this.players = game.players.map((player, index) => {
-            const gamePlayerDto = new GamePlayerDto();
-            gamePlayerDto.nickname = player.nickname;
-            gamePlayerDto.position = index;
-            return gamePlayerDto;
-        });
+        this.currentPlayer = game.currentPlayer;
+        this.players = game.players
+            .map((player, index) => {
+                if (!player) return;
+                const gamePlayerDto = new GamePlayerDto();
+                gamePlayerDto.nickname = player.nickname;
+                gamePlayerDto.position = index;
+                return gamePlayerDto;
+            });
     }
 
     public id: string;

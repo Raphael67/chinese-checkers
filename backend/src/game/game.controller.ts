@@ -3,8 +3,8 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
-import { DatabaseGameRepository } from './game-database.repository';
-import { GameStatus } from './game.class';
+import { CacheGameRepository } from './game-cache.repository';
+import { GameStatus } from './game.entity';
 import { GameService } from './game.service';
 
 @Controller('/api/game')
@@ -18,18 +18,11 @@ export class GameController {
     @ApiQuery({ name: 'orderBy', enum: ['createdAt', 'rounds'] })
     @ApiResponse({ status: 200, description: 'Lise of games', type: [GameDetailsDto] })
     public async getGames(
-        @Query('player') player?: string,
+        @Query('player') nickname?: string,
         @Query('date') date?: string,
         @Query('orderBy') orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<GameDetailsDto[]> {
-        const gameEntities = await this.databaseGameRepository.find({
-            where: {
-                status: GameStatus.FINISHED + 1,
-            },
-            order: { [orderBy]: 'DESC' },
-            relations: ['gamePlayers', 'creator'],
-        });
-        const games = gameEntities.map((gameEntity) => DatabaseGameRepository.fromEntityToGame(gameEntity));
+        const games = await this.cacheGameRepository.findByPlayerNickname(nickname);
         return games.map((game) => new GameDetailsDto(game));
     }
 
@@ -43,7 +36,7 @@ export class GameController {
     @Post('/')
     @ApiOperation({ summary: 'Create a new game and return its id' })
     public async createGame(): Promise<GameDetailsDto> {
-        const game = this.gameService.createGame();
+        const game = await this.gameService.createGame();
         return new GameDetailsDto(game);
     }
 
@@ -75,6 +68,7 @@ export class GameController {
     @Inject(PlayerService)
     private readonly playerService: PlayerService;
 
-    @Inject(DatabaseGameRepository)
-    private readonly databaseGameRepository: DatabaseGameRepository;
+    @Inject(CacheGameRepository)
+    private readonly cacheGameRepository: CacheGameRepository;
+
 }

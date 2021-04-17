@@ -9,7 +9,8 @@
             "request": "attach",
             "name": "Attach",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "/**/node_modules/**/*"
             ],
             "outFiles": [
                 "${workspaceFolder}/backend/**/*.js"

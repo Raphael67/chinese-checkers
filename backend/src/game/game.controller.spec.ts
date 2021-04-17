@@ -1,20 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Player } from '../player/player.class';
+import { Player } from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
-import { DatabaseGameRepository } from './game-database.repository';
-import { Game } from './game.class';
+import { CacheGameRepository } from './game-cache.repository';
 import { GameController } from './game.controller';
+import { Game } from './game.entity';
 import { GameService } from './game.service';
 
-class GameServiceMock extends GameService { }
 class PlayerServiceMock extends PlayerService { }
-class DatabaseGameRepositoryMock extends DatabaseGameRepository { }
+class CacheGameRepositoryMock extends CacheGameRepository { }
 
 describe('GameController', () => {
     let controller: GameController;
-    const gameService: GameService = new GameServiceMock();
+    let gameService: GameService;
     const playerService: PlayerService = new PlayerServiceMock();
-    const databaseGameRepository: DatabaseGameRepository = new DatabaseGameRepositoryMock();
+    const cacheGameRepository: CacheGameRepository = new CacheGameRepositoryMock;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -22,20 +21,21 @@ describe('GameController', () => {
             providers: [
                 {
                     provide: GameService,
-                    useValue: gameService,
+                    useValue: jest.fn(),
                 },
                 {
                     provide: PlayerService,
                     useValue: playerService,
                 },
                 {
-                    provide: DatabaseGameRepository,
-                    useValue: databaseGameRepository,
+                    provide: CacheGameRepository,
+                    useValue: cacheGameRepository,
                 },
             ],
         }).compile();
 
         controller = module.get<GameController>(GameController);
+        gameService = module.get<GameService>(GameService);
     });
 
     describe('addPlayerToGame', () => {
@@ -46,7 +46,8 @@ describe('GameController', () => {
 
 
             gameService.loadGame = jest.fn(async () => game);
-            playerService.upsertPlayer = jest.fn(async () => new Player());
+            playerService.upsertPlayer = jest.fn(async () => new Player(''));
+            gameService.addPlayerToGame = jest.fn(async () => { return; });
 
             await expect(controller.upsertPlayerToGame(gameId, playerDto)).resolves;
         });

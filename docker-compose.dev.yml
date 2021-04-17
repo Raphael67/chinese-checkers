@@ -4,6 +4,14 @@ networks:
     driver: bridge
 
 services:
+  mongodb:
+    image: mongo
+    hostname: mongodb.chinese-checkers.dev
+    container_name: mongodb.chinese-checkers.dev
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_DATABASE: chinese-checkers
   mariadb:
     image: mariadb:10.4
     hostname: mariadb.chinese-checkers.dev

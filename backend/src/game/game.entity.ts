@@ -1,48 +1,27 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
-import { PlayerEntity } from '../player/player.entity';
-import { GamePlayer } from './game-player.entity';
-import { GameStatus } from './game.class';
-import { Move } from './move.entity';
 
-@Entity('game')
-export class GameEntity {
-    @PrimaryColumn('uuid')
-    public id: string;
+import { v4 as uuid } from 'uuid';
+import { Player } from '../player/player.entity';
+import { Board, Coords } from './board';
 
-    @Column('enum', { name: 'status', enum: GameStatus })
+export enum GameStatus {
+    CREATED = 'CREATED',
+    STARTED = 'STARTED',
+    FINISHED = 'FINISHED',
+}
+
+export class Game {
+    public id: string = uuid();
+    public players: Player[] = [];
+    public playerNickname: string[] = [];
     public status: GameStatus = GameStatus.CREATED;
-
-    @Column({ name: 'created_at' })
-    public readonly createdAt: Date = new Date();
-
-    @Column({ name: 'updated_at' })
-    public readonly updatedAt: Date;
-
-    @Column()
-    public rounds: number = 1;
-
-    @Column({ name: 'longest_streak' })
+    public currentPlayer: number = -1;
+    public creator: string;
+    public turn: number = 0;
     public longestStreak: number = 0;
+    public winner: string;
 
-    @ManyToOne(() => PlayerEntity, player => player.winnedGames)
-    @JoinColumn({
-        name: 'winner',
-        referencedColumnName: 'id',
-    })
-    public winner: PlayerEntity;
+    public board: Board = new Board();
 
-    @ManyToOne(() => PlayerEntity, player => player.createdGames)
-    @JoinColumn({
-        name: 'creator',
-        referencedColumnName: 'id',
-    })
-    public creator: PlayerEntity;
-
-    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.game, { cascade: true })
-    @JoinColumn({ name: 'game_id', referencedColumnName: 'id' })
-    public gamePlayers: GamePlayer[];
-
-    @OneToMany(() => Move, gameMoves => gameMoves.game, { cascade: true })
-    @JoinColumn({ name: 'game_id', referencedColumnName: 'id' })
-    public moves: Move[];
+    public moves: Coords[][] = [];
+    public createdAt: Date;
 }
