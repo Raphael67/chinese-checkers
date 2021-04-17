@@ -1,13 +1,13 @@
 import { Store } from 'redux';
-import { setPath, setPawnPlace, setPossiblePlaces } from 'redux/actions/game.action';
+import { setPath, setPawnPlace, setPawns, setPossiblePlaces } from 'redux/actions/game.action';
 import Api from 'services/api';
-import Board, { Colour } from './board';
+import Board, { ColourPosition } from './board';
 
 export default class Game {
     private id?: string;
-    private playerColour?: Colour;
+    private playerPosition?: number;
     private board: Board = new Board();
-    private pawnTaken?: string;
+    private pawnTaken?: IPawn;
     private possiblePlaces?: IPath[];
     private path: IPath[] = [];
 
@@ -17,8 +17,8 @@ export default class Game {
         this.id = id;
     }
 
-    public setPlayerColour(playerColour: number) {
-        this.playerColour = playerColour;
+    public setPlayerPosition(position: number) {
+        this.playerPosition = position;
     }
 
     public async getBoard(gameId: string): Promise<IBoard> {
@@ -31,31 +31,74 @@ export default class Game {
 
         rawBoard.forEach((rawPawn: IRawPawn) => {
             const pawnPlace = this.board.getPawnFromRaw(rawPawn);
-            board[pawnPlace.pawn] = pawnPlace.place;
+            board[pawnPlace.pawn.id] = pawnPlace.place;
         });
 
         return board;
     }
 
-    public takePawn(pawn: string) {
+    public async initBoard(gameId: string) {
+        this.board.initBoard((await Api.getBoard({
+            gameId
+        }).catch((err) => {
+            throw err;
+        })).map((rawPawn: IRawPawn, index: number) => {
+            const { pawn, coords } = rawPawn;
+            return {
+                pawn: {
+                    colour: ColourPosition[pawn],
+                    id: `pawn${index}`
+                },
+                position: {
+                    x: coords.x,
+                    y: coords.y
+                }
+            };
+        }));
+
+        setPawns(this.store.dispatch, this.board.getPawns());
+    }
+
+    public async getMoves(gameId: string): Promise<IPawnPlace[]> {
+        return (await Api.getMoves({
+            gameId
+        }).catch((err) => {
+            throw err;
+        })).map((position: IPosition) => {
+            return this.board.getPawnPlaceByPosition(position);
+        });
+    }
+
+    public takePawn(pawnId: string) {
+        const pawn = this.board.getPawnById(pawnId);
         this.setPawn(this.board.getPossiblePlacesForPawn(pawn), pawn);
     }
 
     public placePawn(place: string) {
-        if (this.pawnTaken && this.id && this.playerColour) {
+        if (this.pawnTaken && this.id && this.playerPosition !== undefined) {
+            const fullPath = [{
+                place: this.board.getPlaceForPawn(this.pawnTaken)
+            },
+            ...this.path
+            ];
+
             this.board.placePawn(this.pawnTaken, place);
             setPawnPlace(this.store.dispatch, this.pawnTaken, place);
-            this.setPawn([]);
 
             Api.newMove({
                 gameId: this.id,
-                playerIndex: this.playerColour,
-                moves: [[10, 3], [9, 4]]
+                playerIndex: this.playerPosition,
+                moves: fullPath.map((path: IPath) => {
+                    const position = this.board.getPositionForPlace(path.place);
+                    return [position.x, position.y];
+                })
             });
+
+            this.setPawn([]);
         }
     }
 
-    private setPawn(possiblePlaces: IPath[], pawn?: string) {
+    private setPawn(possiblePlaces: IPath[], pawn?: IPawn) {
         this.path = [];
         this.pawnTaken = pawn;
         this.possiblePlaces = possiblePlaces;
@@ -65,6 +108,10 @@ export default class Game {
 
     private getPath(path: IPath[]): IPath['place'][] {
         return path.map((pathPart: IPath) => pathPart.place);
+    }
+
+    public getPawns(): IPawnPlace[] {
+        return this.board.getPawns();
     }
 
     public clickPlace(place: string) {
