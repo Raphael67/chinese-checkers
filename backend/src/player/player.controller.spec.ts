@@ -6,7 +6,7 @@ class PlayerServiceMock extends PlayerService { }
 
 describe('PlayerController', () => {
     let controller: PlayerController;
-    let playerService: PlayerService = new PlayerServiceMock();
+    const playerService: PlayerService = new PlayerServiceMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -14,7 +14,7 @@ describe('PlayerController', () => {
             providers: [{
                 provide: PlayerService,
                 useValue: playerService,
-            }]
+            }],
         }).compile();
 
         controller = module.get<PlayerController>(PlayerController);
