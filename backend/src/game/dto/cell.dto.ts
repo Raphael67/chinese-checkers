@@ -2,10 +2,12 @@ import { Cell } from '../board';
 import { CoordsDto } from './coords.dto';
 
 export class CellDto {
-    public constructor(cell: Cell) {
-        this.coords = new CoordsDto(cell.coords);
-        this.pawn = cell.getPawn();
+    public static from(cell: Cell): CellDto {
+        const dto = new CellDto();
+        dto.coords = CoordsDto.from(cell.coords);
+        dto.pawn = cell.getPawn();
+        return dto;
     }
-    public readonly coords: CoordsDto;
-    public readonly pawn: number;
+    public coords: CoordsDto;
+    public pawn: number;
 }

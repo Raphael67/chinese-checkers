@@ -15,7 +15,7 @@ export class BoardController {
     public async getBoard(@Param('gameId') gameId: string): Promise<CellDto[]> {
         const game = await this.gameService.loadGame(gameId);
         if (!game) throw new NotFoundException(`Game not found : ${gameId}`);
-        return game.board.getCells().filter((cell) => cell.getPawn() !== undefined).map(cell => new CellDto(cell));
+        return game.board.getCells().filter((cell) => cell.getPawn() !== undefined).map(cell => CellDto.from(cell));
     }
 
     @Get('/:gameId/move')
@@ -27,7 +27,7 @@ export class BoardController {
         if (!game) {
             throw new NotFoundException(`Can not find game ${gameId}`);
         }
-        return game.moves.slice(offset).map((move) => move.map((coords) => new CoordsDto(coords)));
+        return game.moves.slice(offset).map((move) => move.map((coords) => CoordsDto.from(coords)));
     }
 
     @Post('/:gameId/player/:playerIndex/move')
