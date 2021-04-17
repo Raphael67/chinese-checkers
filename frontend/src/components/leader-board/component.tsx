@@ -1,7 +1,7 @@
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Empty, Form, Input, Layout, List, Radio } from 'antd';
 import Pawn from 'components/game/pawn';
-import { Colour } from 'core/board';
+import { ColourPosition } from 'core/board';
 import React, { ReactElement } from 'react';
 import './index.less';
 
@@ -30,7 +30,7 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
     const renderGamePlayers = (players: IPlayer[]): ReactElement[] => {
         return players.map((player: IPlayer, index: number) => {
             return <div key={`game_player${index}`}>
-                <Pawn colour={player.colour || Colour.Black} r={10} alone={true} />
+                <Pawn colour={ColourPosition[player.position || 0]} r={10} alone={true} />
                 <div className="game-player-name">{player.nickname}</div>
             </div>;
         });
@@ -55,7 +55,7 @@ const LeaderBoardComponent = (props: IProps): ReactElement => {
     };
 
     const renderGamesPlayed = (games: IGame[]): ReactElement => {
-        return games.length > 0 ? <List size="large" dataSource={games} renderItem={renderGamePlayed} /> : <Empty />;
+        return games.length > 0 ? <List size="large" className="games-played" dataSource={games} renderItem={renderGamePlayed} /> : <Empty />;
     };
 
     const onSearch = (values: ISearchGameParams) => {

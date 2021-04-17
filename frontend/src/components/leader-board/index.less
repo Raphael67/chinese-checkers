@@ -45,6 +45,22 @@
         .games-list {
             width: 100%;
 
+            .ant-card-body {
+                gap: 1rem;
+                flex-direction: column;
+                display: flex;
+                overflow: hidden;
+
+                &::before,
+                &::after {
+                    content: none;
+                }
+
+                .games-played {
+                    overflow: auto;
+                }
+            }
+
             .search-form {
                 padding: 2rem;
                 background: #fbfbfb;
