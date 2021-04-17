@@ -1,6 +1,6 @@
 declare interface IRegisterParams {
     nickname: string;
-    color: 'BLACK' | 'BLUE' | 'PURPLE' | 'YELLOW' | 'GREEN' | 'RED';
+    position: number;
 }
 
 declare interface ISearchGameParams {
@@ -23,16 +23,18 @@ declare interface IUser {
 }
 
 declare interface IRawGame {
-    game_id: string;
+    id: string;
+    current_player: number;
     players: IRawGamePlayer[];
     created_at: Date;
     longest_streak?: number;
-    rounds: number;
+    status: 'CREATED' | 'STARTED' | 'FINISHED';
+    turn: number;
 }
 
 declare interface IRawGamePlayer {
     nickname: string;
-    color: string;
+    position: number;
 }
 
 declare interface IGame {
@@ -40,12 +42,13 @@ declare interface IGame {
     players?: IGamePlayer[];
     createdAt: Date;
     longestStreak?: number;
+    status: IRawGame['status'];
     rounds?: number;
 }
 
 declare interface IPlayer {
     nickname: string;
-    colour?: number;
+    position?: number;
     status?: 'idle' | 'disconnected' | 'playing';
 }
 
@@ -58,21 +61,30 @@ declare interface IGamePlayer extends IPlayer {
     win?: number;
 }
 
+declare interface IPawn {
+    id: string;
+    colour: number;
+}
+
 declare interface IPawnPlace {
-    pawn: string;
+    pawn: IPawn;
     place: string;
+}
+
+declare interface IPawnPosition {
+    pawn: IPawn;
+    position: IPosition;
 }
 
 declare interface IPath {
     place: string;
-    fromOverPawn: boolean;
+    fromOverPawn?: boolean;
 }
 
 declare type IBoard = Record<string, string>;
 
 declare interface IRawPawn {
-    x: number;
-    y: number;
+    coords: IPosition;
     pawn: number;
 }
 
@@ -81,4 +93,13 @@ declare type IRawBoard = IRawPawn[];
 declare interface IMove {
     from: string;
     to: string;
+}
+
+declare interface IPosition {
+    x: number;
+    y: number;
+}
+
+declare interface IColourPosition {
+    [key: number]: number;
 }
