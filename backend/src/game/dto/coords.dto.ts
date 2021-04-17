@@ -1,12 +1,17 @@
+import { IsNumber } from 'class-validator';
 import { Coords } from '../board';
 
 export class CoordsDto {
-    public readonly x: number;
-    public readonly y: number;
+    @IsNumber()
+    public x: number;
+    @IsNumber()
+    public y: number;
 
-    public constructor(coords: Coords) {
-        this.x = coords.x;
-        this.y = coords.y;
+    public static from(coords: Coords): CoordsDto {
+        const dto = new CoordsDto();
+        dto.x = coords.x;
+        dto.y = coords.y;
+        return dto;
     }
 
     public toCoords(): Coords {
