@@ -83,7 +83,7 @@ export default class Api {
         );
     }
 
-    public static getMoves(params: IGameParams): Promise<IPosition[]> {
+    public static getMoves(params: IGameParams): Promise<IPosition[][]> {
         return Api.fetch(
             routes.moves,
             params

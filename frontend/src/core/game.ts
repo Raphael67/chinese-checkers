@@ -59,13 +59,13 @@ export default class Game {
         setPawns(this.store.dispatch, this.board.getPawns());
     }
 
-    public async getMoves(gameId: string): Promise<IPawnPlace[]> {
+    public async getMoves(gameId: string): Promise<IPawnPlace[][]> {
         return (await Api.getMoves({
             gameId
         }).catch((err) => {
             throw err;
-        })).map((position: IPosition) => {
-            return this.board.getPawnPlaceByPosition(position);
+        })).map((positions: IPosition[]) => {
+            return positions.map((position: IPosition) => this.board.getPawnPlaceByPosition(position));
         });
     }
 
@@ -90,7 +90,10 @@ export default class Game {
                 playerIndex: this.playerPosition,
                 moves: fullPath.map((path: IPath) => {
                     const position = this.board.getPositionForPlace(path.place);
-                    return [position.x, position.y];
+                    return {
+                        x: position.x,
+                        y: position.y
+                    };
                 })
             });
 
