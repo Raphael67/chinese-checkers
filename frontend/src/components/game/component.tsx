@@ -28,7 +28,14 @@ const GameComponent = (props: IProps): ReactElement => {
 
     const renderPlayers = (players: IGamePlayer[]): ReactElement[] => {
         return players.map((player: IGamePlayer, index: number) => {
-            return <div className={`player ${props.player && props.player.position === player.position ? 'me' : ''}`} key={`p${index}`}>
+            const classes = ['player'];
+            if (props.player && props.player.position === player.position) {
+                classes.push('me');
+            }
+            if (props.game && player.position === props.game.currentPlayer) {
+                classes.push('playing');
+            }
+            return <div className={classes.join(' ')} key={`p${index}`}>
                 <Pawn colour={ColourPosition[player.position || 0]} r={10} alone={true} />
                 <div>{player.nickname}</div>
             </div>;
@@ -68,9 +75,13 @@ const GameComponent = (props: IProps): ReactElement => {
         }, 2000);
     };
 
+    const renderStartAction = (game?: IGame): ReactElement | undefined => {
+        return game && game.status === 'CREATED' ? <Button type="primary" size="large" onClick={startGame}>Start game</Button> : undefined;
+    };
+
     return <div className="game">
         <div className="board-container">
-            <Board />
+            <Board game={props.game} />
         </div>
         <div className="info-container">
             <div className="info">
@@ -82,7 +93,8 @@ const GameComponent = (props: IProps): ReactElement => {
                 </Card>
             </div>
             <div className="actions">
-                <Button type="primary" size="large" onClick={startGame}>Start game</Button>
+                {renderStartAction(props.game)}
+
                 <Button type="primary" size="large" onClick={openInviteModale}>Invite friend</Button>
                 <Button type="primary" danger size="large" onClick={quitGame}>Quit game</Button>
             </div>
