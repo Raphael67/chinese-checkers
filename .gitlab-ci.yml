@@ -20,7 +20,9 @@ node_modules:
     - yarn install --cache-folder .yarn --frozen-lockfile
   cache:
     paths:
+      - backend/node_modules/
       - backend/.yarn
+      - frontend/node_modules/
       - frontend/.yarn
   artifacts:
     untracked: true
@@ -41,7 +43,9 @@ build:
     - yarn test
   cache:
     paths:
+      - backend/node_modules/
       - backend/.yarn
+      - frontend/node_modules/
       - frontend/.yarn
   artifacts:
     untracked: false
