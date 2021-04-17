@@ -1,22 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PlayerEntity } from './player.entity';
+import { PlayerCacheRepository } from './player-cache.repository';
 import { PlayerService } from './player.service';
 
-class PlayerRepositoryMock extends Repository<PlayerEntity> { }
+class PlayerCacheRepositoryMock extends PlayerCacheRepository { }
 
 describe('PlayerService', () => {
     let service: PlayerService;
-    const playerRepository: Repository<PlayerEntity> = new PlayerRepositoryMock();
+    const playerCacheRepository: PlayerCacheRepository = new PlayerCacheRepositoryMock();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 PlayerService,
                 {
-                    provide: getRepositoryToken(PlayerEntity),
-                    useValue: playerRepository,
+                    provide: PlayerCacheRepository,
+                    useValue: playerCacheRepository,
                 },
             ],
         }).compile();
@@ -25,6 +23,6 @@ describe('PlayerService', () => {
     });
 
     it('should be defined', async () => {
-        expect(PlayerService).toBeDefined();
+        expect(service).toBeDefined();
     });
 });

@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { EventEmitter } from 'events';
 import { Cell, Coords, playerPositions } from './board';
-import { Game } from './game.class';
+import { Game } from './game.entity';
+import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
 
 interface Scoring {
     id: string;
@@ -10,13 +12,27 @@ interface Scoring {
     path: Cell[];
 }
 
-
 @Injectable()
 export class AIService {
+    private readonly logger: Logger = new Logger(AIService.name);
+
+    public constructor(
+        @Inject(GAME_SERVICE_EVENT_TOKEN)
+        private readonly eventEmitter: EventEmitter
+    ) {
+        this.eventEmitter.on('NEXT_PLAYER', (game: Game) => {
+            if (game.players[game.currentPlayer].isBot) {
+                const move = this.play(game);
+                this.eventEmitter.emit('MOVE', game, move);
+            }
+        });
+    }
+
     public play(game: Game): Coords[] {
+        this.logger.debug(`Bot play in game: ${game.id}`);
         const scorings: Scoring[] = [];
         const target = this.findTarget(game);
-        const playerPawns = game.board.getCells().filter((cell) => cell.getPawn() === game.getCurrentPlayer());
+        const playerPawns = game.board.getCells().filter((cell) => cell.getPawn() === game.currentPlayer);
         playerPawns.forEach((cell) => {
             const currentDistance = Coords.dist(cell.coords, target.coords);
             const bestPath = this.findPath(game, cell, target);
@@ -36,7 +52,7 @@ export class AIService {
 
     private findTarget(game: Game): Cell {
         return game.board.getCells().find(cell => {
-            return playerPositions[(game.getCurrentPlayer() + 3) % 6].includes(cell.getIndex()) && (cell.getPawn() === undefined || cell.getPawn() !== game.getCurrentPlayer());
+            return playerPositions[(game.currentPlayer + 3) % 6].includes(cell.getIndex()) && (cell.getPawn() === undefined || cell.getPawn() !== game.currentPlayer);
         });
     }
 
@@ -88,4 +104,6 @@ export class AIService {
         });
         return moves;
     }
+
+
 }

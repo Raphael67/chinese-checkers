@@ -1,11 +1,10 @@
-import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BoardService } from './board.service';
 import { CellDto } from './dto/cell.dto';
 import { CoordsDto } from './dto/coords.dto';
 import { CacheGameRepository } from './game-cache.repository';
-import { DatabaseGameRepository } from './game-database.repository';
-import { GameStatus } from './game.class';
+import { GameStatus } from './game.entity';
 import { GameService } from './game.service';
 
 @Controller('/api/board')
@@ -23,15 +22,10 @@ export class BoardController {
     @ApiOperation({ summary: 'Return a list of all moves for a game' })
     @ApiQuery({ name: 'offset', required: false, description: 'Starts at 0, return offset element included.' })
     @ApiOkResponse({ type: [CoordsDto] })
-    public async move(@Param('gameId') gameId: string, @Query('offset') offset?: number): Promise<CoordsDto[][]> {
-        let game = this.cacheGameRepository.findOne(gameId);
+    public async getMoves(@Param('gameId') gameId: string, @Query('offset') offset?: number): Promise<CoordsDto[][]> {
+        const game = this.cacheGameRepository.findOne(gameId);
         if (!game) {
-            const gameEntity = await this.databaseGameRepository.findOne(gameId, {
-                where: { status: GameStatus.FINISHED },
-                relations: ['moves'],
-            });
-            if (!gameEntity) throw new NotFoundException(`Can not find game ${gameId}`);
-            game = DatabaseGameRepository.fromEntityToGame(gameEntity);
+            throw new NotFoundException(`Can not find game ${gameId}`);
         }
         return game.moves.slice(offset).map((move) => move.map((coords) => new CoordsDto(coords)));
     }
@@ -42,13 +36,13 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'BadRequest with details in message property' })
     @ApiResponse({ status: 201, description: 'Move successfuly played' })
     public async addMove(
-        @Body() moveDto: CoordsDto[],
+        @Body(new ParseArrayPipe({ items: CoordsDto })) moveDto: CoordsDto[],
         @Param('gameId') gameId: string,
         @Param('playerIndex', new ParseIntPipe()) playerIndex: number,
     ): Promise<void> {
         const game = await this.gameService.loadGame(gameId);
         if (game.status !== GameStatus.STARTED) throw new BadRequestException('Game is not started');
-        if (game.getCurrentPlayer() !== playerIndex) throw new BadRequestException('Not this player turn');
+        if (game.currentPlayer !== playerIndex) throw new BadRequestException('Not this player turn');
         try {
             this.boardService.isValidMove(game, moveDto);
         } catch (ex) {
@@ -59,9 +53,6 @@ export class BoardController {
 
     @Inject(BoardService)
     private readonly boardService: BoardService;
-
-    @Inject(DatabaseGameRepository)
-    private readonly databaseGameRepository: DatabaseGameRepository;
 
     @Inject(CacheGameRepository)
     private readonly cacheGameRepository: CacheGameRepository;

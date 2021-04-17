@@ -1,50 +1,50 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Player } from '../player/player.class';
+import { EventEmitter } from 'events';
+import { Player } from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
-import { AIService } from './ai.service';
-import { BoardService } from './board.service';
 import { CacheGameRepository } from './game-cache.repository';
-import { DatabaseGameRepository } from './game-database.repository';
-import { Game } from './game.class';
+import { Game } from './game.entity';
+import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
 import { GameService } from './game.service';
 
-class DatabaseGameRepositoryMock extends DatabaseGameRepository { }
 class CacheGameRepositoryMock extends CacheGameRepository { }
-class AIServiceMock extends AIService { }
-class BoardServiceMock extends BoardService { }
 class PlayerServiceMock extends PlayerService { }
 
 describe('GameService', () => {
     let service: GameService;
-    const gameRepository: DatabaseGameRepository = new DatabaseGameRepositoryMock;
     const cacheGameRepository: CacheGameRepository = new CacheGameRepositoryMock;
-    const aiService: AIService = new AIServiceMock;
     const playerService: PlayerService = new PlayerServiceMock;
-    const boardService: BoardService = new BoardServiceMock();
+    const eventEmitter: EventEmitter = new EventEmitter();
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                GameService,
-                {
-                    provide: DatabaseGameRepository,
-                    useValue: gameRepository,
-                },
                 {
                     provide: CacheGameRepository,
                     useValue: cacheGameRepository,
                 },
                 {
-                    provide: AIService,
-                    useValue: aiService,
-                },
-                {
-                    provide: BoardService,
-                    useValue: boardService,
-                },
-                {
                     provide: PlayerService,
                     useValue: playerService,
+                },
+                {
+                    provide: GAME_SERVICE_EVENT_TOKEN,
+                    useValue: eventEmitter,
+                },
+                {
+                    provide: GameService,
+                    useFactory: (eventEmitter: EventEmitter, playerService: PlayerService, cacheGameRepository: CacheGameRepository) => {
+                        return new GameService(
+                            cacheGameRepository,
+                            playerService,
+                            eventEmitter,
+                        );
+                    },
+                    inject: [
+                        GAME_SERVICE_EVENT_TOKEN,
+                        PlayerService,
+                        CacheGameRepository,
+                    ],
                 },
             ],
         }).compile();
@@ -53,18 +53,17 @@ describe('GameService', () => {
     });
 
     describe('addPlayerToGame', () => {
-        it('should test if color available', () => {
+        it('should throw if color not available', () => {
             const game = new Game();
-            game.players[2] = new Player();
-            const player = new Player();
+            game.players[2] = new Player('');
+            const player = new Player('');
 
-            expect(() => service.addPlayerToGame(game, player, 0)).toThrow();
+            expect(() => service.addPlayerToGame(game, player, 3)).toThrow();
         });
     });
     describe('startGame', () => {
         it('should fill a game with bots', async () => {
             const game = new Game();
-            game.addListener = jest.fn();
 
             service.startGame(game);
             expect(game.players).toHaveLength(6);

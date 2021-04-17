@@ -1,15 +1,15 @@
-import { PlayerEntity } from '../player.entity';
+import { Player } from '../player.entity';
 
 export class PlayerDto {
-    public constructor(player: PlayerEntity) {
+    public constructor(player: Player) {
         this.id = player.id;
         this.nickname = player.nickname;
-        this.win = player.win;
-        this.lose = player.lose;
+        this.win = player.wins;
+        this.lose = player.loses;
         this.rating = player.rating;
     }
 
-    public id: number;
+    public id: string;
     public nickname: string;
     public win: number;
     public lose: number;

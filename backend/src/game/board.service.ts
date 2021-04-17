@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Board, Coords } from './board';
-import { Game } from './game.class';
+import { Game } from './game.entity';
 
 export interface IBoardService {
     isWinner(board: Board, player: number): boolean;
@@ -17,7 +17,7 @@ export class BoardService implements IBoardService {
                 throw new Error(`Only valid cell in path: ${moveIndex}: ${coords}`);
             }
             // first cell should contain a pawn from current player
-            if (moveIndex === 0 && game.board.getCell(coords).getPawn() !== game.getCurrentPlayer()) {
+            if (moveIndex === 0 && game.board.getCell(coords).getPawn() !== game.currentPlayer) {
                 throw new Error(`first cell should contain a pawn from specified player: ${moveIndex}: ${coords.toString()}`);
             }
             // Other cells should be free

@@ -1,58 +1,15 @@
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { GamePlayer } from '../game/game-player.entity';
-import { GameEntity } from '../game/game.entity';
+import { v4 as uuid } from 'uuid';
 
-export const botNicknames = [
-    'BLACK_AI',
-    'BLUE_AI',
-    'PURPLE_AI',
-    'YELLOW_AI',
-    'GREEN_AI',
-    'RED_AI',
-];
-
-@Entity('player')
-export class PlayerEntity {
+export class Player {
     public constructor(nickname: string) {
         this.nickname = nickname;
     }
-
-    @PrimaryGeneratedColumn()
-    public id: number;
-
-    @Column({ length: 32, unique: true })
+    public id: string = uuid();
     public nickname: string;
-
-    @Column({ name: 'created_at' })
-    public readonly createdAt: Date = new Date();
-
-    @Column({ name: 'updated_at' })
-    public readonly updatedAt: Date;
-
-    @Column()
-    public win: number;
-
-    @Column()
-    public lose: number;
-
-    @Column()
-    public readonly rating: number;
-
-    @OneToMany(() => GamePlayer, gamePlayer => gamePlayer.player)
-    @JoinColumn({ name: 'player_id', referencedColumnName: 'id' })
-    public gamePlayers: GamePlayer[];
-
-    @OneToMany(() => GameEntity, game => game.winner)
-    @JoinColumn({
-        name: 'winner',
-        referencedColumnName: 'id',
-    })
-    public winnedGames: GameEntity[];
-
-    @OneToMany(() => GameEntity, game => game.creator)
-    @JoinColumn({
-        name: 'creator',
-        referencedColumnName: 'id',
-    })
-    public createdGames: GameEntity[];
+    public online: boolean;
+    public isBot: boolean;
+    public wins: number;
+    public loses: number;
+    public longestStreak: number;
+    public rating: number;
 }
