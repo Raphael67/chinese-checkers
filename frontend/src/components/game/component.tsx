@@ -1,7 +1,7 @@
 import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
 import { Button, Card, Input, Modal, Popover } from 'antd';
 import Board from 'components/game/board';
-import { Colour } from 'core/board';
+import { ColourPosition } from 'core/board';
 import React, { ReactElement, useState } from 'react';
 import Pawn from './pawn';
 
@@ -28,8 +28,8 @@ const GameComponent = (props: IProps): ReactElement => {
 
     const renderPlayers = (players: IGamePlayer[]): ReactElement[] => {
         return players.map((player: IGamePlayer, index: number) => {
-            return <div className={`player ${props.player && props.player.colour === player.colour ? 'me' : ''}`} key={`p${index}`}>
-                <Pawn colour={player.colour || Colour.Black} r={10} alone={true} />
+            return <div className={`player ${props.player && props.player.position === player.position ? 'me' : ''}`} key={`p${index}`}>
+                <Pawn colour={ColourPosition[player.position || 0]} r={10} alone={true} />
                 <div>{player.nickname}</div>
             </div>;
         });

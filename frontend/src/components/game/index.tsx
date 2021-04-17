@@ -39,8 +39,8 @@ const Game = (): ReactElement => {
             const gameId = gameParams.gameId;
             const player = mapStateToObj.player;
             game.setId(gameId);
-            if (player && player.colour) {
-                game.setPlayerColour(player.colour);
+            if (player && player.position !== undefined) {
+                game.setPlayerPosition(player.position);
             }
             await refresh(gameId);
             clearInterval(Number(timer.current));
