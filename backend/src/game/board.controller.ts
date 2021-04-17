@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BoardService } from './board.service';
 import { CellDto } from './dto/cell.dto';
@@ -36,7 +36,7 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'BadRequest with details in message property' })
     @ApiResponse({ status: 201, description: 'Move successfuly played' })
     public async addMove(
-        @Body() moveDto: CoordsDto[],
+        @Body(new ParseArrayPipe({ items: CoordsDto })) moveDto: CoordsDto[],
         @Param('gameId') gameId: string,
         @Param('playerIndex', new ParseIntPipe()) playerIndex: number,
     ): Promise<void> {
