@@ -15,7 +15,7 @@ declare interface IGameParams {
 declare interface IMoveParams {
     gameId: string;
     playerIndex: number;
-    moves: number[][];
+    moves: IPosition[];
 }
 
 declare interface IUser {
