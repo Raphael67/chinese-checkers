@@ -1,5 +1,4 @@
 import LoginComponent from 'components/login/component';
-import { Colour, ColourMapReverse } from 'core/board';
 import pages from 'pages';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -31,11 +30,11 @@ const Login = (): ReactElement | null => {
 
     }, [gameParams.gameId, dispatch]);
 
-    const login = async (playerName: string, colour: Colour) => {
+    const login = async (playerName: string, position: number) => {
         try {
             await register(dispatch, gameParams, {
                 nickname: playerName,
-                color: ColourMapReverse[colour]
+                position
             }).catch((err) => {
                 throw err;
             });
