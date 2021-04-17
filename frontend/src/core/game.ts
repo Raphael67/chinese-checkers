@@ -10,6 +10,7 @@ export default class Game {
     private pawnTaken?: IPawn;
     private possiblePlaces?: IPath[];
     private path: IPath[] = [];
+    private moves: IPawnPlace[][] = [];
 
     constructor(private store: Store<any, any>) { }
 
@@ -38,6 +39,7 @@ export default class Game {
     }
 
     public async initBoard(gameId: string) {
+        this.moves = await this.getMoves(gameId);
         this.board.initBoard((await Api.getBoard({
             gameId
         }).catch((err) => {
@@ -61,7 +63,8 @@ export default class Game {
 
     public async getMoves(gameId: string): Promise<IPawnPlace[][]> {
         return (await Api.getMoves({
-            gameId
+            gameId,
+            offset: this.moves.length
         }).catch((err) => {
             throw err;
         })).map((positions: IPosition[]) => {
