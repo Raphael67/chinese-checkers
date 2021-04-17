@@ -11,10 +11,10 @@ interface IConfig {
 
 let config: IConfig = {
     api: {
-        hostname: 'game.corteks.net',
-        port: 443,
-        protocol: 'https:',
-        path: '/api'
+        hostname: window.location.host,
+        protocol: window.location.protocol,
+        path: '/api',
+        port: 443
     },
 };
 
