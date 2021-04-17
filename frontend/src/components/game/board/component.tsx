@@ -1,17 +1,17 @@
 import Pawn from 'components/game/pawn';
-import { Colour } from 'core/board';
-import React, { useEffect, useState } from 'react';
+import { ColourPosition } from 'core/board';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { IHashPath, IHashPawnPlaces, IHashPossiblePlaces } from '.';
 import './index.less';
 
 interface IProps {
-    canMove: {
-        [key in Colour]?: boolean
-    };
+    pawns: IHashPawnPlaces;
     clickPlace: (place: string) => void;
     doubleClickPlace: (place: string) => void;
     pawnPlace?: IPawnPlace;
-    path: { path: string[], hash: string; };
-    placesHighlighted: { possiblePlaces: string[], hash: string; };
+    player?: IPlayer;
+    path: IHashPath;
+    placesHighlighted: IHashPossiblePlaces;
 }
 
 const BoardComponent = (props: IProps) => {
@@ -40,6 +40,20 @@ const BoardComponent = (props: IProps) => {
         props.doubleClickPlace(event.currentTarget.id);
     };
 
+    const renderPawns = (pawns: IPawnPlace[]): (ReactElement | undefined)[] => {
+        return pawns.map((pawnPlace: IPawnPlace) => {
+            const { pawn, place } = pawnPlace;
+            const player = props.player;
+            const placeElement = document.getElementById(place);
+            if (placeElement) {
+                const { cx, cy } = placeElement as unknown as SVGCircleElement;
+                const { id, colour } = pawn;
+                return <Pawn key={id} canMove={player && player.position !== undefined ? colour === ColourPosition[player.position] : false} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16.071173} />;
+            }
+            return undefined;
+        });
+    };
+
     useEffect(() => {
         const possiblePlaces = props.placesHighlighted.possiblePlaces;
         // Reset to default places colour for previous ones
@@ -55,7 +69,7 @@ const BoardComponent = (props: IProps) => {
         const pawnPlace = props.pawnPlace;
         if (pawnPlace) {
             const { pawn, place } = pawnPlace;
-            const pawnElement = document.getElementById(pawn);
+            const pawnElement = document.getElementById(pawn.id);
             const placeElement = document.getElementById(place);
             if (pawnElement && placeElement) {
                 pawnElement.setAttribute('cx', placeElement.getAttribute('cx')!);
@@ -89,12 +103,7 @@ const BoardComponent = (props: IProps) => {
         });
     }, [props.path]);
 
-    const canMoveBlue = props.canMove[Colour.Blue];
-    const canMoveGreen = props.canMove[Colour.Green];
-    const canMoveYellow = props.canMove[Colour.Yellow];
-    const canMoveBlack = props.canMove[Colour.Black];
-    const canMoveRed = props.canMove[Colour.Red];
-    const canMovePurple = props.canMove[Colour.Purple];
+
     return <svg viewBox="0 137 744.09448819 800" className="board">
         <g>
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} r="20" cy="351.41861" cx="103.51184" id="p1" className="place red"></circle>
@@ -218,66 +227,7 @@ const BoardComponent = (props: IProps) => {
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} r="20" cy="816.7724" cx="318.30524" id="p119" className="place yellow"></circle>
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} className="place yellow" id="p120" cx="345.16806" cy="863.30017" r="20"></circle>
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} className="place yellow" id="p121" cx="399.01025" cy="863.23688" r="20"></circle>
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn1" x={613.83923} y={491.08954} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn2" x={533.18213} y={351.3873} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn3" x={560.06781} y={397.95474} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn4" x={586.95355} y={444.52213} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn5" x={613.83923} y={397.95474} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn6" x={640.69855} y={444.56781} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn7" x={640.53943} y={351.43152} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn8" x={586.89661} y={351.3801} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn9" x={667.75006} y={397.95474} r={16.071173} />
-            <Pawn canMove={canMoveBlue} colour={Colour.Blue} id="pawn10" x={694.41724} y={351.52441} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn11" x={130.30804} y={584.04999} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn12" x={103.47699} y={630.52277} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn13" x={211.08548} y={723.96063} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn14" x={76.645874} y={676.99561} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn15" x={157.23386} y={630.68683} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn16" x={184.1597} y={677.32379} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn17" x={130.45422} y={677.24872} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn18" x={157.43149} y={723.97467} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn19" x={104.06158} y={723.82465} r={16.071173} />
-            <Pawn canMove={canMoveGreen} colour={Colour.Green} id="pawn20" x={49.908939} y={723.63141} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn21" x={130.26566} y={491.07831} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn22" x={157.23883} y={444.47647} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn23" x={103.40286} y={444.55057} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn24" x={184.07819} y={397.94901} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn25" x={130.37534} y={397.94754} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn26" x={76.540039} y={398.02283} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn27" x={210.9158} y={351.41861} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn28" x={157.21387} y={351.41861} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn29" x={103.51184} y={351.41861} r={16.071173} />
-            <Pawn canMove={canMoveRed} colour={Colour.Red} id="pawn30" x={49.67728} y={351.49512} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn31" x={291.44241} y={770.24463} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn32" x={372.03085} y={909.82788} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn33" x={399.01025} y={863.23688} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn34" x={345.16806} y={863.30017} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn35" x={425.85712} y={816.72235} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn36" x={372.14676} y={816.70795} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn37" x={318.30524} y={816.7724} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn38" x={452.70392} y={770.20789} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn39" x={398.99277} y={770.19196} r={16.071173} />
-            <Pawn canMove={canMoveYellow} colour={Colour.Yellow} id="pawn40" x={345.28326} y={770.17902} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn41" x={452.72672} y={305.07776} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn42" x={398.69955} y={305.25867} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn43" x={345.04459} y={305.21497} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn44" x={291.38403} y={305.16153} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn45" x={425.87802} y={258.57449} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn46" x={371.84854} y={258.75134} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn47" x={318.19077} y={258.70276} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn48" x={399.02933} y={212.07121} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn49" x={344.99753} y={212.24402} r={16.071173} />
-            <Pawn canMove={canMoveBlack} colour={Colour.Black} id="pawn50" x={372.18066} y={165.56793} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn51" x={694.36487} y={723.6073} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn52" x={640.3587} y={723.82465} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn53" x={586.729} y={723.82465} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn54" x={533.0993} y={723.82465} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn55" x={667.51611} y={677.104} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn56" x={613.50775} y={677.31732} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn57" x={559.87518} y={677.3125} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn58" x={640.66748} y={630.60077} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn59" x={586.65668} y={630.80994} r={16.071173} />
-            <Pawn canMove={canMovePurple} colour={Colour.Purple} id="pawn60" x={613.81879} y={584.09747} r={16.071173} />
+            {renderPawns(props.pawns.pawns)}
         </g>
     </svg>;
 };
