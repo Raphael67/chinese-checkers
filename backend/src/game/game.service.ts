@@ -1,8 +1,8 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventEmitter } from 'events';
+import { Coords } from '../board/board';
 import { Player } from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
-import { Coords } from './board';
 import { CacheGameRepository } from './game-cache.repository';
 import { Game, GameStatus } from './game.entity';
 import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
@@ -73,8 +73,8 @@ export class GameService implements IGameService {
     }
 
     public nextPlayer(game: Game): void {
-        this.logger.debug(`${game.id}: Next player`);
         game.currentPlayer = (game.currentPlayer + 1) % 6;
+        this.logger.debug(`player ${game.currentPlayer}`);
         this.eventEmitter.emit('NEXT_PLAYER', game);
     }
 

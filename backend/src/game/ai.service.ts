@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter } from 'events';
-import { Cell, Coords, playerPositions } from './board';
+import { Cell, Coords, playerPositions } from '../board/board';
 import { Game } from './game.entity';
 import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
 
@@ -29,7 +29,7 @@ export class AIService {
     }
 
     public play(game: Game): Coords[] {
-        this.logger.debug(`Bot play in game: ${game.id}`);
+        this.logger.debug('Bot is playing');
         const scorings: Scoring[] = [];
         const target = this.findTarget(game);
         const playerPawns = game.board.getCells().filter((cell) => cell.getPawn() === game.currentPlayer);

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { EventEmitter } from 'events';
+import { BoardController } from '../board/board.controller';
+import { BoardService } from '../board/board.service';
 import { PlayerModule } from '../player/player.module';
 import { PlayerService } from '../player/player.service';
 import { AIService } from './ai.service';
-import { BoardController } from './board.controller';
-import { BoardService } from './board.service';
 import { CacheGameRepository } from './game-cache.repository';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
@@ -58,5 +58,6 @@ export const GAME_SERVICE_EVENT_TOKEN = Symbol('GAME_SERVICE_EVENT_TOKEN');
         BoardService,
         CacheGameRepository,
     ],
+    exports: [GameService, CacheGameRepository],
 })
 export class GameModule { }

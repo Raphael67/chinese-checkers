@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { Game } from '../game/game.entity';
 import { Board, Coords } from './board';
-import { Game } from './game.entity';
 
 export interface IBoardService {
-    isWinner(board: Board, player: number): boolean;
     isValidMove(game: Game, move: Coords[]): boolean;
 }
 
@@ -41,10 +40,6 @@ export class BoardService implements IBoardService {
             }
         }
         return true;
-    }
-
-    public isWinner(board: Board, player: number): boolean {
-        return board.isWinner(player);
     }
 
     private isOneCellJump(from: Coords, to: Coords): boolean {
