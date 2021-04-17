@@ -8,8 +8,13 @@ declare interface ISearchGameParams {
     date?: Date;
     orderBy: 'created_at' | 'rounds';
 }
+
 declare interface IGameParams {
     gameId: string;
+}
+
+declare interface IGetMoveParams extends IGameParams {
+    offset?: number;
 }
 
 declare interface IMoveParams {
@@ -38,6 +43,7 @@ declare interface IRawGamePlayer {
 }
 
 declare interface IGame {
+    currentPlayer: number;
     id: string;
     players?: IGamePlayer[];
     createdAt: Date;
