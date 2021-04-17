@@ -55,7 +55,7 @@ export class BoardService implements IBoardService {
     private isJumpOver(board: Board, from: Coords, to: Coords): boolean {
         if (Math.abs(to.x - from.x) <= 4 && Math.abs(to.y - from.y) <= 2) {
             const between = board.getCell(new Coords(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2));
-            if (between.getPawn()) return true;
+            if (between.getPawn() !== undefined) return true;
         }
         return false;
     }
