@@ -59,8 +59,9 @@ export const getGames = async (values: ISearchGameParams): Promise<IGame[]> => {
 };
 
 const convertRawGame = (rawGame: IRawGame): IGame => {
-    const { created_at, id, longest_streak, players, turn, status } = rawGame;
+    const { created_at, id, longest_streak, players, turn, status, current_player } = rawGame;
     return {
+        currentPlayer: current_player,
         id,
         createdAt: new Date(created_at),
         longestStreak: longest_streak,

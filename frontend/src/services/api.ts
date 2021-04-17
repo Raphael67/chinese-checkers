@@ -11,10 +11,10 @@ interface IConfig {
 
 let config: IConfig = {
     api: {
-        hostname: window.location.host,
-        protocol: window.location.protocol,
-        path: '/api',
-        port: 443
+        hostname: 'game.corteks.net',
+        port: 443,
+        protocol: 'https:',
+        path: '/api'
     },
 };
 
@@ -83,7 +83,7 @@ export default class Api {
         );
     }
 
-    public static getMoves(params: IGameParams): Promise<IPosition[][]> {
+    public static getMoves(params: IGetMoveParams): Promise<IPosition[][]> {
         return Api.fetch(
             routes.moves,
             params
