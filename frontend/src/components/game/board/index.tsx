@@ -53,9 +53,9 @@ const Board = (): ReactElement => {
     });
 
     const refresh = useCallback(async () => {
-        const moves = await game.getMoves(gameParams.gameId).catch((err) => {
+        console.log(await game.getMoves(gameParams.gameId).catch((err) => {
             console.error(err);
-        });
+        }));
         const pawns = mapStateToObj.pawns;
         setPawns({
             pawns,
