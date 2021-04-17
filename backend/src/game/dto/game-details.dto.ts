@@ -1,4 +1,4 @@
-import { Game } from '../game.entity';
+import { Game, GameStatus } from '../game.entity';
 
 class GamePlayerDto {
     public nickname: string;
@@ -11,6 +11,7 @@ export class GameDetailsDto {
     ) {
         this.created_at = game.createdAt;
         this.id = game.id;
+        this.status = game.status;
         this.longest_streak = game.longestStreak;
         this.turn = game.turn;
         this.current_player = game.currentPlayer;
@@ -25,6 +26,7 @@ export class GameDetailsDto {
     }
 
     public id: string;
+    public status: GameStatus;
     public turn: number;
     public current_player: number;
     public longest_streak: number;
