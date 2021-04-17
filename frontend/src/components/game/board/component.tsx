@@ -12,6 +12,7 @@ interface IProps {
     player?: IPlayer;
     path: IHashPath;
     placesHighlighted: IHashPossiblePlaces;
+    game?: IGame;
 }
 
 const BoardComponent = (props: IProps) => {
@@ -48,7 +49,8 @@ const BoardComponent = (props: IProps) => {
             if (placeElement) {
                 const { cx, cy } = placeElement as unknown as SVGCircleElement;
                 const { id, colour } = pawn;
-                return <Pawn key={id} canMove={player && player.position !== undefined ? colour === ColourPosition[player.position] : false} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16.071173} />;
+                const canMove = player && player.position !== undefined && props.game && props.game.currentPlayer === player.position ? colour === ColourPosition[player.position] : false;
+                return <Pawn key={id} canMove={canMove} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16.071173} />;
             }
             return undefined;
         });

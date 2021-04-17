@@ -25,7 +25,11 @@ export interface IHashPossiblePlaces {
     hash: string;
 }
 
-const Board = (): ReactElement => {
+interface IProps {
+    game?: IGame;
+}
+
+const Board = (props: IProps): ReactElement => {
     const { game } = useContext(AppContext);
     const timer = useRef<NodeJS.Timeout>();
     const gameParams = useParams<IGameParams>();
@@ -102,6 +106,7 @@ const Board = (): ReactElement => {
         path={mapStateToObj.path}
         clickPlace={clickPlace}
         doubleClickPlace={doubleClickPlace}
+        game={props.game}
     />;
 };
 export default Board;
