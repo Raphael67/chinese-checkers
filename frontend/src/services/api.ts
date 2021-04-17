@@ -1,9 +1,9 @@
 import { IRoute, routes } from 'routes';
-import { ColourMap, ColourMapReverse, IndexedColourMap } from '../core/board';
 
 interface IConfig {
     api: {
         hostname: string;
+        port: number;
         protocol: string;
         path?: string;
     };
@@ -13,19 +13,21 @@ let config: IConfig = {
     api: {
         hostname: window.location.host,
         protocol: window.location.protocol,
-        path: '/api'
+        path: '/api',
+        port: 443
     },
 };
 
 export default class Api {
     public static register(gameParams: IGameParams, params: IRegisterParams): Promise<IUser> {
+        const { nickname, position } = params;
         return Api.fetch(
             routes.register,
             gameParams,
             {
                 body: JSON.stringify({
-                    nickname: params.nickname,
-                    position: Object.keys(ColourMap).indexOf(params.color)
+                    nickname,
+                    position
                 }),
             },
         );
@@ -62,13 +64,10 @@ export default class Api {
     }
 
     public static async getGame(params: IGameParams): Promise<IRawGame> {
-        const game = await Api.fetch(
+        return await Api.fetch(
             routes.game,
             params
         );
-
-        game.players = game.players.map((player: { nickname: string, position: number; }): IRawGamePlayer => ({ nickname: player.nickname, color: ColourMapReverse[IndexedColourMap[player.position]] }));
-        return game;
     }
 
     public static getPlayers(): Promise<IPlayer[]> {
@@ -84,14 +83,14 @@ export default class Api {
         );
     }
 
-    public static getMoves(params: IGameParams): Promise<IMove[]> {
+    public static getMoves(params: IGameParams): Promise<IPosition[]> {
         return Api.fetch(
             routes.moves,
             params
         );
     }
 
-    public static newMove(params: IMoveParams): Promise<IMove> {
+    public static newMove(params: IMoveParams) {
         const { gameId, moves, playerIndex } = params;
         return Api.fetch(
             routes.newMove,
