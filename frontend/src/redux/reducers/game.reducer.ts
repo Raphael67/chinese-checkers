@@ -4,11 +4,13 @@ export interface IGameState {
     possiblePlaces: string[];
     path: string[];
     pawnPlace?: IPawnPlace;
+    pawns: IPawnPlace[];
 }
 
 const defaultState: IGameState = {
     possiblePlaces: [],
-    path: []
+    path: [],
+    pawns: []
 };
 
 const savedState: IGameState = defaultState;
@@ -26,6 +28,10 @@ const game = (state: IGameState = savedState, action: ActionTypes) => {
 
         case Type.SET_PAWN_PLACE:
             temporaryState = { ...temporaryState, pawnPlace: action.payload };
+            break;
+
+        case Type.SET_PAWNS:
+            temporaryState = { ...temporaryState, pawns: action.payload };
             break;
         default:
     }

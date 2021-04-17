@@ -1,6 +1,5 @@
-import { ColourMap } from 'core/board';
 import { Dispatch } from 'react';
-import { ISetGame, ISetPath, ISetPawnPlace, ISetPossiblePlaces, Type } from 'redux/actions/types';
+import { ISetGame, ISetPath, ISetPawnPlace, ISetPawns, ISetPossiblePlaces, Type } from 'redux/actions/types';
 import Api from 'services/api';
 
 export const setPossiblePlaces = async (dispatch: Dispatch<ISetPossiblePlaces>, possiblePlaces: string[]) => {
@@ -17,13 +16,20 @@ export const setPath = async (dispatch: Dispatch<ISetPath>, path: string[]) => {
     });
 };
 
-export const setPawnPlace = async (dispatch: Dispatch<ISetPawnPlace>, pawn: string, place: string) => {
+export const setPawnPlace = async (dispatch: Dispatch<ISetPawnPlace>, pawn: IPawn, place: string) => {
     dispatch({
         payload: {
             pawn,
             place
         },
         type: Type.SET_PAWN_PLACE
+    });
+};
+
+export const setPawns = async (dispatch: Dispatch<ISetPawns>, pawns: IPawnPlace[]) => {
+    dispatch({
+        payload: pawns,
+        type: Type.SET_PAWNS
     });
 };
 
@@ -53,18 +59,19 @@ export const getGames = async (values: ISearchGameParams): Promise<IGame[]> => {
 };
 
 const convertRawGame = (rawGame: IRawGame): IGame => {
-    const { created_at, game_id, longest_streak, players, rounds } = rawGame;
+    const { created_at, id, longest_streak, players, turn, status } = rawGame;
     return {
-        id: game_id,
+        id,
         createdAt: new Date(created_at),
         longestStreak: longest_streak,
         players: players.map((player: IRawGamePlayer): IGamePlayer => {
-            const { color, nickname } = player;
+            const { position, nickname } = player;
             return {
                 nickname,
-                colour: ColourMap[color as IRegisterParams['color']]
+                position
             };
         }),
-        rounds
+        status,
+        rounds: turn
     };
 };

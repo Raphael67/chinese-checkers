@@ -1,4 +1,3 @@
-import { ColourMap } from 'core/board';
 import { Dispatch } from 'react';
 import { IResetSession, ISetPlayer, Type } from 'redux/actions/types';
 import Api from 'services/api';
@@ -8,10 +7,11 @@ export const register = async (dispatch: Dispatch<ISetPlayer>, gameParams: IGame
         throw err;
     });
 
+    const { nickname, position } = params;
     dispatch({
         payload: {
-            nickname: params.nickname,
-            colour: ColourMap[params.color]
+            nickname,
+            position
         },
         type: Type.SET_PLAYER
     });
