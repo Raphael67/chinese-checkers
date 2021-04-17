@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Game } from '../game/game.entity';
 import { Coords } from './board';
 import { BoardService } from './board.service';
-import { Game } from './game.entity';
 
 describe('BoardService', () => {
     let service: BoardService;

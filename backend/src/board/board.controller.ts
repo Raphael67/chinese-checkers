@@ -1,15 +1,24 @@
 import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CacheGameRepository } from '../game/game-cache.repository';
+import { GameStatus } from '../game/game.entity';
+import { GameService } from '../game/game.service';
 import { BoardService } from './board.service';
 import { CellDto } from './dto/cell.dto';
 import { CoordsDto } from './dto/coords.dto';
-import { CacheGameRepository } from './game-cache.repository';
-import { GameStatus } from './game.entity';
-import { GameService } from './game.service';
 
 @Controller('/api/board')
 @ApiTags('Board')
 export class BoardController {
+    public constructor(
+        @Inject(GameService)
+        private readonly gameService: GameService,
+        @Inject(BoardService)
+        private readonly boardService: BoardService,
+        @Inject(CacheGameRepository)
+        private readonly cacheGameRepository: CacheGameRepository,
+    ) { }
+
     @Get('/:gameId')
     @ApiOperation({ summary: 'Return all pawns position for a game' })
     public async getBoard(@Param('gameId') gameId: string): Promise<CellDto[]> {
@@ -50,13 +59,4 @@ export class BoardController {
         }
         await this.gameService.playMove(game, moveDto);
     }
-
-    @Inject(BoardService)
-    private readonly boardService: BoardService;
-
-    @Inject(CacheGameRepository)
-    private readonly cacheGameRepository: CacheGameRepository;
-
-    @Inject(GameService)
-    private readonly gameService: GameService;
 }
