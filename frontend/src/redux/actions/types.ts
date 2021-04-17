@@ -4,7 +4,8 @@ export enum Type {
     SET_PATH,
     SET_PAWN_PLACE,
     SET_GAME,
-    RESET_SESSION
+    RESET_SESSION,
+    SET_PAWNS
 }
 export interface ISetPlayer {
     payload: IPlayer;
@@ -35,4 +36,8 @@ export interface IResetSession {
     type: Type.RESET_SESSION;
 }
 
-export type ActionTypes = ISetPlayer | ISetPossiblePlaces | ISetPath | ISetPawnPlace | ISetGame | IResetSession;
+export interface ISetPawns {
+    payload: IPawnPlace[];
+    type: Type.SET_PAWNS;
+}
+export type ActionTypes = ISetPlayer | ISetPossiblePlaces | ISetPath | ISetPawnPlace | ISetGame | IResetSession | ISetPawns;
