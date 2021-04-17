@@ -13,7 +13,7 @@ export class GameDetailsDto {
         this.id = game.id;
         this.longest_streak = game.longestStreak;
         this.turn = game.turn;
-        this.currentPlayer = game.currentPlayer;
+        this.current_player = game.currentPlayer;
         this.players = game.players
             .map((player, index) => {
                 if (!player) return;
@@ -26,7 +26,7 @@ export class GameDetailsDto {
 
     public id: string;
     public turn: number;
-    public currentPlayer: number;
+    public current_player: number;
     public longest_streak: number;
     public created_at: Date;
     public players: GamePlayerDto[];
