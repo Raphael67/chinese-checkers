@@ -59,6 +59,10 @@ export const GAME_SERVICE_EVENT_TOKEN = Symbol('GAME_SERVICE_EVENT_TOKEN');
         BoardService,
         CacheGameRepository,
     ],
-    exports: [GameService, CacheGameRepository],
+    exports: [
+        GameService,
+        CacheGameRepository,
+        GAME_SERVICE_EVENT_TOKEN,
+    ],
 })
 export class GameModule { }
