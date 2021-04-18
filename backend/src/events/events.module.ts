@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GameModule } from '../game/game.module';
+import { ConnectionRepository } from './connection.repository';
 import { EventsGateway } from './events.gateway';
 
 @Module({
@@ -8,6 +9,7 @@ import { EventsGateway } from './events.gateway';
     ],
     providers: [
         EventsGateway,
+        ConnectionRepository,
     ],
 })
 export class EventsModule { }
