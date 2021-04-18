@@ -74,6 +74,7 @@ export class GameService implements IGameService {
 
     public nextPlayer(game: Game): void {
         game.currentPlayer = (game.currentPlayer + 1) % 6;
+        if (game.currentPlayer === 0) game.turn++;
         this.logger.debug(`player ${game.currentPlayer}`);
         this.eventEmitter.emit('NEXT_PLAYER', game);
     }
