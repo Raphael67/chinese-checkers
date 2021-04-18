@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { EventEmitter } from 'events';
 import { Cell, Coords, playerPositions } from '../board/board';
+import { IGameEvents } from './game-events.interface';
 import { Game } from './game.entity';
 import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
 
@@ -18,7 +18,7 @@ export class AIService {
 
     public constructor(
         @Inject(GAME_SERVICE_EVENT_TOKEN)
-        private readonly eventEmitter: EventEmitter
+        private readonly eventEmitter: IGameEvents
     ) {
         this.eventEmitter.on('NEXT_PLAYER', (game: Game) => {
             if (game.players[game.currentPlayer].isBot) {

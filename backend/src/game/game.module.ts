@@ -6,6 +6,7 @@ import { PlayerModule } from '../player/player.module';
 import { PlayerService } from '../player/player.service';
 import { AIService } from './ai.service';
 import { CacheGameRepository } from './game-cache.repository';
+import { IGameEvents } from './game-events.interface';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
 
@@ -35,7 +36,7 @@ export const GAME_SERVICE_EVENT_TOKEN = Symbol('GAME_SERVICE_EVENT_TOKEN');
         },
         {
             provide: GameService,
-            useFactory: (eventEmitter: EventEmitter, playerService: PlayerService, cacheGameRepository: CacheGameRepository) => {
+            useFactory: (eventEmitter: IGameEvents, playerService: PlayerService, cacheGameRepository: CacheGameRepository) => {
                 return new GameService(
                     cacheGameRepository,
                     playerService,
@@ -50,7 +51,7 @@ export const GAME_SERVICE_EVENT_TOKEN = Symbol('GAME_SERVICE_EVENT_TOKEN');
         },
         {
             provide: AIService,
-            useFactory: (eventEmitter: EventEmitter) => {
+            useFactory: (eventEmitter: IGameEvents) => {
                 return new AIService(eventEmitter);
             },
             inject: [GAME_SERVICE_EVENT_TOKEN],
