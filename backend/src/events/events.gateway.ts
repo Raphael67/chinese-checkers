@@ -1,6 +1,8 @@
 import { Inject, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { Coords } from '../board/board';
+import { BoardService } from '../board/board.service';
 import { CoordsDto } from '../board/dto/coords.dto';
 import { IGameEvents } from '../game/game-events.interface';
 import { Game } from '../game/game.entity';
@@ -15,14 +17,17 @@ export enum Events {
     NEW_PLAYER = 'PLAYERS', // [{nickname: string, online: boolean}]
     GAME_STATE = 'GAME_STATE', // {status: GameStatus, turn: number, current_player: number, longest_streak: number}
     MOVE = 'MOVE', // Coords[]
-    ERROR = 'ERROR', // message
 }
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect {
     private readonly logger: Logger = new Logger(EventsGateway.name);
+
     @Inject(GameService)
     private readonly gameService: GameService;
+
+    @Inject(BoardService)
+    private readonly boardService: BoardService;
 
     @Inject(GAME_SERVICE_EVENT_TOKEN)
     private readonly eventEmitter: IGameEvents;
@@ -66,9 +71,27 @@ export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect {
             }
             client.join(game.id);
         } catch (err) {
-            client.emit('err', { message: err.message });
+            client.emit('ERROR', { message: err.message });
+            this.logger.warn(err);
             client.disconnect();
         }
+    }
+
+    @SubscribeMessage(Events.MOVE)
+    public async handleMove(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() move: Coords[],
+    ): Promise<void> {
+        const connection = this.connectionRepository.findBySocketId(client.id);
+        if (!connection) return this.logger.warn('Player tried to move on unknown game');
+        const game = await this.gameService.loadGame(connection.gameId);
+        try {
+            this.boardService.isValidMove(game, move);
+        } catch (err) {
+            client.emit('ERROR', { message: err.message });
+            return;
+        }
+        await this.gameService.playMove(game, move);
     }
 
     @SubscribeMessage(Events.MOVE)
