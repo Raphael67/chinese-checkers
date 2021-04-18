@@ -84,6 +84,7 @@ export class GameService implements IGameService {
         if (move[0]) {
             game.board.getCell(move[0]).setPawn(undefined);
             game.board.getCell(move[move.length - 1]).setPawn(game.currentPlayer);
+            this.updateLongestStreak(game, move.length - 1);
         }
         if (game.board.isWinner(game.currentPlayer)) {
             await this.endGame(game);
@@ -111,8 +112,6 @@ export class GameService implements IGameService {
         return game;
     }
 
-
-
     private readonly logger: Logger = new Logger(GameService.name);
 
     private isPositionAvailable(game: Game, position: number): boolean {
@@ -127,5 +126,11 @@ export class GameService implements IGameService {
             return false;
         }
         return true;
+    }
+
+    private updateLongestStreak(game: Game, streak: number) {
+        if (streak > game.longestStreak) {
+            game.longestStreak = streak;
+        }
     }
 }
