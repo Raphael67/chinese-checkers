@@ -78,6 +78,12 @@ export class GameService implements IGameService {
         player.online = true;
     }
 
+    public disconnectPlayer(game: Game, nickname: string): void {
+        const player = game.players.find((player) => player.nickname === nickname);
+        if (!player) throw new NotFoundException(`Player ${nickname} not present in this game`);
+        player.online = false;
+    }
+
     public nextPlayer(game: Game): void {
         game.currentPlayer = (game.currentPlayer + 1) % 6;
         if (game.currentPlayer === 0) game.turn++;

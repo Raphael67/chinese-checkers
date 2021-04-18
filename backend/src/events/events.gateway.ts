@@ -1,13 +1,18 @@
 import { Inject, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { CoordsDto } from '../board/dto/coords.dto';
+import { Game } from '../game/game.entity';
 import { GameService } from '../game/game.service';
+import { ConnectionRepository } from './connection.repository';
+import { JoinGameDto } from './dto/join-game.dto';
 
 export enum Events {
+    JOIN_GAME = 'JOIN_GAME', // gameId, nickname
     NEW_PLAYER = 'NEW_PLAYER', // nickname, position
     GAME_STATE = 'GAME_STATE', // status, turn, current_player, longest_streak
     MOVE = 'MOVE', // Coords[]
+    ERROR = 'ERROR', // message
 }
 
 @WebSocketGateway()
@@ -16,25 +21,56 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     @Inject(GameService)
     private readonly gameService: GameService;
 
+    @Inject(ConnectionRepository)
+    private readonly connectionRepository: ConnectionRepository;
+
     public afterInit(server: Server): void {
         this.logger.debug('Websocket server initialized');
     }
 
     public handleConnection(
-        @ConnectedSocket() client: any, ...args: any[]
+        @ConnectedSocket() client: Socket, ...args: any[]
     ): void {
         this.logger.debug('Websocket connected');
     }
 
-    public handleDisconnect(
-        @ConnectedSocket() client: any
-    ) {
+    public async handleDisconnect(
+        @ConnectedSocket() client: Socket
+    ): Promise<void> {
         this.logger.debug('Websocket disconnected');
+        const connection = this.connectionRepository.findBySocketId(client.id);
+        if (!connection) return;
+        const game = await this.gameService.loadGame(connection.gameId);
+        this.gameService.disconnectPlayer(game, connection.nickname);
+        this.connectionRepository.removeConnection(connection.socketId);
+    }
+
+    @SubscribeMessage(Events.JOIN_GAME)
+    public async handleJoinGame(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() joinGameDto: JoinGameDto
+    ): Promise<void> {
+        let game: Game;
+        try {
+            game = await this.gameService.loadGame(joinGameDto.gameId);
+            if (joinGameDto.nickname) {
+                this.gameService.joinGame(game, joinGameDto.nickname);
+                const connection = this.connectionRepository.findByPlayer(joinGameDto.gameId, joinGameDto.nickname);
+                const socket = this.server.clients().connected[connection.socketId];
+                socket.disconnect(true);
+                this.connectionRepository.removeConnection(connection.socketId);
+                this.connectionRepository.addConnection(client.id, joinGameDto.gameId, joinGameDto.gameId);
+            }
+            client.join(game.id);
+        } catch (err) {
+            client.emit('err', { message: err.message });
+            client.disconnect();
+        }
     }
 
     @SubscribeMessage(Events.MOVE)
     public handleMessage(
-        @ConnectedSocket() client: any,
+        @ConnectedSocket() client: Socket,
         @MessageBody() move: CoordsDto[]
     ): void {
         this.logger.debug(move);
