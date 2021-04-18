@@ -2,15 +2,17 @@ import { Inject, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { CoordsDto } from '../board/dto/coords.dto';
+import { IGameEvents } from '../game/game-events.interface';
 import { Game } from '../game/game.entity';
+import { GAME_SERVICE_EVENT_TOKEN } from '../game/game.module';
 import { GameService } from '../game/game.service';
 import { ConnectionRepository } from './connection.repository';
 import { JoinGameDto } from './dto/join-game.dto';
 
 export enum Events {
-    JOIN_GAME = 'JOIN_GAME', // gameId, nickname
-    NEW_PLAYER = 'NEW_PLAYER', // nickname, position
-    GAME_STATE = 'GAME_STATE', // status, turn, current_player, longest_streak
+    JOIN_GAME = 'JOIN_GAME', // {gameId: string, nickname?: string}
+    NEW_PLAYER = 'PLAYERS', // [{nickname: string, online: boolean}]
+    GAME_STATE = 'GAME_STATE', // {status: GameStatus, turn: number, current_player: number, longest_streak: number}
     MOVE = 'MOVE', // Coords[]
     ERROR = 'ERROR', // message
 }
@@ -21,11 +23,19 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     @Inject(GameService)
     private readonly gameService: GameService;
 
+    @Inject(GAME_SERVICE_EVENT_TOKEN)
+    private readonly eventEmitter: IGameEvents;
+
     @Inject(ConnectionRepository)
     private readonly connectionRepository: ConnectionRepository;
 
     public afterInit(server: Server): void {
         this.logger.debug('Websocket server initialized');
+        this.eventEmitter.on('GAME_STATE', (game: Game) => {
+            this.server.to(game.id).emit('GAME_STATE', {
+                ...game,
+            });
+        });
     }
 
     public handleConnection(

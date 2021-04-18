@@ -89,6 +89,7 @@ export class GameService implements IGameService {
         if (game.currentPlayer === 0) game.turn++;
         this.logger.debug(`player ${game.currentPlayer}`);
         this.eventEmitter.emit('NEXT_PLAYER', game);
+        this.eventEmitter.emit('GAME_STATE', game);
     }
 
     public async playMove(game: Game, move: ICoords[]): Promise<void> {
