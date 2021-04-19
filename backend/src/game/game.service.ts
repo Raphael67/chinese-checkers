@@ -1,9 +1,9 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { EventEmitter } from 'events';
 import { Coords } from '../board/board';
 import { Player } from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
 import { CacheGameRepository } from './game-cache.repository';
+import { IGameEvents } from './game-events.interface';
 import { Game, GameStatus } from './game.entity';
 import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
 
@@ -26,7 +26,7 @@ export class GameService implements IGameService {
         private readonly playerService: PlayerService,
 
         @Inject(GAME_SERVICE_EVENT_TOKEN)
-        private readonly eventEmitter: EventEmitter,
+        private readonly eventEmitter: IGameEvents,
     ) {
         this.eventEmitter.on('MOVE', (game: Game, move: Coords[]) => {
             this.playMove(game, move)
@@ -72,11 +72,24 @@ export class GameService implements IGameService {
         this.nextPlayer(game);
     }
 
+    public joinGame(game: Game, nickname: string): void {
+        const player = game.players.find((player) => player.nickname === nickname);
+        if (!player) throw new NotFoundException(`Player ${nickname} not present in this game`);
+        player.online = true;
+    }
+
+    public disconnectPlayer(game: Game, nickname: string): void {
+        const player = game.players.find((player) => player.nickname === nickname);
+        if (!player) throw new NotFoundException(`Player ${nickname} not present in this game`);
+        player.online = false;
+    }
+
     public nextPlayer(game: Game): void {
         game.currentPlayer = (game.currentPlayer + 1) % 6;
         if (game.currentPlayer === 0) game.turn++;
         this.logger.debug(`player ${game.currentPlayer}`);
         this.eventEmitter.emit('NEXT_PLAYER', game);
+        this.eventEmitter.emit('GAME_STATE', game);
     }
 
     public async playMove(game: Game, move: ICoords[]): Promise<void> {

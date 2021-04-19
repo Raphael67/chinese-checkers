@@ -8,5 +8,6 @@ import { BoardService } from './board.service';
     imports: [GameModule],
     controllers: [BoardController],
     providers: [BoardService],
+    exports: [BoardService],
 })
 export class BoardModule { }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Game } from '../game/game.entity';
 import { Board, Coords } from './board';
 
@@ -13,15 +13,18 @@ export class BoardService implements IBoardService {
         for (const coords of move) {
             // Only valid cell in path
             if (!game.board.getCell(coords)) {
-                throw new Error(`Only valid cell in path: ${moveIndex}: ${coords}`);
+                this.logger.warn(`Player tried to move on invalid cell: ${JSON.stringify(coords)}`);
+                throw new Error(`Only valid cell in path: ${moveIndex}: ${JSON.stringify(coords)}`);
             }
             // first cell should contain a pawn from current player
             if (moveIndex === 0 && game.board.getCell(coords).getPawn() !== game.currentPlayer) {
-                throw new Error(`first cell should contain a pawn from specified player: ${moveIndex}: ${coords.toString()}`);
+                this.logger.warn(`Player tried to move from another pawn at: ${JSON.stringify(coords)}`);
+                throw new Error(`first cell should contain a pawn from specified player: ${moveIndex}: ${JSON.stringify(coords)}`);
             }
             // Other cells should be free
             if (moveIndex > 0 && game.board.getCell(coords).getPawn() !== undefined) {
-                throw new Error(`Other cells should be free: ${moveIndex}: ${coords}`);
+                this.logger.warn(`Player tried to move on a not empty cell: ${JSON.stringify(coords)}`);
+                throw new Error(`Other cells should be free: ${moveIndex}: ${JSON.stringify(coords)}`);
             }
             moveIndex++;
         }
@@ -41,6 +44,8 @@ export class BoardService implements IBoardService {
         }
         return true;
     }
+
+    private readonly logger: Logger = new Logger(BoardService.name);
 
     private isOneCellJump(from: Coords, to: Coords): boolean {
         if (Math.abs(to.x - from.x) <= 2 && Math.abs(to.y - from.y) <= 1) return true;
