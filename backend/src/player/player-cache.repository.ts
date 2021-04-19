@@ -10,11 +10,7 @@ export class PlayerCacheRepository {
         return players;
     }
 
-    public findOneById(playerId: string): Player {
-        return this.playerMap.get(playerId);
-    }
-
-    public findOneByNickname(nickname: string): Player {
+    public async findOneByNickname(nickname: string): Promise<Player> {
         let player: Player;
         this.playerMap.forEach(p => {
             if (p.nickname === nickname) {
@@ -28,8 +24,12 @@ export class PlayerCacheRepository {
         this.playerMap.set(player.id, player);
     }
 
-    public update(playerId: string, playerData: Partial<Player>): Player {
-        let player = this.playerMap.get(playerId);
+    public async save(player: Player): Promise<void> {
+        this.playerMap.set(player.nickname, player);
+    }
+
+    public async update(nickname: string, playerData: Partial<Player>): Promise<Player> {
+        let player = this.playerMap.get(nickname);
         player = Object.assign(player, playerData);
         return player;
     }

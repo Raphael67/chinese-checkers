@@ -4,7 +4,6 @@ export class Player {
     public constructor(nickname: string) {
         this.nickname = nickname;
     }
-    public id: string = uuid();
     public nickname: string;
     public online: boolean = false;
     public isBot: boolean = false;

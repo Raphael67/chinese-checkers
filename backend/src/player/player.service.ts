@@ -23,9 +23,9 @@ export class PlayerService implements IPlayerService {
 
     public async updatePLayer(player: Player): Promise<Player> {
         const existingPlayer = await this.playerCacheRepository
-            .update(player.id, player);
+            .update(player.nickname, player);
 
-        if (!existingPlayer) throw new NotFoundException(`Player ${existingPlayer.id} does not exist`);
+        if (!existingPlayer) throw new NotFoundException(`Player ${existingPlayer.nickname} does not exist`);
         return existingPlayer;
     }
 
