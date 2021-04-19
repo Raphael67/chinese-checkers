@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { Coords } from '../board/board';
-import { Game } from './game.entity';
+import { Game } from './game.class';
 
 export interface IGameEvents extends EventEmitter {
     on(event: 'MOVE', listener: (game: Game, move: Coords[]) => void): this;

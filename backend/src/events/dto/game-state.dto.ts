@@ -1,4 +1,4 @@
-import { Game, GameStatus } from '../../game/game.entity';
+import { Game, GameStatus } from '../../game/game.class';
 
 export class GameStateDto {
     public status: GameStatus;

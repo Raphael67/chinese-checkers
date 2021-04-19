@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Player } from './player.entity';
+import { Player } from './player.class';
 
 @Injectable()
 export class PlayerCacheRepository {

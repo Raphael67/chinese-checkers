@@ -4,7 +4,7 @@ import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
 import { CacheGameRepository } from './game-cache.repository';
-import { GameStatus } from './game.entity';
+import { GameStatus } from './game.class';
 import { GameService } from './game.service';
 
 @Controller('/api/game')

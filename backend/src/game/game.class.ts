@@ -1,7 +1,7 @@
 
 import { v4 as uuid } from 'uuid';
 import { Board, Coords } from '../board/board';
-import { Player } from '../player/player.entity';
+import { Player } from '../player/player.class';
 
 export enum GameStatus {
     CREATED = 'CREATED',

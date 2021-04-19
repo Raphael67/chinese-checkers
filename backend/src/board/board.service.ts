@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Game } from '../game/game.entity';
+import { Game } from '../game/game.class';
 import { Board, Coords } from './board';
 
 export interface IBoardService {

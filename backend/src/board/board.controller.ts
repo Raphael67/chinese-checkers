@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CacheGameRepository } from '../game/game-cache.repository';
-import { GameStatus } from '../game/game.entity';
+import { GameStatus } from '../game/game.class';
 import { GameService } from '../game/game.service';
 import { BoardService } from './board.service';
 import { CellDto } from './dto/cell.dto';

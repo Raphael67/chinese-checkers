@@ -1,4 +1,4 @@
-import { Game, GameStatus } from '../game.entity';
+import { Game, GameStatus } from '../game.class';
 
 class GamePlayerDto {
     public nickname: string;

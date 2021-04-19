@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cell, Coords, playerPositions } from '../board/board';
 import { IGameEvents } from '../game/game-events.interface';
-import { Game } from '../game/game.entity';
+import { Game } from '../game/game.class';
 import { GAME_SERVICE_EVENT_TOKEN } from '../game/game.module';
 
 interface Scoring {

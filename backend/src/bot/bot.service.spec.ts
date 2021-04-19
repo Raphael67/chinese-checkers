@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter } from 'events';
-import { Game } from '../game/game.entity';
+import { Game } from '../game/game.class';
 import { GAME_SERVICE_EVENT_TOKEN } from '../game/game.module';
 import { BotService } from './bot.service';
 

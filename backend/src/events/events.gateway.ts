@@ -5,7 +5,7 @@ import { Coords } from '../board/board';
 import { BoardService } from '../board/board.service';
 import { CoordsDto } from '../board/dto/coords.dto';
 import { IGameEvents } from '../game/game-events.interface';
-import { Game } from '../game/game.entity';
+import { Game } from '../game/game.class';
 import { GAME_SERVICE_EVENT_TOKEN } from '../game/game.module';
 import { GameService } from '../game/game.service';
 import { ConnectionRepository } from './connection.repository';

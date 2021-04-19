@@ -1,7 +1,7 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { CacheGameRepository } from '../game/game-cache.repository';
-import { Game } from '../game/game.entity';
+import { Game } from '../game/game.class';
 import { GameService } from '../game/game.service';
 import { BoardController } from './board.controller';
 import { BoardService } from './board.service';

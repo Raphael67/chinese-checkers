@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Game } from '../game/game.entity';
+import { Game } from '../game/game.class';
 import { Coords } from './board';
 import { BoardService } from './board.service';
 

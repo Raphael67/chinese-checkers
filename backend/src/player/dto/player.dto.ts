@@ -1,4 +1,4 @@
-import { Player } from '../player.entity';
+import { Player } from '../player.class';
 
 export class PlayerDto {
     public constructor(player: Player) {

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Player } from '../player/player.entity';
+import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
 import { CacheGameRepository } from './game-cache.repository';
+import { Game } from './game.class';
 import { GameController } from './game.controller';
-import { Game } from './game.entity';
 import { GameService } from './game.service';
 
 class PlayerServiceMock extends PlayerService { }

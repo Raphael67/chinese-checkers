@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter } from 'events';
-import { Player } from '../player/player.entity';
+import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
 import { CacheGameRepository } from './game-cache.repository';
-import { Game } from './game.entity';
+import { Game } from './game.class';
 import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
 import { GameService } from './game.service';
 

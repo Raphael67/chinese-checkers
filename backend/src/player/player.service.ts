@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PlayerCacheRepository } from './player-cache.repository';
-import { Player } from './player.entity';
+import { Player } from './player.class';
 
 interface IPlayerService {
     upsertPlayer(nickname: string): Promise<Player>;
