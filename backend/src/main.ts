@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ConfigService } from './config/config.service';
+import { version } from './version.json';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -15,12 +15,10 @@ async function bootstrap() {
         },
     }));
 
-    const configSerice = app.get<ConfigService>(ConfigService);
-
     const config = new DocumentBuilder()
         .setTitle('Chinese checkers')
         .setDescription('The chinese checkers API description')
-        .setVersion(configSerice.getVersion())
+        .setVersion(version)
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
