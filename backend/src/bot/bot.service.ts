@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cell, Coords, playerPositions } from '../board/board';
-import { IGameEvents } from './game-events.interface';
-import { Game } from './game.entity';
-import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
+import { IGameEvents } from '../game/game-events.interface';
+import { Game } from '../game/game.entity';
+import { GAME_SERVICE_EVENT_TOKEN } from '../game/game.module';
 
 interface Scoring {
     id: string;
@@ -13,8 +13,8 @@ interface Scoring {
 }
 
 @Injectable()
-export class AIService {
-    private readonly logger: Logger = new Logger(AIService.name);
+export class BotService {
+    private readonly logger: Logger = new Logger(BotService.name);
 
     public constructor(
         @Inject(GAME_SERVICE_EVENT_TOKEN)

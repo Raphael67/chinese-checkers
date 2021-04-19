@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter } from 'events';
-import { AIService } from './ai.service';
-import { Game } from './game.entity';
-import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
+import { Game } from '../game/game.entity';
+import { GAME_SERVICE_EVENT_TOKEN } from '../game/game.module';
+import { BotService } from './bot.service';
 
 describe('AIService', () => {
-    let service: AIService;
+    let service: BotService;
     const eventEmitter: EventEmitter = new EventEmitter();
 
     beforeEach(async () => {
@@ -15,11 +15,11 @@ describe('AIService', () => {
                     provide: GAME_SERVICE_EVENT_TOKEN,
                     useValue: eventEmitter,
                 },
-                AIService,
+                BotService,
             ],
         }).compile();
 
-        service = module.get<AIService>(AIService);
+        service = module.get<BotService>(BotService);
     });
     describe('play', () => {
         it('should return a move', () => {
