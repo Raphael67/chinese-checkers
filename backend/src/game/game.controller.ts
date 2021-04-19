@@ -3,7 +3,6 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
-import { CacheGameRepository } from './game-cache.repository';
 import { GameStatus } from './game.class';
 import { GameService } from './game.service';
 
@@ -22,7 +21,7 @@ export class GameController {
         @Query('date') date?: string,
         @Query('orderBy') orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<GameDetailsDto[]> {
-        const games = await this.cacheGameRepository.findByPlayerNickname(nickname);
+        const games = await this.gameService.find();
         return games.map((game) => new GameDetailsDto(game));
     }
 
@@ -67,8 +66,4 @@ export class GameController {
 
     @Inject(PlayerService)
     private readonly playerService: PlayerService;
-
-    @Inject(CacheGameRepository)
-    private readonly cacheGameRepository: CacheGameRepository;
-
 }

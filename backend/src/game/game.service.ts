@@ -36,6 +36,10 @@ export class GameService implements IGameService {
         });
     }
 
+    public async find(): Promise<Game[]> {
+        return this.cacheGameRepository.find();
+    }
+
     public async loadGame(gameId: string): Promise<Game> {
         const game = this.cacheGameRepository.findOne(gameId);
         if (!game) {
