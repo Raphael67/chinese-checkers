@@ -14,7 +14,9 @@ import { PlayerModule } from './player/player.module';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forRoot('mongodb://localhost:27017/chinse-checkers'),
+        MongooseModule.forRoot('mongodb://localhost:27017/chinese-checkers', {
+            useFindAndModify: false,
+        }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', '..', 'frontend', 'build'),
         }),
