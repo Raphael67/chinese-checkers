@@ -98,6 +98,10 @@ export class GameService implements IGameService {
             game.board.getCell(move[0]).setPawn(undefined);
             game.board.getCell(move[move.length - 1]).setPawn(game.currentPlayer);
             this.updateLongestStreak(game, move.length - 1);
+            if (move.length - 1 > game.players[game.currentPlayer].longestStreak) {
+                game.players[game.currentPlayer].longestStreak = move.length - 1;
+                await this.playerService.updatePLayer(game.players[game.currentPlayer]);
+            }
         }
         if (game.board.isWinner(game.currentPlayer)) {
             await this.endGame(game);

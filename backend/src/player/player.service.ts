@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { PlayerCacheRepository } from './player-cache.repository';
+import PlayerRepository from './player-mogoose.repository';
+import { IPlayerRepository } from './player-repository.interface';
 import { Player } from './player.class';
 
 interface IPlayerService {
@@ -18,10 +19,11 @@ export class PlayerService implements IPlayerService {
     }
 
     public async findByRating(): Promise<Player[]> {
-        return this.playerCacheRepository.find();
+        return this.playerCacheRepository.findByRating();
     }
 
     public async updatePLayer(player: Player): Promise<Player> {
+        if (player.isBot) return;
         const existingPlayer = await this.playerCacheRepository
             .update(player.nickname, player);
 
@@ -29,7 +31,7 @@ export class PlayerService implements IPlayerService {
         return existingPlayer;
     }
 
-    @Inject(PlayerCacheRepository)
-    private readonly playerCacheRepository: PlayerCacheRepository;
+    @Inject(PlayerRepository)
+    private readonly playerCacheRepository: IPlayerRepository;
 
 }
