@@ -17,6 +17,7 @@ interface IProps {
 const GameComponent = (props: IProps): ReactElement => {
     const [isInviteModalVisible, setInviteModaleVisible] = useState<boolean>(false);
     const [isLinkTooltipVisible, setLinkTooltipVisible] = useState<boolean>(false);
+    const [currentPlayer, setCurrentPlayer] = useState<number | undefined>(props.game && props.game.currentPlayer);
 
     const quitGame = () => {
         props.quitGame();
@@ -26,13 +27,13 @@ const GameComponent = (props: IProps): ReactElement => {
         props.startGame();
     };
 
-    const renderPlayers = (players: IGamePlayer[]): ReactElement[] => {
+    const renderPlayers = (players: IGamePlayer[], currentPlayer?: number): ReactElement[] => {
         return players.map((player: IGamePlayer, index: number) => {
             const classes = ['player'];
             if (props.player && props.player.position === player.position) {
                 classes.push('me');
             }
-            if (props.game && player.position === props.game.currentPlayer) {
+            if (props.game && player.position === currentPlayer) {
                 classes.push('playing');
             }
             return <div className={classes.join(' ')} key={`p${index}`}>
@@ -75,13 +76,17 @@ const GameComponent = (props: IProps): ReactElement => {
         }, 2000);
     };
 
+    const setPlayerPlaying = (position: number) => {
+        setCurrentPlayer(position);
+    };
+
     const renderStartAction = (game?: IGame): ReactElement | undefined => {
         return game && game.status === 'CREATED' ? <Button type="primary" size="large" onClick={startGame}>Start game</Button> : undefined;
     };
 
     return <div className="game">
         <div className="board-container">
-            <Board game={props.game} />
+            <Board game={props.game} setPlayerPlaying={setPlayerPlaying} />
         </div>
         <div className="info-container">
             <div className="info">
@@ -89,7 +94,7 @@ const GameComponent = (props: IProps): ReactElement => {
                     {props.game && renderGameInfo(props.game)}
                 </Card>
                 <Card bordered={false} title="Players" className="players">
-                    {props.game && renderPlayers(props.game.players || [])}
+                    {props.game && renderPlayers(props.game.players || [], currentPlayer)}
                 </Card>
             </div>
             <div className="actions">

@@ -73,7 +73,7 @@ declare interface IPawn {
 }
 
 declare interface IPawnPlace {
-    pawn: IPawn;
+    pawn?: IPawn;
     place: string;
 }
 

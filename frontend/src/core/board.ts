@@ -723,7 +723,11 @@ export default class Board {
     }
 
     public getPawnById(id: string): IPawn {
-        return this.pawns[id].pawn;
+        const pawn = this.pawns[id].pawn;
+        if (!pawn) {
+            throw new Error(`No pawn found with id: ${id}`);
+        }
+        return pawn;
     }
 
     public getPlaceForPawn(pawn: IPawn): string {
