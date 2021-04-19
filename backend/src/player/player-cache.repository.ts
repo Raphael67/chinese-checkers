@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { IPlayerRepository } from './player-repository.interface';
 import { Player } from './player.class';
 
 @Injectable()
-export class PlayerCacheRepository {
+export class PlayerCacheRepository implements IPlayerRepository {
 
     public find(): Player[] {
         const players = [];
@@ -20,8 +21,8 @@ export class PlayerCacheRepository {
         return player;
     }
 
-    public save(player: Player): void {
-        this.playerMap.set(player.id, player);
+    public async findByRating(): Promise<Player[]> {
+        return this.find().sort((a, b) => b.rating - a.rating);
     }
 
     public async save(player: Player): Promise<void> {
