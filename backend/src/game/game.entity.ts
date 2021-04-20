@@ -6,31 +6,31 @@ import { GameStatus } from './game.class';
 @Schema({ collection: 'games' })
 export class GameEntity extends Document {
     @Prop()
-    public id: string;
+    public id!: string;
 
     @Prop()
     public playerNicknames: string[] = [];
 
     @Prop()
-    public status: GameStatus;
+    public status!: GameStatus;
 
     @Prop()
-    public creator: string;
+    public creator!: string;
 
     @Prop()
-    public turn: number;
+    public turn!: number;
 
     @Prop()
-    public longestStreak: number;
+    public longestStreak!: number;
 
     @Prop()
-    public winner: string;
+    public winner!: string;
 
     @Prop()
-    public moves: Coords[][];
+    public moves: Coords[][] = [];
 
     @Prop()
-    public createdAt: Date;
+    public createdAt!: Date;
 }
 
 export const GameSchema = SchemaFactory.createForClass(GameEntity);

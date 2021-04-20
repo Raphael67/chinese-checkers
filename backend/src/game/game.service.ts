@@ -41,10 +41,8 @@ export class GameService implements IGameService {
     }
 
     public async loadGame(gameId: string): Promise<Game> {
-        const game = this.cacheGameRepository.findOne(gameId);
-        if (!game) {
-            if (!game) throw new NotFoundException(`No game found with id: ${gameId}`);
-        }
+        const game = await this.cacheGameRepository.findOne(gameId);
+        if (!game) throw new NotFoundException(`No game found with id: ${gameId}`);
         return game;
     }
 
@@ -78,13 +76,13 @@ export class GameService implements IGameService {
     }
 
     public joinGame(game: Game, nickname: string): void {
-        const player = game.players.find((player) => player.nickname === nickname);
+        const player = game.players.find((player) => player?.nickname === nickname);
         if (!player) throw new NotFoundException(`Player ${nickname} not present in this game`);
         player.online = true;
     }
 
     public disconnectPlayer(game: Game, nickname: string): void {
-        const player = game.players.find((player) => player.nickname === nickname);
+        const player = game.players.find((player) => player?.nickname === nickname);
         if (!player) throw new NotFoundException(`Player ${nickname} not present in this game`);
         player.online = false;
     }
@@ -100,12 +98,15 @@ export class GameService implements IGameService {
     public async playMove(game: Game, move: ICoords[]): Promise<void> {
         game.moves.push(move);
         if (move[0]) {
-            game.board.getCell(move[0]).setPawn(undefined);
-            game.board.getCell(move[move.length - 1]).setPawn(game.currentPlayer);
+            game.board.getCell(move[0])?.setPawn(undefined);
+            game.board.getCell(move[move.length - 1])?.setPawn(game.currentPlayer);
             this.updateLongestStreak(game, move.length - 1);
-            if (move.length - 1 > game.players[game.currentPlayer].longestStreak) {
-                game.players[game.currentPlayer].longestStreak = move.length - 1;
-                await this.playerService.updatePLayer(game.players[game.currentPlayer]);
+            const player = game.players[game.currentPlayer];
+            if (player) {
+                if (move.length - 1 > player.longestStreak) {
+                    player.longestStreak = move.length - 1;
+                    await this.playerService.updatePLayer(player);
+                }
             }
         }
         await this.cacheGameRepository.save(game);
@@ -118,11 +119,11 @@ export class GameService implements IGameService {
 
     public async endGame(game: Game): Promise<Game> {
         game.status = GameStatus.FINISHED;
-        game.winner = game.players[game.currentPlayer].nickname;
+        game.winner = game.players[game.currentPlayer]?.nickname;
         const playerEntities = [];
         for (let i = 0; i < 6; i++) {
-            const player: Player = game.players[i];
-            if (player.isBot) continue;
+            const player = game.players[i];
+            if (!player || player.isBot) continue;
             if (game.winner === player.nickname) {
                 player.wins++;
             } else {
@@ -145,7 +146,7 @@ export class GameService implements IGameService {
     }
 
     private isNicknameAvailable(game: Game, nickname: string): boolean {
-        if (game.players.find((player) => player.nickname === nickname)) {
+        if (game.players.find((player) => player && player.nickname === nickname)) {
             return false;
         }
         return true;

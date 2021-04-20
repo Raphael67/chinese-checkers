@@ -7,7 +7,7 @@ import { PlayerService } from './player.service';
 @ApiTags('Player')
 export class PlayerController {
     @Inject(PlayerService)
-    private readonly playerService: PlayerService;
+    private readonly playerService!: PlayerService;
 
 
     @Get('/')

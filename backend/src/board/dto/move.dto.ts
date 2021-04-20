@@ -1,5 +1,5 @@
 import { Coords } from '../board';
 
 export class MoveDto {
-    public path: Coords[];
+    public path: Coords[] = [];
 }

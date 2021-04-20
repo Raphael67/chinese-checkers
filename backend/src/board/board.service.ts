@@ -17,12 +17,12 @@ export class BoardService implements IBoardService {
                 throw new Error(`Only valid cell in path: ${moveIndex}: ${JSON.stringify(coords)}`);
             }
             // first cell should contain a pawn from current player
-            if (moveIndex === 0 && game.board.getCell(coords).getPawn() !== game.currentPlayer) {
+            if (moveIndex === 0 && game.board.getCell(coords)?.getPawn() !== game.currentPlayer) {
                 this.logger.warn(`Player tried to move from another pawn at: ${JSON.stringify(coords)}`);
                 throw new Error(`first cell should contain a pawn from specified player: ${moveIndex}: ${JSON.stringify(coords)}`);
             }
             // Other cells should be free
-            if (moveIndex > 0 && game.board.getCell(coords).getPawn() !== undefined) {
+            if (moveIndex > 0 && game.board.getCell(coords)?.getPawn() !== undefined) {
                 this.logger.warn(`Player tried to move on a not empty cell: ${JSON.stringify(coords)}`);
                 throw new Error(`Other cells should be free: ${moveIndex}: ${JSON.stringify(coords)}`);
             }
@@ -55,7 +55,7 @@ export class BoardService implements IBoardService {
     private isJumpOver(board: Board, from: Coords, to: Coords): boolean {
         if (Math.abs(to.x - from.x) <= 4 && Math.abs(to.y - from.y) <= 2) {
             const between = board.getCell(new Coords(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2));
-            if (between.getPawn() !== undefined) return true;
+            if (between?.getPawn() !== undefined) return true;
         }
         return false;
     }

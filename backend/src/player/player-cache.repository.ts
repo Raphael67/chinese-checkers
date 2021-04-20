@@ -6,18 +6,13 @@ import { Player } from './player.class';
 export class PlayerCacheRepository implements IPlayerRepository {
 
     public find(): Player[] {
-        const players = [];
+        const players: Player[] = [];
         this.playerMap.forEach(player => players.push(player));
         return players;
     }
 
-    public async findOneByNickname(nickname: string): Promise<Player> {
-        let player: Player;
-        this.playerMap.forEach(p => {
-            if (p.nickname === nickname) {
-                player = p;
-            }
-        });
+    public async findOneByNickname(nickname: string): Promise<Player | undefined> {
+        const player = this.find().find(p => p.nickname === nickname);
         return player;
     }
 

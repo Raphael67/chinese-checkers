@@ -6,10 +6,9 @@ import { PlayerEntity } from './player.entity';
 
 export default class PlayerRepository implements IPlayerRepository {
     @InjectModel(PlayerEntity.name)
-    private readonly playerModel: Model<PlayerEntity>;
+    private readonly playerModel!: Model<PlayerEntity>;
 
-    private fromEntityToObject(playerEntity: PlayerEntity): Player | null {
-        if (!playerEntity) return null;
+    private fromEntityToObject(playerEntity: PlayerEntity): Player {
         const player = new Player(playerEntity.nickname);
         player.isBot = false;
         player.longestStreak = playerEntity.longestStreak;
@@ -20,8 +19,9 @@ export default class PlayerRepository implements IPlayerRepository {
         return player;
     }
 
-    public async findOneByNickname(nickname: string): Promise<Player> {
+    public async findOneByNickname(nickname: string): Promise<Player | undefined> {
         const playerEntity = await this.playerModel.findOne({ nickname }).exec();
+        if (!playerEntity) return undefined;
         return this.fromEntityToObject(playerEntity);
     }
 

@@ -33,8 +33,9 @@ export default class GameRepository implements IGameRepository {
         await gameEntity.save();
     }
 
-    public async findOne(gameId: string): Promise<Game> {
+    public async findOne(gameId: string): Promise<Game | undefined> {
         const gameEntity = await this.gameModel.findOne({ _id: gameId }).exec();
+        if (!gameEntity) return undefined;
         return this.fromEntityToObject(gameEntity);
     }
 
@@ -48,9 +49,9 @@ export default class GameRepository implements IGameRepository {
     }
 
     @InjectModel(GameEntity.name)
-    private readonly gameModel: Model<GameEntity>;
+    private readonly gameModel!: Model<GameEntity>;
 
     @Inject(PlayerRepository)
-    private readonly playerRepository: PlayerRepository;
+    private readonly playerRepository!: PlayerRepository;
 
 }

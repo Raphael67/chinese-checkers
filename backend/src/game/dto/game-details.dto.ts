@@ -1,8 +1,8 @@
 import { Game, GameStatus } from '../game.class';
 
 class GamePlayerDto {
-    public nickname: string;
-    public position: number;
+    public nickname!: string;
+    public position!: number;
 }
 
 export class GameDetailsDto {
@@ -31,5 +31,5 @@ export class GameDetailsDto {
     public current_player: number;
     public longest_streak: number;
     public created_at: Date;
-    public players: GamePlayerDto[];
+    public players: (GamePlayerDto | undefined)[];
 }

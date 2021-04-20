@@ -58,12 +58,12 @@ export class GameController {
     ): Promise<void> {
         const game = await this.gameService.loadGame(gameId);
         const player = await this.playerService.upsertPlayer(gamePlayerDto.nickname);
-        this.gameService.addPlayerToGame(game, player, gamePlayerDto.position);
+        await this.gameService.addPlayerToGame(game, player, gamePlayerDto.position);
     }
 
     @Inject(GameService)
-    private readonly gameService: GameService;
+    private readonly gameService!: GameService;
 
     @Inject(PlayerService)
-    private readonly playerService: PlayerService;
+    private readonly playerService!: PlayerService;
 }

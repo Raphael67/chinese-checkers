@@ -21,7 +21,9 @@ export class BotService {
         private readonly eventEmitter: IGameEvents
     ) {
         this.eventEmitter.on('NEXT_PLAYER', (game: Game) => {
-            if (game.players[game.currentPlayer].isBot) {
+            const player = game.players[game.currentPlayer];
+            if (!player) return;
+            if (player.isBot) {
                 const move = this.play(game);
                 this.eventEmitter.emit('MOVE', game, move);
             }
@@ -32,6 +34,7 @@ export class BotService {
         this.logger.debug('Bot is playing');
         const scorings: Scoring[] = [];
         const target = this.findTarget(game);
+        if (!target) return [];
         const playerPawns = game.board.getCells().filter((cell) => cell.getPawn() === game.currentPlayer);
         playerPawns.forEach((cell) => {
             const currentDistance = Coords.dist(cell.coords, target.coords);
@@ -50,7 +53,7 @@ export class BotService {
         return scorings[0].path.map((cell) => cell.coords);
     }
 
-    private findTarget(game: Game): Cell {
+    private findTarget(game: Game): Cell | undefined {
         return game.board.getCells().find(cell => {
             return playerPositions[(game.currentPlayer + 3) % 6].includes(cell.getIndex()) && (cell.getPawn() === undefined || cell.getPawn() !== game.currentPlayer);
         });

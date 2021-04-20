@@ -22,16 +22,15 @@ export class PlayerService implements IPlayerService {
         return this.playerCacheRepository.findByRating();
     }
 
-    public async updatePLayer(player: Player): Promise<Player> {
+    public async updatePLayer(player: Player): Promise<void> {
         if (player.isBot) return;
         const existingPlayer = await this.playerCacheRepository
             .update(player.nickname, player);
 
-        if (!existingPlayer) throw new NotFoundException(`Player ${existingPlayer.nickname} does not exist`);
-        return existingPlayer;
+        if (!existingPlayer) throw new NotFoundException(`Player ${player.nickname} does not exist`);
     }
 
     @Inject(PlayerRepository)
-    private readonly playerCacheRepository: IPlayerRepository;
+    private readonly playerCacheRepository!: IPlayerRepository;
 
 }

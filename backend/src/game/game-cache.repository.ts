@@ -6,7 +6,7 @@ import { Game } from './game.class';
 export class CacheGameRepository implements IGameRepository {
 
     public async find(): Promise<Game[]> {
-        const games = [];
+        const games: Game[] = [];
         this.gameMap.forEach(game => games.push(game));
         return games;
     }

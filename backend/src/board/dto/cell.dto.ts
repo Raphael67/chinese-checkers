@@ -8,6 +8,6 @@ export class CellDto {
         dto.pawn = cell.getPawn();
         return dto;
     }
-    public coords: CoordsDto;
-    public pawn: number;
+    public coords!: CoordsDto;
+    public pawn: number | undefined;
 }

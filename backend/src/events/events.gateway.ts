@@ -22,23 +22,24 @@ export enum Events {
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect {
     private readonly logger: Logger = new Logger(EventsGateway.name);
+    @WebSocketServer()
+    private readonly server: Server | undefined;
 
-    @Inject(GameService)
-    private readonly gameService: GameService;
-
-    @Inject(BoardService)
-    private readonly boardService: BoardService;
-
-    @Inject(GAME_SERVICE_EVENT_TOKEN)
-    private readonly eventEmitter: IGameEvents;
-
-    @Inject(ConnectionRepository)
-    private readonly connectionRepository: ConnectionRepository;
+    public constructor(
+        @Inject(GameService)
+        private readonly gameService: GameService,
+        @Inject(BoardService)
+        private readonly boardService: BoardService,
+        @Inject(GAME_SERVICE_EVENT_TOKEN)
+        private readonly eventEmitter: IGameEvents,
+        @Inject(ConnectionRepository)
+        private readonly connectionRepository: ConnectionRepository,
+    ) { }
 
     public afterInit(server: Server): void {
         this.logger.debug('Websocket server initialized');
         this.eventEmitter.on('GAME_STATE', (game: Game) => {
-            this.server.to(game.id).emit('GAME_STATE', GameStateDto.from(game));
+            server.to(game.id).emit('GAME_STATE', GameStateDto.from(game));
         });
     }
 
@@ -64,9 +65,11 @@ export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect {
             if (joinGameDto.nickname) {
                 this.gameService.joinGame(game, joinGameDto.nickname);
                 const connection = this.connectionRepository.findByPlayer(joinGameDto.gameId, joinGameDto.nickname);
-                const socket = this.server.clients().connected[connection.socketId];
-                socket.disconnect(true);
-                this.connectionRepository.removeConnection(connection.socketId);
+                if (connection && this.server) {
+                    const socket = this.server.clients().connected[connection.socketId];
+                    socket.disconnect(true);
+                    this.connectionRepository.removeConnection(connection.socketId);
+                }
                 this.connectionRepository.addConnection(client.id, joinGameDto.gameId, joinGameDto.gameId);
             }
             client.join(game.id);
@@ -101,8 +104,4 @@ export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect {
     ): void {
         this.logger.debug(move);
     }
-
-    @WebSocketServer()
-    private readonly server: Server;
-
 }
