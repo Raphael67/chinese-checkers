@@ -32,7 +32,7 @@ export class BoardController {
     @ApiQuery({ name: 'offset', required: false, description: 'Starts at 0, return offset element included.' })
     @ApiOkResponse({ type: [CoordsDto] })
     public async getMoves(@Param('gameId') gameId: string, @Query('offset') offset?: number): Promise<CoordsDto[][]> {
-        const game = this.cacheGameRepository.findOne(gameId);
+        const game = await this.cacheGameRepository.findOne(gameId);
         if (!game) {
             throw new NotFoundException(`Can not find game ${gameId}`);
         }

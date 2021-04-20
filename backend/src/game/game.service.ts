@@ -50,19 +50,19 @@ export class GameService implements IGameService {
 
     public async createGame(): Promise<Game> {
         const game = new Game();
-        this.cacheGameRepository.save(game);
+        await this.cacheGameRepository.save(game);
         return game;
     }
 
-    public addPlayerToGame(game: Game, player: Player, position: number): void {
+    public async addPlayerToGame(game: Game, player: Player, position: number): Promise<void> {
         if (!this.isPositionAvailable(game, position)) throw new BadRequestException('Position not available');
         if (!this.isNicknameAvailable(game, player.nickname)) throw new BadRequestException('Nickname already taken');
         if (!game.creator) game.creator = player.nickname;
         game.players[position] = player;
-        this.cacheGameRepository.update(game.id, game);
+        await this.cacheGameRepository.update(game.id, game);
     }
 
-    public startGame(game: Game): void {
+    public async startGame(game: Game): Promise<void> {
         for (let i = 0; i < 6; i++) {
             let player: any = game.players[i];
             if (!player) {
@@ -73,6 +73,7 @@ export class GameService implements IGameService {
             }
         }
         game.status = GameStatus.STARTED;
+        await this.cacheGameRepository.save(game);
         this.nextPlayer(game);
     }
 
@@ -107,6 +108,7 @@ export class GameService implements IGameService {
                 await this.playerService.updatePLayer(game.players[game.currentPlayer]);
             }
         }
+        await this.cacheGameRepository.save(game);
         if (game.board.isWinner(game.currentPlayer)) {
             await this.endGame(game);
         } else {
@@ -129,7 +131,7 @@ export class GameService implements IGameService {
             await this.playerService.updatePLayer(player);
             playerEntities[i] = player;
         }
-        this.cacheGameRepository.save(game);
+        await this.cacheGameRepository.save(game);
         return game;
     }
 

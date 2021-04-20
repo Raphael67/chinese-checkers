@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { EventEmitter } from 'events';
 import { BoardController } from '../board/board.controller';
 import { BoardService } from '../board/board.service';
@@ -7,12 +8,19 @@ import { PlayerService } from '../player/player.service';
 import { CacheGameRepository } from './game-cache.repository';
 import { IGameEvents } from './game-events.interface';
 import { GameController } from './game.controller';
+import { GameEntity, GameSchema } from './game.entity';
 import { GameService } from './game.service';
 
 export const GAME_SERVICE_EVENT_TOKEN = Symbol('GAME_SERVICE_EVENT_TOKEN');
 @Module({
     imports: [
         PlayerModule,
+        MongooseModule.forFeature([
+            {
+                name: GameEntity.name,
+                schema: GameSchema,
+            },
+        ]),
     ],
     controllers: [
         GameController,
