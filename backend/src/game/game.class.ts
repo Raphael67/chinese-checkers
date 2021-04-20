@@ -12,7 +12,6 @@ export enum GameStatus {
 export class Game {
     public id: string = uuid();
     public players: Player[] = [];
-    public playerNickname: string[] = [];
     public status: GameStatus = GameStatus.CREATED;
     public currentPlayer: number = -1;
     public creator: string;
