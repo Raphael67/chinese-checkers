@@ -4,7 +4,6 @@ import { PlayerService } from './player.service';
 
 describe('PlayerController', () => {
     let controller: PlayerController;
-    let playerService: PlayerService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
