@@ -1,6 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CacheGameRepository } from '../game/game-cache.repository';
 import { GameStatus } from '../game/game.class';
 import { GameService } from '../game/game.service';
 import { BoardService } from './board.service';
@@ -11,12 +10,10 @@ import { CoordsDto } from './dto/coords.dto';
 @ApiTags('Board')
 export class BoardController {
     public constructor(
-        @Inject(GameService)
-        private readonly gameService: GameService,
         @Inject(BoardService)
         private readonly boardService: BoardService,
-        @Inject(CacheGameRepository)
-        private readonly cacheGameRepository: CacheGameRepository,
+        @Inject(GameService)
+        private readonly gameService: GameService,
     ) { }
 
     @Get('/:gameId')
@@ -32,7 +29,7 @@ export class BoardController {
     @ApiQuery({ name: 'offset', required: false, description: 'Starts at 0, return offset element included.' })
     @ApiOkResponse({ type: [CoordsDto] })
     public async getMoves(@Param('gameId') gameId: string, @Query('offset') offset?: number): Promise<CoordsDto[][]> {
-        const game = await this.cacheGameRepository.findOne(gameId);
+        const game = await this.gameService.loadGame(gameId);
         if (!game) {
             throw new NotFoundException(`Can not find game ${gameId}`);
         }

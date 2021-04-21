@@ -3,6 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema({ collection: 'players' })
 export class PlayerEntity extends Document {
+
     @Prop()
     public nickname!: string;
 

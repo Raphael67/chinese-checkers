@@ -3,7 +3,7 @@ import { IGameRepository } from './game-repository.interface';
 import { Game } from './game.class';
 
 @Injectable()
-export class CacheGameRepository implements IGameRepository {
+export class GameCacheRepository implements IGameRepository {
 
     public async find(): Promise<Game[]> {
         const games: Game[] = [];

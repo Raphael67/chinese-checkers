@@ -6,7 +6,7 @@ import { GameStatus } from './game.class';
 @Schema({ collection: 'games' })
 export class GameEntity extends Document {
     @Prop()
-    public id!: string;
+    public gameId!: string;
 
     @Prop()
     public playerNicknames: string[] = [];

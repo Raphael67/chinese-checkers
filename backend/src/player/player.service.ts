@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import PlayerRepository from './player-mogoose.repository';
+import { PlayerRepository } from './player-mogoose.repository';
 import { IPlayerRepository } from './player-repository.interface';
 import { Player } from './player.class';
 
@@ -9,28 +9,36 @@ interface IPlayerService {
 @Injectable()
 export class PlayerService implements IPlayerService {
 
+    public constructor(
+        @Inject(PlayerRepository)
+        private readonly playerRepository: IPlayerRepository
+    ) { }
+
     public async upsertPlayer(nickname: string): Promise<Player> {
-        let player = await this.playerCacheRepository.findOneByNickname(nickname);
+        let player = await this.playerRepository.findOneByNickname(nickname);
         if (!player) {
             player = new Player(nickname);
-            await this.playerCacheRepository.save(player);
+            await this.playerRepository.save(player);
         }
         return player;
     }
 
     public async findByRating(): Promise<Player[]> {
-        return this.playerCacheRepository.findByRating();
+        return this.playerRepository.findByRating();
     }
 
     public async updatePLayer(player: Player): Promise<void> {
         if (player.isBot) return;
-        const existingPlayer = await this.playerCacheRepository
+        const existingPlayer = await this.playerRepository
             .update(player.nickname, player);
 
         if (!existingPlayer) throw new NotFoundException(`Player ${player.nickname} does not exist`);
     }
 
-    @Inject(PlayerRepository)
-    private readonly playerCacheRepository!: IPlayerRepository;
-
+    public generateBot(): Player {
+        const bot = new Player('AI');
+        bot.isBot = true;
+        bot.online = true;
+        return bot;
+    }
 }

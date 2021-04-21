@@ -4,7 +4,7 @@ import { IPlayerRepository } from './player-repository.interface';
 import { Player } from './player.class';
 import { PlayerEntity } from './player.entity';
 
-export default class PlayerRepository implements IPlayerRepository {
+export class PlayerRepository implements IPlayerRepository {
     @InjectModel(PlayerEntity.name)
     private readonly playerModel!: Model<PlayerEntity>;
 

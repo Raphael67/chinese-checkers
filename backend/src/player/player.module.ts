@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PlayerCacheRepository } from './player-cache.repository';
-import PlayerRepository from './player-mogoose.repository';
+import { PlayerRepository } from './player-mogoose.repository';
 import { PlayerController } from './player.controller';
 import { PlayerEntity, PlayerSchema } from './player.entity';
 import { PlayerService } from './player.service';
@@ -21,6 +21,9 @@ import { PlayerService } from './player.service';
         PlayerCacheRepository,
         PlayerRepository,
     ],
-    exports: [PlayerService],
+    exports: [
+        PlayerService,
+        PlayerRepository,
+    ],
 })
 export class PlayerModule { }

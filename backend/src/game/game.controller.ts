@@ -18,7 +18,7 @@ export class GameController {
     @ApiResponse({ status: 200, description: 'Lise of games', type: [GameDetailsDto] })
     public async getGames(
         @Query('player') nickname?: string,
-        @Query('date') date?: string,
+        @Query('date') date?: Date,
         @Query('orderBy') orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<GameDetailsDto[]> {
         const games = await this.gameService.find();
