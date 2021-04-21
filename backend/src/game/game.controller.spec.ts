@@ -38,7 +38,7 @@ describe('GameController', () => {
 
     describe('getGames', () => {
         it('should return list of games', async () => {
-            gameService.find = jest.fn(async () => []);
+            gameService.findFinishedGames = jest.fn(async () => []);
             await expect(controller.getGames()).resolves.toBeInstanceOf(Array);
         });
     });

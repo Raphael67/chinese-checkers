@@ -3,10 +3,10 @@ import { Coords } from '../board/board';
 import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
 import { GAME_SERVICE_EVENT_TOKEN } from './constants';
+import { GameCacheRepository } from './game-cache.repository';
 import { IGameEvents } from './game-events.interface';
-import { IGameRepository } from './game-repository.interface';
+import { GameMongooseRepository } from './game-mongoose.repository';
 import { Game, GameStatus } from './game.class';
-import { GameRepository } from './game.repository';
 
 interface IGameService {
     createGame(): Promise<Game>;
@@ -20,8 +20,10 @@ interface IGameService {
 export class GameService implements IGameService, OnModuleInit {
 
     public constructor(
-        @Inject(GameRepository)
-        private readonly gameRepository: IGameRepository,
+        @Inject(GameCacheRepository)
+        private readonly gameCacheRepository: GameCacheRepository,
+        @Inject(GameMongooseRepository)
+        private readonly gameMongooseRepository: GameMongooseRepository,
         @Inject(PlayerService)
         private readonly playerService: PlayerService,
         @Inject(GAME_SERVICE_EVENT_TOKEN)
@@ -39,19 +41,28 @@ export class GameService implements IGameService, OnModuleInit {
         });
     }
 
-    public async find(): Promise<Game[]> {
-        return this.gameRepository.find();
+    public async findFinishedGames(): Promise<Game[]> {
+        return this.gameMongooseRepository.find();
     }
 
     public async loadGame(gameId: string): Promise<Game> {
-        const game = await this.gameRepository.findOne(gameId);
-        if (!game) throw new NotFoundException(`No game found with id: ${gameId}`);
+        let game = await this.gameCacheRepository.findOne(gameId);
+        if (!game) {
+            game = await this.gameMongooseRepository.findOne(gameId);
+            if (!game) throw new NotFoundException(`No game found with id: ${gameId}`);
+            if (game.status !== GameStatus.FINISHED) {
+                for (let i = 0; i < 6; i++) {
+                    if (!game.players[i]) game.players[i] = this.playerService.generateBot();
+                }
+                await this.gameCacheRepository.save(game);
+            }
+        }
         return game;
     }
 
     public async createGame(): Promise<Game> {
         const game = new Game();
-        await this.gameRepository.save(game);
+        await this.gameCacheRepository.save(game);
         return game;
     }
 
@@ -72,7 +83,7 @@ export class GameService implements IGameService, OnModuleInit {
             game.players[i] = player;
         }
         game.status = GameStatus.STARTED;
-        await this.gameRepository.save(game);
+        await this.gameMongooseRepository.save(game);
         this.nextPlayer(game);
     }
 
@@ -108,7 +119,7 @@ export class GameService implements IGameService, OnModuleInit {
                 await this.playerService.updatePLayer(player);
             }
         }
-        await this.gameRepository.update(game.id, game);
+        await this.gameMongooseRepository.update(game.id, game);
         if (game.board.isWinner(game.currentPlayer)) {
             await this.endGame(game);
         } else {
@@ -131,7 +142,7 @@ export class GameService implements IGameService, OnModuleInit {
             await this.playerService.updatePLayer(player);
             playerEntities[i] = player;
         }
-        await this.gameRepository.update(game.id, game);
+        await this.gameMongooseRepository.update(game.id, game);
         return game;
     }
 

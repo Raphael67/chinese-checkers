@@ -21,7 +21,7 @@ export class GameController {
         @Query('date') date?: Date,
         @Query('orderBy') orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<GameDetailsDto[]> {
-        const games = await this.gameService.find();
+        const games = await this.gameService.findFinishedGames();
         return games.map((game) => new GameDetailsDto(game));
     }
 

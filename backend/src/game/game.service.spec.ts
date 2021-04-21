@@ -2,22 +2,29 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
 import { GAME_SERVICE_EVENT_TOKEN } from './constants';
+import { GameCacheRepository } from './game-cache.repository';
 import { IGameEvents } from './game-events.interface';
+import { GameMongooseRepository } from './game-mongoose.repository';
 import { Game, GameStatus } from './game.class';
-import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
 
 describe('GameService', () => {
     let service: GameService;
     let eventEmitter: IGameEvents;
-    let gameRepository: GameRepository;
+    let gameCacheRepository: GameCacheRepository;
+    let gameMongooseRepository: GameMongooseRepository;
+    let playerService: PlayerService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 GameService,
                 {
-                    provide: GameRepository,
+                    provide: GameCacheRepository,
+                    useValue: {},
+                },
+                {
+                    provide: GameMongooseRepository,
                     useValue: {},
                 },
                 {
@@ -33,27 +40,29 @@ describe('GameService', () => {
 
         service = module.get<GameService>(GameService);
         eventEmitter = module.get(GAME_SERVICE_EVENT_TOKEN);
-        gameRepository = module.get(GameRepository);
+        gameCacheRepository = module.get(GameCacheRepository);
+        gameMongooseRepository = module.get(GameMongooseRepository);
+        playerService = module.get(PlayerService);
     });
 
     describe('find', () => {
         it('should return a list of games', async () => {
-            gameRepository.find = jest.fn(async () => []);
-            await expect(service.find()).resolves.toBeInstanceOf(Array);
+            gameMongooseRepository.find = jest.fn(async () => []);
+            await expect(service.findFinishedGames()).resolves.toBeInstanceOf(Array);
         });
     });
     describe('loadGame', () => {
         it('should load a game in memeory', async () => {
             const game = new Game();
-            gameRepository.findOne = jest.fn(async () => game);
+            gameCacheRepository.findOne = jest.fn(async () => game);
             await expect(service.loadGame('GAME_ID')).resolves.toBe(game);
         });
     });
     describe('startGame', () => {
         it('should create a new game', async () => {
-            gameRepository.save = jest.fn();
+            gameCacheRepository.save = jest.fn();
             await service.createGame();
-            expect(gameRepository.save).toHaveBeenCalled();
+            expect(gameCacheRepository.save).toHaveBeenCalled();
         });
     });
     describe('addPlayerToGame', () => {
@@ -70,6 +79,7 @@ describe('GameService', () => {
             const game = new Game();
             eventEmitter.on = jest.fn();
             eventEmitter.emit = jest.fn();
+            gameMongooseRepository.save = jest.fn();
 
             await service.startGame(game);
             expect(game.players).toHaveLength(6);
@@ -81,6 +91,7 @@ describe('GameService', () => {
             const game = new Game();
             game.players[3] = player;
             eventEmitter.emit = jest.fn();
+            gameMongooseRepository.save = jest.fn();
             await service.startGame(game);
             expect(() => service.joinGame(game, 'test')).not.toThrow();
         });
@@ -92,6 +103,7 @@ describe('GameService', () => {
             const game = new Game();
             game.players[3] = player;
             eventEmitter.emit = jest.fn();
+            gameMongooseRepository.save = jest.fn();
             await service.startGame(game);
 
             service.disconnectPlayer(game, 'test');
@@ -107,6 +119,7 @@ describe('GameService', () => {
             game.players[0] = player1;
             game.players[1] = player2;
             eventEmitter.emit = jest.fn();
+            gameMongooseRepository.save = jest.fn();
 
             expect(game.currentPlayer).toBe(-1);
             await service.startGame(game);
@@ -123,9 +136,10 @@ describe('GameService', () => {
             game.players[0] = player1;
             game.players[1] = player2;
             eventEmitter.emit = jest.fn();
+            gameMongooseRepository.save = jest.fn();
             await service.startGame(game);
 
-            gameRepository.update = jest.fn();
+            gameMongooseRepository.update = jest.fn();
             await service.playMove(game, []);
             expect(game.currentPlayer).toBe(1);
         });
@@ -138,6 +152,10 @@ describe('GameService', () => {
             game.players[0] = player1;
             game.players[1] = player2;
             eventEmitter.emit = jest.fn();
+            gameMongooseRepository.save = jest.fn();
+            gameMongooseRepository.update = jest.fn();
+            playerService.updatePLayer = jest.fn();
+
             await service.startGame(game);
 
             const endedGame = await service.endGame(game);

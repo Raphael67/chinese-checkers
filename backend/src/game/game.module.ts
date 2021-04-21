@@ -7,7 +7,6 @@ import { GameCacheRepository } from './game-cache.repository';
 import { GameMongooseRepository } from './game-mongoose.repository';
 import { GameController } from './game.controller';
 import { GameEntity, GameSchema } from './game.entity';
-import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
 
 @Module({
@@ -31,7 +30,6 @@ import { GameService } from './game.service';
         },
         GameCacheRepository,
         GameMongooseRepository,
-        GameRepository,
     ],
     exports: [
         GameService,
