@@ -91,12 +91,14 @@ deploy-net:
       docker run -d
       --name mongo.game.corteks.net
       -e MONGODB_DATABASE=chinese-checkers
+      -l com.docker.compose.project=game.corteks.net
       mongo
     - >
       docker run -d
       --name game.corteks.net
       --network corteks_net_nginx_proxy
-      -e DATABASE_HOST=mariadb.corteks.net
+      -l com.docker.compose.project=game.corteks.net
+      -e MONGODB_HOST=mongo.game.corteks.net
       -e VIRTUAL_HOST=game.corteks.net
       -e VIRTUAL_PORT=8080
       -e LETSENCRYPT_HOST=game.corteks.net
