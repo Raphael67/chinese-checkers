@@ -56,7 +56,6 @@ const Board = (props: IProps): ReactElement => {
         pawns: [],
         hash: ''
     });
-    const [pawnPlace, setPawnPlace] = useState<IPawnPlace | undefined>(mapStateToObj.pawnPlace);
 
     //const setPlayerPlaying = props.setPlayerPlaying;
 
@@ -72,7 +71,7 @@ const Board = (props: IProps): ReactElement => {
                 }
 
                 if (move) {
-                    setPawnPlace(move);
+                    //setPawnPlace(move);
                 }
 
             }
@@ -84,8 +83,6 @@ const Board = (props: IProps): ReactElement => {
         clearTimeout(Number(timer.current));
         try {
             await replayMoves();
-
-
 
             timer.current = setTimeout(async () => {
                 await refresh();
@@ -136,7 +133,6 @@ const Board = (props: IProps): ReactElement => {
         pawns={pawns}
         player={mapStateToObj.player}
         placesHighlighted={mapStateToObj.possiblePlaces}
-        pawnPlace={pawnPlace}
         path={mapStateToObj.path}
         clickPlace={clickPlace}
         doubleClickPlace={doubleClickPlace}

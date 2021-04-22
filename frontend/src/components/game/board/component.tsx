@@ -8,7 +8,6 @@ interface IProps {
     pawns: IHashPawnPlaces;
     clickPlace: (place: string) => void;
     doubleClickPlace: (place: string) => void;
-    pawnPlace?: IPawnPlace;
     player?: IPlayer;
     path: IHashPath;
     placesHighlighted: IHashPossiblePlaces;
@@ -17,7 +16,6 @@ interface IProps {
 
 const BoardComponent = (props: IProps) => {
     const [placesHighlighted, setPlacesHighlighted] = useState<string[]>(props.placesHighlighted.possiblePlaces);
-    const [zIndexBoardUseId, setZIndexBoardUseId] = useState<string>('');
 
     const highlightPlaces = (places: string[], reset: boolean) => {
         places.forEach((place: string) => {
@@ -42,10 +40,6 @@ const BoardComponent = (props: IProps) => {
         props.doubleClickPlace(event.currentTarget.id);
     };
 
-    const setZIndexBoardUse = (id: string) => {
-        setZIndexBoardUseId(id);
-    };
-
     const renderPawns = (pawns: IPawnPlace[]): (ReactElement | undefined)[] => {
         return pawns.map((pawnPlace: IPawnPlace) => {
             const { pawn, place } = pawnPlace;
@@ -55,7 +49,7 @@ const BoardComponent = (props: IProps) => {
                 const { cx, cy } = placeElement as unknown as SVGCircleElement;
                 const { id, colour } = pawn;
                 const canMove = player && player.position !== undefined && props.game && props.game.currentPlayer === player.position ? colour === ColourPosition[player.position] : false;
-                return <Pawn key={id} setZIndexBoardUse={setZIndexBoardUse} canMove={canMove} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16.071173} />;
+                return <Pawn key={id} canMove={canMove} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16} />;
             }
             return undefined;
         });
@@ -73,21 +67,6 @@ const BoardComponent = (props: IProps) => {
     }, [setPlacesHighlighted, placesHighlighted, props.placesHighlighted]);
 
     useEffect(() => {
-        const pawnPlace = props.pawnPlace;
-        if (pawnPlace) {
-            const { pawn, place } = pawnPlace;
-            if (pawn) {
-                const pawnElement = document.getElementById(pawn.id);
-                const placeElement = document.getElementById(place);
-                if (pawnElement && placeElement) {
-                    pawnElement.setAttribute('cx', placeElement.getAttribute('cx')!);
-                    pawnElement.setAttribute('cy', placeElement.getAttribute('cy')!);
-                }
-            }
-        }
-    }, [props.pawnPlace]);
-
-    useEffect(() => {
         document.querySelectorAll('text').forEach((element: SVGTextElement) => element.parentElement?.removeChild(element));
 
         const svgElement = document.querySelector('svg');
@@ -101,7 +80,7 @@ const BoardComponent = (props: IProps) => {
                 pathNumber.setAttributeNS(null, 'x', placeElement.getAttribute('cx')!);
                 pathNumber.setAttributeNS(null, 'y', placeElement.getAttribute('cy')!);
                 pathNumber.setAttributeNS(null, 'text-anchor', 'middle');
-                pathNumber.setAttributeNS(null, 'alignment-baseline', 'middle');
+                pathNumber.setAttributeNS(null, 'dominant-baseline', 'middle');
                 pathNumber.setAttributeNS(null, 'pointer-events', 'none');
                 pathNumber.setAttributeNS(null, 'font-size', '20');
 
@@ -237,7 +216,6 @@ const BoardComponent = (props: IProps) => {
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} className="place yellow" id="p120" cx="345.16806" cy="863.30017" r="20"></circle>
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} className="place yellow" id="p121" cx="399.01025" cy="863.23688" r="20"></circle>
             {renderPawns(props.pawns.pawns)}
-            <use id="zIndexboardUse" xlinkHref={`#${zIndexBoardUseId}`} />
         </g>
     </svg>;
 };

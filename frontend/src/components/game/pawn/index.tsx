@@ -1,17 +1,8 @@
 import { Colour } from 'core/board';
+import * as d3 from 'd3';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../..';
 import './index.less';
-
-enum State {
-    Idle,
-    Moving
-}
-
-const stateClasses = {
-    [State.Idle]: 'idle',
-    [State.Moving]: 'moving'
-};
 
 interface IProps {
     colour: Colour;
@@ -21,47 +12,63 @@ interface IProps {
     r: number;
     alone?: boolean;
     canMove?: boolean;
-    setZIndexBoardUse?: (id: string) => void;
 }
 
 const Pawn = (props: IProps) => {
-    const { game } = useContext(AppContext);
-    const ref = useRef<SVGCircleElement>(null);
-    const [state, setState] = useState<State>(State.Idle);
-
     const defaultPosition = props.r + 1;
     const dimension = (defaultPosition * 2);
 
-    const setZIndexBoardUse = props.setZIndexBoardUse;
+    const { game } = useContext(AppContext);
+    const ref = useRef<SVGCircleElement>(null);
+    const [position] = useState<IPosition>({
+        x: props.x || defaultPosition,
+        y: props.y || defaultPosition
+    });
+    const [canMove, setCanMove] = useState<boolean>(props.canMove || false);
 
     useEffect(() => {
         const element = ref.current;
         if (element) {
-            element.addEventListener('transitionstart', () => {
-                setZIndexBoardUse && setZIndexBoardUse(element.id);
-                setState(State.Moving);
-            });
+            const d3Element = d3.select(element);
 
-            element.addEventListener('transitionend', () => {
-                setState(State.Idle);
-            });
+            if (props.x && props.y) {
+                setCanMove(false);
+
+                d3Element
+                    .raise()
+                    .attr('r', props.r || 16)
+                    .transition()
+                    .duration(1000)
+                    .attr('cx', (Number(d3Element.attr('cx')) + (props.x || defaultPosition)) / 2)
+                    .attr('cy', (Number(d3Element.attr('cy')) + (props.y || defaultPosition)) / 2)
+                    .attr('r', 25)
+                    .transition()
+                    .duration(1000)
+                    .attr('cx', props.x || defaultPosition)
+                    .attr('cy', props.y || defaultPosition)
+                    .attr('r', props.r || 16)
+                    .on('end', () => setCanMove(props.canMove || false));
+            }
+
+
         }
-    }, [setZIndexBoardUse]);
+    }, [props.x, props.y, props.r, props.canMove, defaultPosition]);
 
     const clickPawn = (event: React.MouseEvent<SVGGeometryElement>) => {
-        if (props.canMove) {
+        if (canMove) {
             game.takePawn(event.currentTarget.id);
         }
     };
 
     const renderPawn = () => {
+        const { x, y } = position;
         return <circle
             onClick={clickPawn}
-            className={`pawn ${Colour[props.colour].toLowerCase()} ${props.canMove ? 'pointer' : ''} ${stateClasses[state]}`}
+            className={`pawn ${Colour[props.colour].toLowerCase()} ${canMove ? 'pointer' : ''} `}
             ref={ref}
             id={props.id}
-            cx={props.x || defaultPosition}
-            cy={props.y || defaultPosition}
+            cx={x || defaultPosition}
+            cy={y || defaultPosition}
             r={props.r}
         />;
     };
