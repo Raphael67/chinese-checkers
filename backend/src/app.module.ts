@@ -20,7 +20,6 @@ import { PlayerModule } from './player/player.module';
         }),
         MongooseModule.forRootAsync({
             useFactory: (config: ConfigType<typeof mongodbConfig>) => {
-                console.log(config);
                 return {
                     uri: `mongodb://${config.host}:${config.port}/chinese-checkers`,
                     useFindAndModify: false,
