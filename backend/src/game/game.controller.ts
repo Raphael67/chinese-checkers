@@ -3,8 +3,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
-import { CacheGameRepository } from './game-cache.repository';
-import { GameStatus } from './game.entity';
+import { GameStatus } from './game.class';
 import { GameService } from './game.service';
 
 @Controller('/api/game')
@@ -19,10 +18,10 @@ export class GameController {
     @ApiResponse({ status: 200, description: 'Lise of games', type: [GameDetailsDto] })
     public async getGames(
         @Query('player') nickname?: string,
-        @Query('date') date?: string,
+        @Query('date') date?: Date,
         @Query('orderBy') orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<GameDetailsDto[]> {
-        const games = await this.cacheGameRepository.findByPlayerNickname(nickname);
+        const games = await this.gameService.findFinishedGames();
         return games.map((game) => new GameDetailsDto(game));
     }
 
@@ -59,16 +58,12 @@ export class GameController {
     ): Promise<void> {
         const game = await this.gameService.loadGame(gameId);
         const player = await this.playerService.upsertPlayer(gamePlayerDto.nickname);
-        this.gameService.addPlayerToGame(game, player, gamePlayerDto.position);
+        await this.gameService.addPlayerToGame(game, player, gamePlayerDto.position);
     }
 
     @Inject(GameService)
-    private readonly gameService: GameService;
+    private readonly gameService!: GameService;
 
     @Inject(PlayerService)
-    private readonly playerService: PlayerService;
-
-    @Inject(CacheGameRepository)
-    private readonly cacheGameRepository: CacheGameRepository;
-
+    private readonly playerService!: PlayerService;
 }

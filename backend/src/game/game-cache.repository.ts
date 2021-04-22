@@ -1,28 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { Game } from './game.entity';
+import { IGameRepository } from './game-repository.interface';
+import { Game } from './game.class';
 
 @Injectable()
-export class CacheGameRepository {
+export class GameCacheRepository implements IGameRepository {
 
-    public find(): Game[] {
-        const games = [];
+    public async find(): Promise<Game[]> {
+        const games: Game[] = [];
         this.gameMap.forEach(game => games.push(game));
         return games;
     }
 
-    public save(game: Game): void {
+    public async save(game: Game): Promise<void> {
         this.gameMap.set(game.id, game);
     }
 
-    public findOne(gameId: string): Game | undefined {
+    public async findOne(gameId: string): Promise<Game | undefined> {
         return this.gameMap.get(gameId);
     }
 
-    public findByPlayerNickname(nickname: string): Game[] {
-        return this.find().filter((game) => !!game.players.find(player => player && player.nickname === nickname));
-    }
-
-    public update(gameId: string, playerData: Partial<Game>): Game {
+    public async update(gameId: string, playerData: Partial<Game>): Promise<Game> {
         let game = this.gameMap.get(gameId);
         game = Object.assign(game, playerData);
         return game;

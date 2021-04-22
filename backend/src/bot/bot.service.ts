@@ -1,8 +1,8 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cell, Coords, playerPositions } from '../board/board';
-import { IGameEvents } from './game-events.interface';
-import { Game } from './game.entity';
-import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
+import { GAME_SERVICE_EVENT_TOKEN } from '../game/constants';
+import { IGameEvents } from '../game/game-events.interface';
+import { Game } from '../game/game.class';
 
 interface Scoring {
     id: string;
@@ -13,15 +13,18 @@ interface Scoring {
 }
 
 @Injectable()
-export class AIService {
-    private readonly logger: Logger = new Logger(AIService.name);
+export class BotService implements OnModuleInit {
+    private readonly logger: Logger = new Logger(BotService.name);
 
     public constructor(
         @Inject(GAME_SERVICE_EVENT_TOKEN)
         private readonly eventEmitter: IGameEvents
-    ) {
+    ) { }
+
+    public onModuleInit(): void {
         this.eventEmitter.on('NEXT_PLAYER', (game: Game) => {
-            if (game.players[game.currentPlayer].isBot) {
+            const player = game.players[game.currentPlayer];
+            if (player.isBot) {
                 const move = this.play(game);
                 this.eventEmitter.emit('MOVE', game, move);
             }
@@ -32,6 +35,7 @@ export class AIService {
         this.logger.debug('Bot is playing');
         const scorings: Scoring[] = [];
         const target = this.findTarget(game);
+        if (!target) return [];
         const playerPawns = game.board.getCells().filter((cell) => cell.getPawn() === game.currentPlayer);
         playerPawns.forEach((cell) => {
             const currentDistance = Coords.dist(cell.coords, target.coords);
@@ -50,7 +54,7 @@ export class AIService {
         return scorings[0].path.map((cell) => cell.coords);
     }
 
-    private findTarget(game: Game): Cell {
+    private findTarget(game: Game): Cell | undefined {
         return game.board.getCells().find(cell => {
             return playerPositions[(game.currentPlayer + 3) % 6].includes(cell.getIndex()) && (cell.getPawn() === undefined || cell.getPawn() !== game.currentPlayer);
         });

@@ -18,7 +18,7 @@ export class ConnectionRepository {
         return this.connections.find(connection => connection.gameId === gameId && connection.nickname === nickname);
     }
 
-    public find(socketId: string, gameId: string, nickname: string): IConnection {
+    public find(socketId: string, gameId: string, nickname: string): IConnection | undefined {
         return this.connections.find(connection => {
             return connection.socketId === socketId && connection.gameId === gameId && connection.nickname === nickname;
         });

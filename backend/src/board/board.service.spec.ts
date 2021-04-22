@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Game } from '../game/game.entity';
+import { Game } from '../game/game.class';
 import { Coords } from './board';
 import { BoardService } from './board.service';
 
@@ -30,7 +30,7 @@ describe('BoardService', () => {
         });
         it('should return false if any cell not free', () => {
             const game = new Game();
-            game.board.getCell(new Coords(8, 4)).setPawn(5);
+            game.board.getCell(new Coords(8, 4))!.setPawn(5);
             const path = [new Coords(9, 3), new Coords(8, 4)];
 
             expect(() => service.isValidMove(game, path)).toThrow();

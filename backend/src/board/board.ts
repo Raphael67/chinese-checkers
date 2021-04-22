@@ -38,7 +38,7 @@ export class Cell {
         this.pawn = player;
     }
 
-    public getPawn(): number {
+    public getPawn(): number | undefined {
         return this.pawn;
     }
 }
@@ -69,7 +69,7 @@ export class Board {
         for (const player of playerPositions) {
             for (const pawn of player) {
                 const cell = this.cells.get(pawn);
-                cell.setPawn(playerIndex);
+                cell?.setPawn(playerIndex);
             }
             playerIndex++;
         }
@@ -78,18 +78,18 @@ export class Board {
     public isWinner(player: number): boolean {
         const opponent = (player + 3) % 6;
         for (const position of playerPositions[opponent]) {
-            if (this.cells.get(position).getPawn() !== player) return false;
+            if (this.cells.get(position)?.getPawn() !== player) return false;
         }
         return true;
     }
 
     public getCells(): Cell[] {
-        const cells = [];
+        const cells: Cell[] = [];
         this.cells.forEach(cell => cells.push(cell));
         return cells;
     }
 
-    public getCell(coords: Coords | string): Cell {
+    public getCell(coords: Coords | string): Cell | undefined {
         if (typeof coords === 'string') {
             return this.cells.get(coords);
         } else {

@@ -6,11 +6,11 @@ export class GamePlayerDto {
         example: 'Test',
     })
     @IsString()
-    public readonly nickname: string;
+    public readonly nickname!: string;
 
     @ApiProperty({
         example: 0,
     })
     @IsNumber()
-    public readonly position: number;
+    public readonly position!: number;
 }

@@ -1,35 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { Player } from './player.entity';
+import { IPlayerRepository } from './player-repository.interface';
+import { Player } from './player.class';
 
 @Injectable()
-export class PlayerCacheRepository {
+export class PlayerCacheRepository implements IPlayerRepository {
 
     public find(): Player[] {
-        const players = [];
+        const players: Player[] = [];
         this.playerMap.forEach(player => players.push(player));
         return players;
     }
 
-    public findOneById(playerId: string): Player {
-        return this.playerMap.get(playerId);
-    }
-
-    public findOneByNickname(nickname: string): Player {
-        let player: Player;
-        this.playerMap.forEach(p => {
-            if (p.nickname === nickname) {
-                player = p;
-            }
-        });
+    public async findOneByNickname(nickname: string): Promise<Player | undefined> {
+        const player = this.find().find(p => p.nickname === nickname);
         return player;
     }
 
-    public save(player: Player): void {
-        this.playerMap.set(player.id, player);
+    public async findByRating(): Promise<Player[]> {
+        return this.find().sort((a, b) => b.rating - a.rating);
     }
 
-    public update(playerId: string, playerData: Partial<Player>): Player {
-        let player = this.playerMap.get(playerId);
+    public async save(player: Player): Promise<void> {
+        this.playerMap.set(player.nickname, player);
+    }
+
+    public async update(nickname: string, playerData: Partial<Player>): Promise<Player> {
+        let player = this.playerMap.get(nickname);
         player = Object.assign(player, playerData);
         return player;
     }

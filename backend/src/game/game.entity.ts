@@ -1,27 +1,36 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { Coords } from '../board/board';
+import { GameStatus } from './game.class';
 
-import { v4 as uuid } from 'uuid';
-import { Board, Coords } from '../board/board';
-import { Player } from '../player/player.entity';
+@Schema({ collection: 'games' })
+export class GameEntity extends Document {
+    @Prop()
+    public gameId!: string;
 
-export enum GameStatus {
-    CREATED = 'CREATED',
-    STARTED = 'STARTED',
-    FINISHED = 'FINISHED',
-}
+    @Prop()
+    public playerNicknames: string[] = [];
 
-export class Game {
-    public id: string = uuid();
-    public players: Player[] = [];
-    public playerNickname: string[] = [];
-    public status: GameStatus = GameStatus.CREATED;
-    public currentPlayer: number = -1;
-    public creator: string;
-    public turn: number = 0;
-    public longestStreak: number = 0;
-    public winner: string;
+    @Prop()
+    public status!: GameStatus;
 
-    public board: Board = new Board();
+    @Prop()
+    public creator!: string;
 
+    @Prop()
+    public turn!: number;
+
+    @Prop()
+    public longestStreak!: number;
+
+    @Prop()
+    public winner!: string;
+
+    @Prop()
     public moves: Coords[][] = [];
-    public createdAt: Date;
+
+    @Prop()
+    public createdAt!: Date;
 }
+
+export const GameSchema = SchemaFactory.createForClass(GameEntity);

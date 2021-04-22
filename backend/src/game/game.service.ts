@@ -1,11 +1,12 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { Coords } from '../board/board';
-import { Player } from '../player/player.entity';
+import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
-import { CacheGameRepository } from './game-cache.repository';
+import { GAME_SERVICE_EVENT_TOKEN } from './constants';
+import { GameCacheRepository } from './game-cache.repository';
 import { IGameEvents } from './game-events.interface';
-import { Game, GameStatus } from './game.entity';
-import { GAME_SERVICE_EVENT_TOKEN } from './game.module';
+import { GameMongooseRepository } from './game-mongoose.repository';
+import { Game, GameStatus } from './game.class';
 
 interface IGameService {
     createGame(): Promise<Game>;
@@ -16,18 +17,22 @@ interface IGameService {
 }
 
 @Injectable()
-export class GameService implements IGameService {
+export class GameService implements IGameService, OnModuleInit {
 
     public constructor(
-        @Inject(CacheGameRepository)
-        private readonly cacheGameRepository: CacheGameRepository,
-
+        @Inject(GameCacheRepository)
+        private readonly gameCacheRepository: GameCacheRepository,
+        @Inject(GameMongooseRepository)
+        private readonly gameMongooseRepository: GameMongooseRepository,
         @Inject(PlayerService)
         private readonly playerService: PlayerService,
-
         @Inject(GAME_SERVICE_EVENT_TOKEN)
         private readonly eventEmitter: IGameEvents,
     ) {
+
+    }
+
+    public onModuleInit(): void {
         this.eventEmitter.on('MOVE', (game: Game, move: Coords[]) => {
             this.playMove(game, move)
                 .catch((err) => {
@@ -36,39 +41,49 @@ export class GameService implements IGameService {
         });
     }
 
+    public async findFinishedGames(): Promise<Game[]> {
+        return this.gameMongooseRepository.find();
+    }
+
     public async loadGame(gameId: string): Promise<Game> {
-        const game = this.cacheGameRepository.findOne(gameId);
+        let game = await this.gameCacheRepository.findOne(gameId);
         if (!game) {
+            game = await this.gameMongooseRepository.findOne(gameId);
             if (!game) throw new NotFoundException(`No game found with id: ${gameId}`);
+            if (game.status !== GameStatus.FINISHED) {
+                for (let i = 0; i < 6; i++) {
+                    if (!game.players[i]) game.players[i] = this.playerService.generateBot();
+                }
+                await this.gameCacheRepository.save(game);
+            }
         }
         return game;
     }
 
     public async createGame(): Promise<Game> {
         const game = new Game();
-        this.cacheGameRepository.save(game);
+        await this.gameCacheRepository.save(game);
         return game;
     }
 
-    public addPlayerToGame(game: Game, player: Player, position: number): void {
+    public async addPlayerToGame(game: Game, player: Player, position: number): Promise<void> {
         if (!this.isPositionAvailable(game, position)) throw new BadRequestException('Position not available');
         if (!this.isNicknameAvailable(game, player.nickname)) throw new BadRequestException('Nickname already taken');
         if (!game.creator) game.creator = player.nickname;
         game.players[position] = player;
-        this.cacheGameRepository.update(game.id, game);
     }
 
-    public startGame(game: Game): void {
+    public async startGame(game: Game): Promise<void> {
         for (let i = 0; i < 6; i++) {
-            let player: any = game.players[i];
-            if (!player) {
-                player = new Player('AI');
-                player.isBot = true;
-                player.online = true;
-                game.players[i] = player;
-            }
+            let player: Player | undefined = game.players[i];
+            if (player) continue;
+            player = new Player('AI');
+            player.isBot = true;
+            player.online = true;
+            game.players[i] = player;
         }
         game.status = GameStatus.STARTED;
+        await this.gameMongooseRepository.save(game);
         this.nextPlayer(game);
     }
 
@@ -95,10 +110,16 @@ export class GameService implements IGameService {
     public async playMove(game: Game, move: ICoords[]): Promise<void> {
         game.moves.push(move);
         if (move[0]) {
-            game.board.getCell(move[0]).setPawn(undefined);
-            game.board.getCell(move[move.length - 1]).setPawn(game.currentPlayer);
+            game.board.getCell(move[0])?.setPawn(undefined);
+            game.board.getCell(move[move.length - 1])?.setPawn(game.currentPlayer);
             this.updateLongestStreak(game, move.length - 1);
+            const player = game.players[game.currentPlayer];
+            if (move.length - 1 > player.longestStreak) {
+                player.longestStreak = move.length - 1;
+                await this.playerService.updatePLayer(player);
+            }
         }
+        await this.gameMongooseRepository.update(game.id, game);
         if (game.board.isWinner(game.currentPlayer)) {
             await this.endGame(game);
         } else {
@@ -108,10 +129,10 @@ export class GameService implements IGameService {
 
     public async endGame(game: Game): Promise<Game> {
         game.status = GameStatus.FINISHED;
-        game.winner = game.players[game.currentPlayer].nickname;
+        game.winner = game.players[game.currentPlayer]?.nickname;
         const playerEntities = [];
         for (let i = 0; i < 6; i++) {
-            const player: Player = game.players[i];
+            const player = game.players[i];
             if (player.isBot) continue;
             if (game.winner === player.nickname) {
                 player.wins++;
@@ -121,7 +142,7 @@ export class GameService implements IGameService {
             await this.playerService.updatePLayer(player);
             playerEntities[i] = player;
         }
-        this.cacheGameRepository.save(game);
+        await this.gameMongooseRepository.update(game.id, game);
         return game;
     }
 
@@ -135,7 +156,7 @@ export class GameService implements IGameService {
     }
 
     private isNicknameAvailable(game: Game, nickname: string): boolean {
-        if (game.players.find((player) => player.nickname === nickname)) {
+        if (game.players.find((player) => player && player.nickname === nickname)) {
             return false;
         }
         return true;

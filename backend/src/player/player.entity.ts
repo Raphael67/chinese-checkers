@@ -1,15 +1,23 @@
-import { v4 as uuid } from 'uuid';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export class Player {
-    public constructor(nickname: string) {
-        this.nickname = nickname;
-    }
-    public id: string = uuid();
-    public nickname: string;
-    public online: boolean = false;
-    public isBot: boolean = false;
-    public wins: number = 0;
-    public loses: number = 0;
-    public longestStreak: number = 0;
-    public rating: number = 0;
+@Schema({ collection: 'players' })
+export class PlayerEntity extends Document {
+
+    @Prop()
+    public nickname!: string;
+
+    @Prop()
+    public wins!: number;
+
+    @Prop()
+    public loses!: number;
+
+    @Prop()
+    public longestStreak!: number;
+
+    @Prop()
+    public rating!: number;
 }
+
+export const PlayerSchema = SchemaFactory.createForClass(PlayerEntity);
