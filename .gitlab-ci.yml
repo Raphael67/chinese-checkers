@@ -83,15 +83,19 @@ deploy-net:
   dependencies:
     - docker-master
   script:
+    - docker stop game.corteks.net || true
+    - docker rm game.corteks.net || true
+    - docker stop mongo.game.corteks.net || true
+    - docker rm mongo.game.corteks.net || true
     - >
-      docker run --rm -d
+      docker run -d
       --name mongo.game.corteks.net
       -e MONGODB_DATABASE=chinese-checkers
       -l com.docker.compose.project=game.corteks.net
       mongo
     - docker network connect game_default mongo.game.corteks.net
     - >
-      docker run --rm -d
+      docker run -d
       --name game.corteks.net
       --network corteks_net_nginx_proxy
       -l com.docker.compose.project=game.corteks.net
