@@ -1,25 +1,26 @@
 import LoginComponent from 'components/login/component';
 import pages from 'pages';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import { getAndStoreGame } from 'redux/actions/game.action';
 import { register } from 'redux/actions/session.action';
+import { AppContext } from '../..';
 
 const Login = (): ReactElement | null => {
+    const { game } = useContext(AppContext);
     const dispatch = useDispatch();
     const gameParams = useParams<IGameParams>();
 
     const [errorMessage] = useState<string>();
 
-    const [game, setGame] = useState<IGame>();
+    const [currentGame, setCurrentGame] = useState<IGame>();
 
     const history = useHistory();
 
     useEffect(() => {
         (async () => {
             try {
-                setGame(await getAndStoreGame(dispatch, gameParams.gameId).catch((err) => {
+                setCurrentGame(await game.getAndStoreGame(gameParams.gameId).catch((err) => {
                     throw err;
                 }));
             }
@@ -28,7 +29,7 @@ const Login = (): ReactElement | null => {
             }
         })();
 
-    }, [gameParams.gameId, dispatch]);
+    }, [gameParams.gameId, game, dispatch]);
 
     const login = async (playerName: string, position: number) => {
         try {
@@ -50,7 +51,7 @@ const Login = (): ReactElement | null => {
         history.push(pages.game.path.replace(':gameId', gameParams.gameId));
     };
 
-    return game ? <LoginComponent game={game} login={login} goToGame={goToGame} errorMessage={errorMessage} /> : null;
+    return game ? <LoginComponent game={currentGame} login={login} goToGame={goToGame} errorMessage={errorMessage} /> : null;
 };
 
 export default Login;
