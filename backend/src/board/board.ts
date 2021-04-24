@@ -99,6 +99,8 @@ export class Board {
     }
 
     public print(): void {
+        process.stdout.cursorTo(0, 0);
+        process.stdout.clearScreenDown();
         console.log('------------------------------------------------');
         for (let y = 0; y < 17; y++) {
             let row = '';

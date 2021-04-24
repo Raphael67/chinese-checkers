@@ -30,7 +30,12 @@ export class BotService implements OnModuleInit {
             if (player.isBot) {
                 const move = this.play(game);
                 this.boardService.isValidMove(game, move);
-                await this.boardService.playMove(game, move);
+                setTimeout(() => {
+                    this.boardService.playMove(game, move)
+                        .catch(err => {
+                            this.logger.error(err);
+                        });
+                }, 1000);
             }
         });
     }

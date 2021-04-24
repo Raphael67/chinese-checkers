@@ -35,6 +35,7 @@ export class BoardService implements IBoardService {
             }
         }
         await this.gameService.update(game.id, game);
+        game.board.print();
         if (game.board.isWinner(game.currentPlayer)) {
             await this.gameService.endGame(game);
         } else {
