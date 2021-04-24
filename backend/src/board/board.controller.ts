@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GameStatus } from '../game/game.class';
 import { GameService } from '../game/game.service';
@@ -6,7 +6,7 @@ import { BoardService } from './board.service';
 import { CellDto } from './dto/cell.dto';
 import { CoordsDto } from './dto/coords.dto';
 
-@Controller('/api/board')
+@Controller('/api')
 @ApiTags('Board')
 export class BoardController {
     public constructor(
@@ -16,7 +16,15 @@ export class BoardController {
         private readonly gameService: GameService,
     ) { }
 
-    @Get('/:gameId')
+    @Patch('/game/:gameId/start')
+    @ApiOperation({ summary: 'Start a game' })
+    @ApiResponse({ status: 201, description: 'Game has been successfuly started' })
+    public async startGame(@Param('gameId') gameId: string): Promise<void> {
+        const game = await this.gameService.loadGame(gameId);
+        await this.boardService.startGame(game);
+    }
+
+    @Get('/board/:gameId')
     @ApiOperation({ summary: 'Return all pawns position for a game' })
     public async getBoard(@Param('gameId') gameId: string): Promise<CellDto[]> {
         const game = await this.gameService.loadGame(gameId);
@@ -24,7 +32,7 @@ export class BoardController {
         return game.board.getCells().filter((cell) => cell.getPawn() !== undefined).map(cell => CellDto.from(cell));
     }
 
-    @Get('/:gameId/move')
+    @Get('/board/:gameId/move')
     @ApiOperation({ summary: 'Return a list of all moves for a game' })
     @ApiQuery({ name: 'offset', required: false, description: 'Starts at 0, return offset element included.' })
     @ApiOkResponse({ type: [CoordsDto] })
@@ -36,7 +44,7 @@ export class BoardController {
         return game.moves.slice(offset).map((move) => move.map((coords) => CoordsDto.from(coords)));
     }
 
-    @Post('/:gameId/player/:playerIndex/move')
+    @Post('/board/:gameId/player/:playerIndex/move')
     @ApiOperation({ summary: 'Add a move for a player to a game' })
     @ApiBody({ type: [CoordsDto] })
     @ApiResponse({ status: 403, description: 'BadRequest with details in message property' })
@@ -54,6 +62,6 @@ export class BoardController {
         } catch (ex) {
             throw new BadRequestException(ex.message);
         }
-        await this.gameService.playMove(game, moveDto);
+        await this.boardService.playMove(game, moveDto);
     }
 }
