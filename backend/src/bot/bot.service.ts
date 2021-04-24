@@ -105,7 +105,7 @@ export class BotService implements OnModuleInit {
             if (allowNoJump && Math.abs(to.coords.y - from.coords.y) <= 1 && Math.abs(to.coords.x - from.coords.x) <= 2) moves.set(to, false);
             if (Math.abs(to.coords.y - from.coords.y) <= 2 && Math.abs(to.coords.x - from.coords.x) <= 4) {
                 const between = game.board.getCells().find((c) => {
-                    return c.getPawn()
+                    return c.getPawn() !== undefined
                         && c.coords.y === (from.coords.y + (to.coords.y - from.coords.y) / 2)
                         && c.coords.x === (from.coords.x + (to.coords.x - from.coords.x) / 2);
                 });
