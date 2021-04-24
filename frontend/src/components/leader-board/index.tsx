@@ -1,8 +1,8 @@
 import pages from 'pages';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { getGames } from 'redux/actions/game.action';
 import Api from 'services/api';
+import { AppContext } from '../..';
 import LeaderBoardComponent from './component';
 import './index.less';
 
@@ -13,6 +13,7 @@ export enum Sort {
 
 const LeaderBoard = (): ReactElement => {
     const history = useHistory();
+    const { game } = useContext(AppContext);
 
     const [topPlayers, setTopPlayers] = useState<IPlayer[]>([]);
     const [gamesPlayed, setGamesPlayed] = useState<IGame[]>([]);
@@ -30,7 +31,8 @@ const LeaderBoard = (): ReactElement => {
 
     const searchGames = async (values: ISearchGameParams) => {
         try {
-            setGamesPlayed(await getGames(values).catch((err) => {
+
+            setGamesPlayed(await game.getGames(values).catch((err) => {
                 throw err;
             }));
         }

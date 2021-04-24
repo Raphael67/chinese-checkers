@@ -1,7 +1,10 @@
 import { Store } from 'redux';
-import { setPath, setPawnPlace, setPawns, setPossiblePlaces } from 'redux/actions/game.action';
+import { setPath, setPawnPlace, setPossiblePlaces } from 'redux/actions/game.action';
+import { Type } from 'redux/actions/types';
 import Api from 'services/api';
 import Board, { ColourPosition } from './board';
+
+type GameStatus = IGame['status'] | undefined;
 
 export default class Game {
     private id?: string;
@@ -10,7 +13,8 @@ export default class Game {
     private pawnTaken?: IPawn;
     private possiblePlaces?: IPath[];
     private path: IPath[] = [];
-    private moves: IPawnPlace[][] = [];
+    private movesOffset = 0;
+    private status?: GameStatus;
 
     constructor(private store: Store<any, any>) { }
 
@@ -41,8 +45,66 @@ export default class Game {
         return board;
     }
 
-    public async initBoard(gameId: string) {
-        [this.moves] = await this.getMoves(gameId);
+    public async start(gameId: string) {
+        await Api.startGame({
+            gameId
+        });
+
+        await this.setStatus(gameId);
+    }
+
+    public async getGame(gameId: string): Promise<IGame> {
+        return this.convertRawGame(await Api.getGame({
+            gameId
+        }).catch((err) => {
+            throw err;
+        }));
+    }
+
+    public async getAndStoreGame(gameId: string): Promise<IGame> {
+        this.store.dispatch({
+            payload: gameId,
+            type: Type.SET_GAME
+        });
+
+        return await this.getGame(gameId);
+    };
+
+    public async getGames(values: ISearchGameParams): Promise<IGame[]> {
+        return (await Api.getGames(values).catch((err) => {
+            throw err;
+        })).map((rawGame: IRawGame) => {
+            return this.convertRawGame(rawGame);
+        });
+    };
+
+    private convertRawGame(rawGame: IRawGame): IGame {
+        const { created_at, id, longest_streak, players, turn, status, current_player } = rawGame;
+        return {
+            currentPlayer: current_player,
+            id,
+            createdAt: new Date(created_at),
+            longestStreak: longest_streak,
+            players: players.map((player: IRawGamePlayer): IGamePlayer => {
+                const { position, nickname } = player;
+                return {
+                    nickname,
+                    position
+                };
+            }),
+            status,
+            rounds: turn
+        };
+    };
+
+    private async setStatus(gameId: string) {
+        this.status = (await this.getGame(gameId)).status;
+    }
+
+    public async initBoard(gameId: string): Promise<IPawnPlace[]> {
+        this.board = new Board();
+        this.movesOffset = (await this.getMoves(gameId)).length;
+        await this.setStatus(gameId);
         this.board.initBoard((await Api.getBoard({
             gameId
         }).catch((err) => {
@@ -61,20 +123,22 @@ export default class Game {
             };
         }));
 
-        setPawns(this.store.dispatch, this.board.getPawns());
+        return this.board.getPawns();
     }
 
-    public async getMoves(gameId: string): Promise<[IPawnPlace[][], number]> {
-        const movesOffset = this.moves.length;
-        this.moves = this.moves.concat((await Api.getMoves({
+    public getStatus(): GameStatus {
+        return this.status;
+    }
+
+    public async getMoves(gameId: string): Promise<IPawnPlace[][]> {
+        return (await Api.getMoves({
             gameId,
-            offset: this.moves.length
+            offset: this.movesOffset
         }).catch((err) => {
             throw err;
         })).map((positions: IPosition[]) => {
             return positions.map((position: IPosition) => this.board.getPawnPlaceByPosition(position));
-        }));
-        return [this.moves, movesOffset];
+        });
     }
 
     public takePawn(pawnId: string) {
@@ -186,13 +250,12 @@ export default class Game {
     }
 
     public async *replayMoves(gameId: string) {
-        let timer: NodeJS.Timeout | undefined = undefined;
-
-        const [pawnMoves, movesOffset] = await this.getMoves(gameId).catch((err) => {
+        const pawnMoves = await this.getMoves(gameId).catch((err) => {
             throw err;
         });
+        this.movesOffset += pawnMoves.length;
 
-        for (let offset = movesOffset; offset < pawnMoves.length; offset++) {
+        for (let offset = 0; offset < pawnMoves.length; offset++) {
             let pawn: IPawn | undefined = undefined;
             const pawnMove = pawnMoves[offset];
             for (let moveNumber = 0; moveNumber < pawnMove.length - 1; moveNumber++) {
@@ -200,16 +263,13 @@ export default class Game {
                 let move: IPawnPlace | undefined = undefined;;
                 // eslint-disable-next-line
                 await new Promise((resolve) => {
-                    timer = setTimeout(() => {
+                    setTimeout(() => {
                         const pawnAtMove = pawnMove[moveNumber].pawn;
                         if (pawnAtMove) {
                             pawn = pawnAtMove;
                             position = Number(Object.keys(ColourPosition).find((position: string) => {
                                 return ColourPosition[Number(position)] === pawnAtMove.colour;
                             }));
-                            if (position) {
-                                //props.setPlayerPlaying(Number(position));
-                            }
                         }
                         move = {
                             pawn,
@@ -223,10 +283,8 @@ export default class Game {
 
 
                 });
-                clearTimeout(timer);
-                yield [position, move];
+                yield [position, this.board.getPawns()];
             }
         }
-
     };
 }

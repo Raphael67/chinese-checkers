@@ -1,6 +1,6 @@
 import Pawn from 'components/game/pawn';
 import { ColourPosition } from 'core/board';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { IHashPath, IHashPawnPlaces, IHashPossiblePlaces } from '.';
 import './index.less';
 
@@ -11,7 +11,7 @@ interface IProps {
     player?: IPlayer;
     path: IHashPath;
     placesHighlighted: IHashPossiblePlaces;
-    game?: IGame;
+    currentPlayerPosition?: number;
 }
 
 const BoardComponent = (props: IProps) => {
@@ -48,7 +48,7 @@ const BoardComponent = (props: IProps) => {
             if (placeElement && pawn) {
                 const { cx, cy } = placeElement as unknown as SVGCircleElement;
                 const { id, colour } = pawn;
-                const canMove = player && player.position !== undefined && props.game && props.game.currentPlayer === player.position ? colour === ColourPosition[player.position] : false;
+                const canMove = player && player.position !== undefined && props.currentPlayerPosition !== undefined && props.currentPlayerPosition === player.position ? colour === ColourPosition[player.position] : false;
                 return <Pawn key={id} canMove={canMove} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16} />;
             }
             return undefined;
@@ -219,4 +219,12 @@ const BoardComponent = (props: IProps) => {
         </g>
     </svg>;
 };
-export default BoardComponent;
+export default memo(BoardComponent, (prevProps, nextProps) => {
+    return !(
+        prevProps.pawns.hash !== nextProps.pawns.hash ||
+        prevProps.player !== nextProps.player ||
+        prevProps.currentPlayerPosition !== nextProps.currentPlayerPosition ||
+        prevProps.placesHighlighted.hash !== nextProps.placesHighlighted.hash ||
+        prevProps.path.hash !== nextProps.path.hash
+    );
+});

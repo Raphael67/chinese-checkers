@@ -1,6 +1,6 @@
 import { Colour } from 'core/board';
 import * as d3 from 'd3';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../..';
 import './index.less';
 
@@ -13,6 +13,8 @@ interface IProps {
     alone?: boolean;
     canMove?: boolean;
 }
+
+export const PawnTransitionDurations = [1000, 1000];
 
 const Pawn = (props: IProps) => {
     const defaultPosition = props.r + 1;
@@ -38,12 +40,12 @@ const Pawn = (props: IProps) => {
                     .raise()
                     .attr('r', props.r || 16)
                     .transition()
-                    .duration(1000)
+                    .duration(PawnTransitionDurations[0])
                     .attr('cx', (Number(d3Element.attr('cx')) + (props.x || defaultPosition)) / 2)
                     .attr('cy', (Number(d3Element.attr('cy')) + (props.y || defaultPosition)) / 2)
                     .attr('r', 25)
                     .transition()
-                    .duration(1000)
+                    .duration(PawnTransitionDurations[1])
                     .attr('cx', props.x || defaultPosition)
                     .attr('cy', props.y || defaultPosition)
                     .attr('r', props.r || 16)
@@ -52,7 +54,7 @@ const Pawn = (props: IProps) => {
 
 
         }
-    }, [props.x, props.y, props.r, props.canMove, defaultPosition]);
+    }, [props.x, props.y, props.r, props.colour, props.canMove, defaultPosition]);
 
     const clickPawn = (event: React.MouseEvent<SVGGeometryElement>) => {
         if (canMove) {
@@ -76,4 +78,4 @@ const Pawn = (props: IProps) => {
     return props.alone ? <svg width={dimension} height={dimension}>{renderPawn()}</svg> : renderPawn();
 };
 
-export default Pawn;
+export default memo(Pawn);

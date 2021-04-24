@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { AppState } from 'redux/reducers';
 import { AppContext } from '../../..';
+import { PawnTransitionDurations } from '../pawn';
 import BoardComponent from './component';
 import './index.less';
 
@@ -26,9 +27,11 @@ export interface IHashPossiblePlaces {
 }
 
 interface IProps {
-    game?: IGame;
-    setPlayerPlaying: (position: number) => void;
+    currentPlayerPosition?: number;
+    player?: IPlayer;
 }
+
+const PawnTransitionDuration = PawnTransitionDurations.reduce((total: number, transitionDuration: number) => total + transitionDuration, 0);
 
 const Board = (props: IProps): ReactElement => {
     const mapStateToObj = useSelector((state: AppState) => {
@@ -51,36 +54,61 @@ const Board = (props: IProps): ReactElement => {
 
     const { game } = useContext(AppContext);
     const timer = useRef<NodeJS.Timeout>();
+    const isUnmounted = useRef<boolean>(false);
     const gameParams = useParams<IGameParams>();
     const [pawns, setPawns] = useState<IHashPawnPlaces>({
         pawns: [],
         hash: ''
     });
 
-    //const setPlayerPlaying = props.setPlayerPlaying;
+    const setPlayerPlaying = (position: number) => {
+        let element = document.querySelector(`[data-position="${position}"]`);
+        if (element) {
+            document.querySelectorAll(`[data-position]`).forEach((element: Element) => {
+                element.classList.remove('playing');
+            });
+            element.classList.add('playing');
+        }
+    };
 
     const replayMoves = useCallback(async () => {
         let movesIterator = game.replayMoves(gameParams.gameId);
         let nextValue = await movesIterator.next();
-        while (!nextValue.done) {
+
+        while (!nextValue.done && !isUnmounted.current) {
             const value = nextValue.value;
             if (value) {
-                const [position, move] = value;
+                const [position, pawns] = value;
                 if (position !== undefined) {
-                    //setPlayerPlaying(Number(position));
+                    setPlayerPlaying(Number(position));
                 }
 
-                if (move) {
-                    //setPawnPlace(move);
+                if (pawns) {
+                    setPawns({
+                        pawns,
+                        hash: JSON.stringify(pawns)
+                    });
                 }
 
             }
             nextValue = await movesIterator.next();
         }
-    }, [game, gameParams.gameId]);
+
+        const player = props.player;
+        if (game.getStatus() === 'STARTED' && player && player.position !== undefined) {
+            setTimeout(() => {
+                setPlayerPlaying(player.position!);
+            }, PawnTransitionDuration);
+        }
+    }, [game, gameParams.gameId, props.player]);
 
     const refresh = useCallback(async () => {
         clearTimeout(Number(timer.current));
+
+        if (isUnmounted.current) {
+            return;
+        }
+
         try {
             await replayMoves();
 
@@ -93,33 +121,30 @@ const Board = (props: IProps): ReactElement => {
         }
     }, [replayMoves]);
 
+    // Init board and set timer
     useEffect(() => {
         (async () => {
-            await refresh();
+            try {
+                const pawns = await game.initBoard(gameParams.gameId).catch((err) => {
+                    throw err;
+                });
+
+                setPawns({
+                    pawns,
+                    hash: JSON.stringify(pawns)
+                });
+                await refresh();
+            }
+            catch (err) {
+                console.error(err);
+            }
         })();
 
         return () => {
+            isUnmounted.current = true;
             clearTimeout(Number(timer.current));
         };
-    }, [refresh]);
-
-    // Init board
-    useEffect(() => {
-        (async () => {
-            await game.initBoard(gameParams.gameId).catch((err) => {
-                console.error(err);
-            });
-        })();
-    }, [game, gameParams.gameId]);
-
-    // Set board initially
-    useEffect(() => {
-        const pawns = mapStateToObj.pawns;
-        setPawns({
-            pawns,
-            hash: JSON.stringify(pawns)
-        });
-    }, [mapStateToObj.pawns]);
+    }, [refresh, game, gameParams.gameId]);
 
     const clickPlace = (place: string) => {
         game.clickPlace(place);
@@ -136,7 +161,7 @@ const Board = (props: IProps): ReactElement => {
         path={mapStateToObj.path}
         clickPlace={clickPlace}
         doubleClickPlace={doubleClickPlace}
-        game={props.game}
+        currentPlayerPosition={props.currentPlayerPosition}
     />;
 };
 export default Board;

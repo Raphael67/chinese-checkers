@@ -2,10 +2,8 @@ import pages from 'pages';
 import React, { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
-import { getGame } from 'redux/actions/game.action';
 import { reset } from 'redux/actions/session.action';
 import { AppState } from 'redux/reducers';
-import Api from 'services/api';
 import { AppContext } from '../..';
 import GameComponent from './component';
 import './index.less';
@@ -29,10 +27,10 @@ const Game = (): ReactElement => {
     });
 
     const refresh = useCallback(async (gameId: string) => {
-        setCurrentGame(await getGame(gameId).catch((err) => {
+        setCurrentGame(await game.getGame(gameId).catch((err) => {
             throw err;
         }));
-    }, []);
+    }, [game]);
 
     useEffect(() => {
         (async () => {
@@ -60,9 +58,7 @@ const Game = (): ReactElement => {
     };
 
     const startGame = () => {
-        Api.startGame({
-            gameId: gameParams.gameId
-        });
+        game.start(gameParams.gameId);
     };
 
     const copyGameLink = () => {
@@ -79,7 +75,14 @@ const Game = (): ReactElement => {
         return protocol + '//' + hostname + (port !== '' ? ':' + port : '') + pages.login.path.replace(':gameId', gameParams.gameId);
     };
 
-    return <GameComponent copyGameLink={copyGameLink} getInviteLink={getInviteLink} quitGame={quitGame} startGame={startGame} game={currentGame} player={mapStateToObj.player} />;
+    return <GameComponent
+        copyGameLink={copyGameLink}
+        getInviteLink={getInviteLink}
+        quitGame={quitGame}
+        startGame={startGame}
+        game={currentGame}
+        player={mapStateToObj.player}
+    />;
 };
 
 export default Game;
