@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cell, Coords, playerPositions } from '../board/board';
+import { BoardService } from '../board/board.service';
 import { GAME_SERVICE_EVENT_TOKEN } from '../game/constants';
 import { IGameEvents } from '../game/game-events.interface';
 import { Game } from '../game/game.class';
@@ -18,15 +19,18 @@ export class BotService implements OnModuleInit {
 
     public constructor(
         @Inject(GAME_SERVICE_EVENT_TOKEN)
-        private readonly eventEmitter: IGameEvents
+        private readonly eventEmitter: IGameEvents,
+        @Inject(BoardService)
+        private readonly boardService: BoardService,
     ) { }
 
     public onModuleInit(): void {
-        this.eventEmitter.on('NEXT_PLAYER', (game: Game) => {
+        this.eventEmitter.on('NEXT_PLAYER', async (game: Game) => {
             const player = game.players[game.currentPlayer];
             if (player.isBot) {
                 const move = this.play(game);
-                this.eventEmitter.emit('MOVE', game, move);
+                this.boardService.isValidMove(game, move);
+                await this.boardService.playMove(game, move);
             }
         });
     }
