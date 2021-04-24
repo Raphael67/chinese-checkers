@@ -7,7 +7,6 @@ import { GameService } from '../game/game.service';
 import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
 import { Board, Coords } from './board';
-import boardConfiguration from './board.configuration';
 
 export interface IBoardService {
     isValidMove(game: Game, move: Coords[]): boolean;
@@ -16,8 +15,6 @@ export interface IBoardService {
 @Injectable()
 export class BoardService implements IBoardService, OnModuleInit {
     public constructor(
-        @Inject(boardConfiguration.KEY)
-        private readonly boardConfig: ConfigType<typeof boardConfiguration>,
         @Inject(GameService)
         private readonly gameService: GameService,
         @Inject(GAME_SERVICE_EVENT_TOKEN)
