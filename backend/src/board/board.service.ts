@@ -1,5 +1,4 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { GAME_SERVICE_EVENT_TOKEN } from '../game/constants';
 import { IGameEvents } from '../game/game-events.interface';
 import { Game, GameStatus } from '../game/game.class';
@@ -13,7 +12,7 @@ export interface IBoardService {
 }
 
 @Injectable()
-export class BoardService implements IBoardService, OnModuleInit {
+export class BoardService implements IBoardService {
     public constructor(
         @Inject(GameService)
         private readonly gameService: GameService,
@@ -22,16 +21,6 @@ export class BoardService implements IBoardService, OnModuleInit {
         @Inject(PlayerService)
         private readonly playerService: PlayerService
     ) { }
-
-
-    public onModuleInit(): void {
-        this.eventEmitter.on('MOVE', (game: Game, move: Coords[]) => {
-            this.playMove(game, move)
-                .catch((err) => {
-                    this.logger.error(err);
-                });
-        });
-    }
 
     public async playMove(game: Game, move: ICoords[]): Promise<void> {
         game.moves.push(move);
