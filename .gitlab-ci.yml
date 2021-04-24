@@ -93,6 +93,7 @@ deploy-net:
       -e MONGODB_DATABASE=chinese-checkers
       -l com.docker.compose.project=game.corteks.net
       mongo
+    - docker network connect game_default mongo.game.corteks.net
     - >
       docker run -d
       --name game.corteks.net
@@ -103,3 +104,4 @@ deploy-net:
       -e VIRTUAL_PORT=8080
       -e LETSENCRYPT_HOST=game.corteks.net
       registry.corteks.net/epitech/chinese-checkers:latest
+    - docker network connect game_default game.corteks.net
