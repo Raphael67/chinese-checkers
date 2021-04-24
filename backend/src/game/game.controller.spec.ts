@@ -56,15 +56,6 @@ describe('GameController', () => {
             await expect(controller.createGame()).resolves.toStrictEqual(new GameDetailsDto(game));
         });
     });
-    describe('startGame', () => {
-        it('should return a new game', async () => {
-            const game = new Game();
-            gameService.loadGame = jest.fn(async () => game);
-            gameService.startGame = jest.fn();
-            await controller.startGame('GAME_ID');
-            await expect(gameService.startGame).toHaveBeenCalledWith(game);
-        });
-    });
     describe('addPlayerToGame', () => {
         it('should add player to game', async () => {
             const gameId = 'GAME_ID';

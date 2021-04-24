@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { GAME_SERVICE_EVENT_TOKEN } from '../game/constants';
 import { Game } from '../game/game.class';
+import { GameService } from '../game/game.service';
+import { PlayerService } from '../player/player.service';
 import { Coords } from './board';
 import { BoardService } from './board.service';
 
@@ -9,6 +12,18 @@ describe('BoardService', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
+                {
+                    provide: GameService,
+                    useValue: {},
+                },
+                {
+                    provide: GAME_SERVICE_EVENT_TOKEN,
+                    useValue: {},
+                },
+                {
+                    provide: PlayerService,
+                    useValue: {},
+                },
                 BoardService,
             ],
         }).compile();
