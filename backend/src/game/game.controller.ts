@@ -1,9 +1,8 @@
-import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
-import { GameStatus } from './game.class';
 import { GameService } from './game.service';
 
 @Controller('/api/game')
@@ -44,7 +43,6 @@ export class GameController {
     @ApiResponse({ status: 201, description: 'Game has been successfuly started' })
     public async startGame(@Param('gameId') gameId: string): Promise<void> {
         const game = await this.gameService.loadGame(gameId);
-        if (game.status !== GameStatus.CREATED) throw new BadRequestException(`Game can not be start as it is in status: ${game.status}`);
         await this.gameService.startGame(game);
     }
 
