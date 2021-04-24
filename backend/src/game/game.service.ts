@@ -67,6 +67,7 @@ export class GameService implements IGameService, OnModuleInit {
     }
 
     public async addPlayerToGame(game: Game, player: Player, position: number): Promise<void> {
+        if (game.status !== GameStatus.CREATED) throw new BadRequestException(`Game can not be start as it is in status: ${game.status}`);
         if (!this.isPositionAvailable(game, position)) throw new BadRequestException('Position not available');
         if (!this.isNicknameAvailable(game, player.nickname)) throw new BadRequestException('Nickname already taken');
         if (!game.creator) game.creator = player.nickname;
