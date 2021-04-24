@@ -94,7 +94,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect {
             client.emit('ERROR', { message: err.message });
             return;
         }
-        await this.gameService.playMove(game, move);
+        await this.boardService.playMove(game, move);
     }
 
     @SubscribeMessage(Events.MOVE)

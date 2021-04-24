@@ -1,13 +1,89 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Game } from '../game/game.class';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { GAME_SERVICE_EVENT_TOKEN } from '../game/constants';
+import { IGameEvents } from '../game/game-events.interface';
+import { Game, GameStatus } from '../game/game.class';
+import { GameService } from '../game/game.service';
+import { Player } from '../player/player.class';
+import { PlayerService } from '../player/player.service';
 import { Board, Coords } from './board';
+import boardConfiguration from './board.configuration';
 
 export interface IBoardService {
     isValidMove(game: Game, move: Coords[]): boolean;
 }
 
 @Injectable()
-export class BoardService implements IBoardService {
+export class BoardService implements IBoardService, OnModuleInit {
+    public constructor(
+        @Inject(boardConfiguration.KEY)
+        private readonly boardConfig: ConfigType<typeof boardConfiguration>,
+        @Inject(GameService)
+        private readonly gameService: GameService,
+        @Inject(GAME_SERVICE_EVENT_TOKEN)
+        private readonly eventEmitter: IGameEvents,
+        @Inject(PlayerService)
+        private readonly playerService: PlayerService
+    ) { }
+
+
+    public onModuleInit(): void {
+        this.eventEmitter.on('MOVE', (game: Game, move: Coords[]) => {
+            this.playMove(game, move)
+                .catch((err) => {
+                    this.logger.error(err);
+                });
+        });
+    }
+
+    public async playMove(game: Game, move: ICoords[]): Promise<void> {
+        game.moves.push(move);
+        if (move[0]) {
+            game.board.getCell(move[0])?.setPawn(undefined);
+            game.board.getCell(move[move.length - 1])?.setPawn(game.currentPlayer);
+            this.updateLongestStreak(game, move.length - 1);
+            const player = game.players[game.currentPlayer];
+            if (move.length - 1 > player.longestStreak) {
+                player.longestStreak = move.length - 1;
+                await this.playerService.updatePLayer(player);
+            }
+        }
+        await this.gameService.update(game.id, game);
+        if (game.board.isWinner(game.currentPlayer)) {
+            await this.gameService.endGame(game);
+        } else {
+            this.nextPlayer(game);
+        }
+    }
+
+    private updateLongestStreak(game: Game, streak: number) {
+        if (streak > game.longestStreak) {
+            game.longestStreak = streak;
+        }
+    }
+
+    public async startGame(game: Game): Promise<void> {
+        for (let i = 0; i < 6; i++) {
+            let player: Player | undefined = game.players[i];
+            if (player) continue;
+            player = new Player('AI');
+            player.isBot = true;
+            player.online = true;
+            game.players[i] = player;
+        }
+        game.status = GameStatus.STARTED;
+        await this.gameService.save(game);
+        this.nextPlayer(game);
+    }
+
+    public nextPlayer(game: Game): void {
+        game.currentPlayer = (game.currentPlayer + 1) % 6;
+        if (game.currentPlayer === 0) game.turn++;
+        this.logger.debug(`player ${game.currentPlayer}`);
+        this.eventEmitter.emit('NEXT_PLAYER', game);
+        this.eventEmitter.emit('GAME_STATE', game);
+    }
+
     public isValidMove(game: Game, move: Coords[]): boolean {
         let moveIndex = 0;
         for (const coords of move) {
