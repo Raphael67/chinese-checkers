@@ -44,12 +44,16 @@ export class BotService implements OnModuleInit {
         playerPawns.forEach((cell) => {
             const currentDistance = Coords.dist(cell.coords, target.coords);
             const bestPath = this.findPath(game, cell, target);
+            let score = currentDistance - bestPath.distance;
+            if (playerPositions[(game.currentPlayer + 3) % 6].includes(cell.getIndex())) {
+                score /= 10;
+            }
             scorings.push({
                 id: cell.getIndex(),
                 currentDistance: currentDistance,
                 bestDistance: bestPath.distance,
                 path: bestPath.path,
-                score: currentDistance - bestPath.distance,
+                score: score,
             });
         });
         scorings.sort((a, b) => {
