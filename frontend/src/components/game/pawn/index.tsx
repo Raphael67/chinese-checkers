@@ -26,7 +26,6 @@ const Pawn = (props: IProps) => {
         x: props.x || defaultPosition,
         y: props.y || defaultPosition
     });
-    const [canMove, setCanMove] = useState<boolean>(props.canMove || false);
 
     useEffect(() => {
         const element = ref.current;
@@ -34,7 +33,6 @@ const Pawn = (props: IProps) => {
             const d3Element = d3.select(element);
 
             if (props.x && props.y) {
-                setCanMove(false);
 
                 d3Element
                     .raise()
@@ -48,16 +46,15 @@ const Pawn = (props: IProps) => {
                     .duration(PawnTransitionDurations[1])
                     .attr('cx', props.x || defaultPosition)
                     .attr('cy', props.y || defaultPosition)
-                    .attr('r', props.r || 16)
-                    .on('end', () => setCanMove(props.canMove || false));
+                    .attr('r', props.r || 16);
             }
 
 
         }
-    }, [props.x, props.y, props.r, props.colour, props.canMove, defaultPosition]);
+    }, [props.x, props.y, props.r, props.colour, defaultPosition]);
 
     const clickPawn = (event: React.MouseEvent<SVGGeometryElement>) => {
-        if (canMove) {
+        if (props.canMove) {
             game.takePawn(event.currentTarget.id);
         }
     };
@@ -66,7 +63,7 @@ const Pawn = (props: IProps) => {
         const { x, y } = position;
         return <circle
             onClick={clickPawn}
-            className={`pawn ${Colour[props.colour].toLowerCase()} ${canMove ? 'pointer' : ''} `}
+            className={`pawn ${Colour[props.colour].toLowerCase()} ${props.canMove ? 'pointer' : ''} `}
             ref={ref}
             id={props.id}
             cx={x || defaultPosition}

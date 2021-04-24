@@ -82,7 +82,6 @@ const GameComponent = (props: IProps): ReactElement => {
         <div className="board-container">
             <Board
                 currentPlayerPosition={props.game && props.game.currentPlayer}
-                player={props.player}
             />
         </div>
         <div className="info-container">

@@ -50,7 +50,8 @@ export default class Game {
             gameId
         });
 
-        await this.setStatus(gameId);
+        const game = await this.getGame(gameId);
+        this.status = game.status;
     }
 
     public async getGame(gameId: string): Promise<IGame> {
@@ -97,14 +98,12 @@ export default class Game {
         };
     };
 
-    private async setStatus(gameId: string) {
-        this.status = (await this.getGame(gameId)).status;
-    }
-
     public async initBoard(gameId: string): Promise<IPawnPlace[]> {
         this.board = new Board();
         this.movesOffset = (await this.getMoves(gameId)).length;
-        await this.setStatus(gameId);
+        const game = await this.getGame(gameId);
+        this.status = game.status;
+        this.setPlayerPosition(game.currentPlayer);
         this.board.initBoard((await Api.getBoard({
             gameId
         }).catch((err) => {
@@ -128,6 +127,10 @@ export default class Game {
 
     public getStatus(): GameStatus {
         return this.status;
+    }
+
+    public getPlayerPosition(): number | undefined {
+        return this.playerPosition;
     }
 
     public async getMoves(gameId: string): Promise<IPawnPlace[][]> {

@@ -628,7 +628,7 @@ export default class Board {
         }
     };
 
-    private pawns: Record<string, IPawnPlace> = { pawn1: { place: 'p49', pawn: { colour: Colour.Blue, id: 'pawn1' } } };
+    private pawns: Record<string, IPawnPlace> = {};
     private pawnsMap: Record<string, IPawn> = {};
 
     public getPawns(): IPawnPlace[] {

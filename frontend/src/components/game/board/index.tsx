@@ -28,7 +28,6 @@ export interface IHashPossiblePlaces {
 
 interface IProps {
     currentPlayerPosition?: number;
-    player?: IPlayer;
 }
 
 const PawnTransitionDuration = PawnTransitionDurations.reduce((total: number, transitionDuration: number) => total + transitionDuration, 0);
@@ -94,13 +93,13 @@ const Board = (props: IProps): ReactElement => {
             nextValue = await movesIterator.next();
         }
 
-        const player = props.player;
-        if (game.getStatus() === 'STARTED' && player && player.position !== undefined) {
+        const player = game.getPlayerPosition();
+        if (game.getStatus() === 'STARTED' && player) {
             setTimeout(() => {
-                setPlayerPlaying(player.position!);
+                setPlayerPlaying(player);
             }, PawnTransitionDuration);
         }
-    }, [game, gameParams.gameId, props.player]);
+    }, [game, gameParams.gameId]);
 
     const refresh = useCallback(async () => {
         clearTimeout(Number(timer.current));

@@ -27,19 +27,18 @@ const Game = (): ReactElement => {
     });
 
     const refresh = useCallback(async (gameId: string) => {
-        setCurrentGame(await game.getGame(gameId).catch((err) => {
+        const gameInfo = await game.getGame(gameId).catch((err) => {
             throw err;
-        }));
+        });
+        setCurrentGame(gameInfo);
+        game.setPlayerPosition(gameInfo.currentPlayer);
     }, [game]);
 
     useEffect(() => {
         (async () => {
             const gameId = gameParams.gameId;
-            const player = mapStateToObj.player;
             game.setId(gameId);
-            if (player && player.position !== undefined) {
-                game.setPlayerPosition(player.position);
-            }
+
             await refresh(gameId);
             clearInterval(Number(timer.current));
             timer.current = setInterval(async () => {
@@ -50,7 +49,7 @@ const Game = (): ReactElement => {
         return () => {
             clearInterval(Number(timer.current));
         };
-    }, [game, gameParams.gameId, mapStateToObj.player, refresh]);
+    }, [game, gameParams.gameId, refresh]);
 
     const quitGame = () => {
         reset(dispatch);

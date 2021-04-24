@@ -73,7 +73,7 @@ const LoginComponent = (props: IProps): ReactElement => {
 
     const error = props.errorMessage ? <Alert type="error" message={props.errorMessage} /> : undefined;
 
-    return <Form
+    return props.game ? <Form
         form={form}
         onValuesChange={(values: Record<string, string>) => {
             setSavedPositions({ ...savedPositions, ...values });
@@ -83,7 +83,7 @@ const LoginComponent = (props: IProps): ReactElement => {
         {error}
         {renderPlayerPlaces((props.game && props.game.players) || [], savedPositions)}
         <Button size="large" onClick={goToGame}>Watcher mode</Button>
-    </Form>;
+    </Form> : <Form form={form}></Form>;
 };
 
 export default LoginComponent;
