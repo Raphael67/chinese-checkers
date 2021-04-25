@@ -5,9 +5,11 @@ import { GameService } from '../game/game.service';
 import { PlayerService } from '../player/player.service';
 import { Coords } from './board';
 import { BoardService } from './board.service';
+import { ConsoleService } from './console.service';
 
 describe('BoardService', () => {
     let service: BoardService;
+    let consoleService: ConsoleService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -24,11 +26,16 @@ describe('BoardService', () => {
                     provide: PlayerService,
                     useValue: {},
                 },
+                {
+                    provide: ConsoleService,
+                    useValue: {},
+                },
                 BoardService,
             ],
         }).compile();
 
         service = module.get<BoardService>(BoardService);
+        consoleService = module.get(ConsoleService);
     });
     describe('isValidMove', () => {
         it('should return false if no pawn at origin', () => {
