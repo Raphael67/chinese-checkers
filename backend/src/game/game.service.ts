@@ -1,23 +1,12 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
-import { Coords } from '../board/board';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
-import { GAME_SERVICE_EVENT_TOKEN } from './constants';
 import { GameCacheRepository } from './game-cache.repository';
-import { IGameEvents } from './game-events.interface';
 import { GameMongooseRepository } from './game-mongoose.repository';
 import { Game, GameStatus } from './game.class';
 
-interface IGameService {
-    createGame(): Promise<Game>;
-    addPlayerToGame(game: Game, player: Player, position: number): void;
-    startGame(game: Game): void;
-    nextPlayer(game: Game): void;
-    playMove(gmae: Game, move: ICoords[]): void;
-}
-
 @Injectable()
-export class GameService implements IGameService, OnModuleInit {
+export class GameService {
 
     public constructor(
         @Inject(GameCacheRepository)
@@ -26,20 +15,7 @@ export class GameService implements IGameService, OnModuleInit {
         private readonly gameMongooseRepository: GameMongooseRepository,
         @Inject(PlayerService)
         private readonly playerService: PlayerService,
-        @Inject(GAME_SERVICE_EVENT_TOKEN)
-        private readonly eventEmitter: IGameEvents,
-    ) {
-
-    }
-
-    public onModuleInit(): void {
-        this.eventEmitter.on('MOVE', (game: Game, move: Coords[]) => {
-            this.playMove(game, move)
-                .catch((err) => {
-                    this.logger.error(err);
-                });
-        });
-    }
+    ) { }
 
     public async findFinishedGames(): Promise<Game[]> {
         return this.gameMongooseRepository.find();
@@ -74,18 +50,8 @@ export class GameService implements IGameService, OnModuleInit {
         game.players[position] = player;
     }
 
-    public async startGame(game: Game): Promise<void> {
-        for (let i = 0; i < 6; i++) {
-            let player: Player | undefined = game.players[i];
-            if (player) continue;
-            player = new Player('AI');
-            player.isBot = true;
-            player.online = true;
-            game.players[i] = player;
-        }
-        game.status = GameStatus.STARTED;
+    public async save(game: Game): Promise<void> {
         await this.gameMongooseRepository.save(game);
-        this.nextPlayer(game);
     }
 
     public joinGame(game: Game, nickname: string): void {
@@ -100,32 +66,8 @@ export class GameService implements IGameService, OnModuleInit {
         player.online = false;
     }
 
-    public nextPlayer(game: Game): void {
-        game.currentPlayer = (game.currentPlayer + 1) % 6;
-        if (game.currentPlayer === 0) game.turn++;
-        this.logger.debug(`player ${game.currentPlayer}`);
-        this.eventEmitter.emit('NEXT_PLAYER', game);
-        this.eventEmitter.emit('GAME_STATE', game);
-    }
-
-    public async playMove(game: Game, move: ICoords[]): Promise<void> {
-        game.moves.push(move);
-        if (move[0]) {
-            game.board.getCell(move[0])?.setPawn(undefined);
-            game.board.getCell(move[move.length - 1])?.setPawn(game.currentPlayer);
-            this.updateLongestStreak(game, move.length - 1);
-            const player = game.players[game.currentPlayer];
-            if (move.length - 1 > player.longestStreak) {
-                player.longestStreak = move.length - 1;
-                await this.playerService.updatePLayer(player);
-            }
-        }
+    public async update(gameId: string, game: Game): Promise<void> {
         await this.gameMongooseRepository.update(game.id, game);
-        if (game.board.isWinner(game.currentPlayer)) {
-            await this.endGame(game);
-        } else {
-            this.nextPlayer(game);
-        }
     }
 
     public async endGame(game: Game): Promise<Game> {
@@ -163,9 +105,4 @@ export class GameService implements IGameService, OnModuleInit {
         return true;
     }
 
-    private updateLongestStreak(game: Game, streak: number) {
-        if (streak > game.longestStreak) {
-            game.longestStreak = streak;
-        }
-    }
 }

@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cell, Coords, playerPositions } from '../board/board';
+import { BoardService } from '../board/board.service';
 import { GAME_SERVICE_EVENT_TOKEN } from '../game/constants';
 import { IGameEvents } from '../game/game-events.interface';
 import { Game } from '../game/game.class';
@@ -18,7 +19,9 @@ export class BotService implements OnModuleInit {
 
     public constructor(
         @Inject(GAME_SERVICE_EVENT_TOKEN)
-        private readonly eventEmitter: IGameEvents
+        private readonly eventEmitter: IGameEvents,
+        @Inject(BoardService)
+        private readonly boardService: BoardService,
     ) { }
 
     public onModuleInit(): void {
@@ -26,7 +29,11 @@ export class BotService implements OnModuleInit {
             const player = game.players[game.currentPlayer];
             if (player.isBot) {
                 const move = this.play(game);
-                this.eventEmitter.emit('MOVE', game, move);
+                this.boardService.isValidMove(game, move);
+                this.boardService.playMove(game, move)
+                    .catch(err => {
+                        this.logger.error(err);
+                    });
             }
         });
     }
@@ -40,12 +47,16 @@ export class BotService implements OnModuleInit {
         playerPawns.forEach((cell) => {
             const currentDistance = Coords.dist(cell.coords, target.coords);
             const bestPath = this.findPath(game, cell, target);
+            let score = currentDistance - bestPath.distance;
+            if (playerPositions[(game.currentPlayer + 3) % 6].includes(cell.getIndex())) {
+                score /= 10;
+            }
             scorings.push({
                 id: cell.getIndex(),
                 currentDistance: currentDistance,
                 bestDistance: bestPath.distance,
                 path: bestPath.path,
-                score: currentDistance - bestPath.distance,
+                score: score,
             });
         });
         scorings.sort((a, b) => {
@@ -97,7 +108,7 @@ export class BotService implements OnModuleInit {
             if (allowNoJump && Math.abs(to.coords.y - from.coords.y) <= 1 && Math.abs(to.coords.x - from.coords.x) <= 2) moves.set(to, false);
             if (Math.abs(to.coords.y - from.coords.y) <= 2 && Math.abs(to.coords.x - from.coords.x) <= 4) {
                 const between = game.board.getCells().find((c) => {
-                    return c.getPawn()
+                    return c.getPawn() !== undefined
                         && c.coords.y === (from.coords.y + (to.coords.y - from.coords.y) / 2)
                         && c.coords.x === (from.coords.x + (to.coords.x - from.coords.x) / 2);
                 });

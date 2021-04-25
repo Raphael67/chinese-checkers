@@ -1,19 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { GAME_SERVICE_EVENT_TOKEN } from '../game/constants';
 import { Game } from '../game/game.class';
+import { GameService } from '../game/game.service';
+import { PlayerService } from '../player/player.service';
 import { Coords } from './board';
 import { BoardService } from './board.service';
+import { ConsoleService } from './console.service';
 
 describe('BoardService', () => {
     let service: BoardService;
+    let consoleService: ConsoleService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
+                {
+                    provide: GameService,
+                    useValue: {},
+                },
+                {
+                    provide: GAME_SERVICE_EVENT_TOKEN,
+                    useValue: {},
+                },
+                {
+                    provide: PlayerService,
+                    useValue: {},
+                },
+                {
+                    provide: ConsoleService,
+                    useValue: {},
+                },
                 BoardService,
             ],
         }).compile();
 
         service = module.get<BoardService>(BoardService);
+        consoleService = module.get(ConsoleService);
     });
     describe('isValidMove', () => {
         it('should return false if no pawn at origin', () => {
@@ -35,10 +57,39 @@ describe('BoardService', () => {
 
             expect(() => service.isValidMove(game, path)).toThrow();
         });
+        it('should return false for two step forward', () => {
+            const game = new Game();
+            const path = [new Coords(11, 3), new Coords(12, 4), new Coords(13, 5)];
 
+            expect(() => service.isValidMove(game, path)).toThrow();
+        });
+        it('should return false for one step and a jump', () => {
+            const game = new Game();
+            const path = [new Coords(11, 3), new Coords(12, 4), new Coords(14, 6)];
+
+            expect(() => service.isValidMove(game, path)).toThrow();
+        });
+        it('should return false for a jump and one step', () => {
+            const game = new Game();
+            const path = [new Coords(10, 2), new Coords(12, 4), new Coords(13, 5)];
+
+            expect(() => service.isValidMove(game, path)).toThrow();
+        });
+        it('should return false for one jump over nothing', () => {
+            const game = new Game();
+            const path = [new Coords(11, 3), new Coords(13, 5)];
+
+            expect(() => service.isValidMove(game, path)).toThrow();
+        });
         it('should return true for one cell move', () => {
             const game = new Game();
             const path = [new Coords(15, 3), new Coords(14, 4)];
+
+            expect(() => service.isValidMove(game, path)).toBeTruthy();
+        });
+        it('should return true for one jump over a pawn', () => {
+            const game = new Game();
+            const path = [new Coords(10, 2), new Coords(12, 4)];
 
             expect(() => service.isValidMove(game, path)).toBeTruthy();
         });

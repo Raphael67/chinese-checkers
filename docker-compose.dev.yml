@@ -12,25 +12,3 @@ services:
       - 27017:27017
     environment:
       MONGODB_DATABASE: chinese-checkers
-  mariadb:
-    image: mariadb:10.4
-    hostname: mariadb.chinese-checkers.dev
-    container_name: mariadb.chinese-checkers.dev
-    networks:
-      - default
-    ports:
-      - "3306:3306"
-    command:
-      - mysqld
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    environment:
-      - MYSQL_ROOT_PASSWORD=Azerty01
-      - MYSQL_DATABASE=chinese-checkers
-      - MYSQL_USER=chinese-checkers
-      - MYSQL_PASSWORD=Azerty01
-    volumes:
-      - D:\docker\volumes\chinese-checkers\mariadb\data:/var/lib/mysql
-      - D:\docker\volumes\chinese-checkers\mariadb\conf.d:/etc/mysql/conf.d
-    labels:
-      - com.docker.compose.project=chinese-checkers_dev

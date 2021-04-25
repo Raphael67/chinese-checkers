@@ -97,18 +97,4 @@ export class Board {
             return this.cells.get(cell.getIndex());
         }
     }
-
-    public print(): void {
-        console.log('------------------------------------------------');
-        for (let y = 0; y < 17; y++) {
-            let row = '';
-            for (let x = 0; x < 25; x++) {
-                const cell = this.getCell(new Coords(x, y));
-                if (!cell) row += ' ';
-                else row += cell.getPawn() === undefined ? '.' : cell.getPawn();
-            }
-            console.log(row);
-        }
-        console.log('------------------------------------------------');
-    }
 }

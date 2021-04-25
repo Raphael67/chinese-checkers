@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
@@ -36,14 +36,6 @@ export class GameController {
     public async createGame(): Promise<GameDetailsDto> {
         const game = await this.gameService.createGame();
         return new GameDetailsDto(game);
-    }
-
-    @Patch('/:gameId/start')
-    @ApiOperation({ summary: 'Start a game' })
-    @ApiResponse({ status: 201, description: 'Game has been successfuly started' })
-    public async startGame(@Param('gameId') gameId: string): Promise<void> {
-        const game = await this.gameService.loadGame(gameId);
-        await this.gameService.startGame(game);
     }
 
     @Post('/:gameId/player')
