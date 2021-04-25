@@ -25,17 +25,15 @@ export class BotService implements OnModuleInit {
     ) { }
 
     public onModuleInit(): void {
-        this.eventEmitter.on('NEXT_PLAYER', async (game: Game) => {
+        this.eventEmitter.on('NEXT_PLAYER', (game: Game) => {
             const player = game.players[game.currentPlayer];
             if (player.isBot) {
                 const move = this.play(game);
                 this.boardService.isValidMove(game, move);
-                setTimeout(() => {
-                    this.boardService.playMove(game, move)
-                        .catch(err => {
-                            this.logger.error(err);
-                        });
-                }, 1000);
+                this.boardService.playMove(game, move)
+                    .catch(err => {
+                        this.logger.error(err);
+                    });
             }
         });
     }

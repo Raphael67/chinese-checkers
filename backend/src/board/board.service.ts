@@ -6,6 +6,7 @@ import { GameService } from '../game/game.service';
 import { Player } from '../player/player.class';
 import { PlayerService } from '../player/player.service';
 import { Board, Coords } from './board';
+import { ConsoleService } from './console.service';
 
 export interface IBoardService {
     isValidMove(game: Game, move: Coords[]): boolean;
@@ -19,7 +20,9 @@ export class BoardService implements IBoardService {
         @Inject(GAME_SERVICE_EVENT_TOKEN)
         private readonly eventEmitter: IGameEvents,
         @Inject(PlayerService)
-        private readonly playerService: PlayerService
+        private readonly playerService: PlayerService,
+        @Inject(ConsoleService)
+        private readonly consoleService: ConsoleService,
     ) { }
 
     public async playMove(game: Game, move: ICoords[]): Promise<void> {
@@ -35,7 +38,7 @@ export class BoardService implements IBoardService {
             }
         }
         await this.gameService.update(game.id, game);
-        game.board.print();
+        await this.consoleService.drawBoard(game.board);
         if (game.board.isWinner(game.currentPlayer)) {
             await this.gameService.endGame(game);
         } else {
