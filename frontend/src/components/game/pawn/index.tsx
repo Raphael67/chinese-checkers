@@ -12,9 +12,10 @@ interface IProps {
     r: number;
     alone?: boolean;
     canMove?: boolean;
+    onPlaced?: () => void;
 }
 
-export const PawnTransitionDurations = [1000, 1000];
+const PawnTransitionDurations = [1000, 1000];
 
 const Pawn = (props: IProps) => {
     const defaultPosition = props.r + 1;
@@ -26,32 +27,43 @@ const Pawn = (props: IProps) => {
         x: props.x || defaultPosition,
         y: props.y || defaultPosition
     });
+    const isInit = useRef<boolean>(false);
+
+    const onPlaced = props.onPlaced;
 
     useEffect(() => {
-        const element = ref.current;
-        if (element) {
-            const d3Element = d3.select(element);
+        (async () => {
+            const element = ref.current;
+            if (element) {
+                const d3Element = d3.select(element);
 
-            if (props.x && props.y) {
+                if (props.x && props.y) {
+                    await d3Element
+                        .raise()
+                        .attr('r', props.r || 16)
+                        .transition()
+                        .duration(PawnTransitionDurations[0])
+                        .attr('cx', (Number(d3Element.attr('cx')) + (props.x || defaultPosition)) / 2)
+                        .attr('cy', (Number(d3Element.attr('cy')) + (props.y || defaultPosition)) / 2)
+                        .attr('r', 25)
+                        .transition()
+                        .duration(PawnTransitionDurations[1])
+                        .attr('cx', props.x || defaultPosition)
+                        .attr('cy', props.y || defaultPosition)
+                        .attr('r', props.r || 16)
+                        .end().catch((err) => {
+                            console.log(err);
+                        });
 
-                d3Element
-                    .raise()
-                    .attr('r', props.r || 16)
-                    .transition()
-                    .duration(PawnTransitionDurations[0])
-                    .attr('cx', (Number(d3Element.attr('cx')) + (props.x || defaultPosition)) / 2)
-                    .attr('cy', (Number(d3Element.attr('cy')) + (props.y || defaultPosition)) / 2)
-                    .attr('r', 25)
-                    .transition()
-                    .duration(PawnTransitionDurations[1])
-                    .attr('cx', props.x || defaultPosition)
-                    .attr('cy', props.y || defaultPosition)
-                    .attr('r', props.r || 16);
+                    if (isInit.current) {
+                        onPlaced && onPlaced();
+                    }
+                }
+
+                isInit.current = true;
             }
-
-
-        }
-    }, [props.x, props.y, props.r, props.colour, defaultPosition]);
+        })();
+    }, [props.x, props.y, props.r, props.colour, defaultPosition, onPlaced]);
 
     const clickPawn = (event: React.MouseEvent<SVGGeometryElement>) => {
         if (props.canMove) {

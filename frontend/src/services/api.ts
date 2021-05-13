@@ -156,12 +156,7 @@ export default class Api {
         }
 
         if (response.status < 200 || response.status >= 300) {
-            const errorMessage =
-                json && json.message ? json.message : 'An error occured';
-            const error = new Error(errorMessage);
-            (error as any).response = response;
-            // throw error
-            throw error;
+            console.warn(json && json.message ? json.message : 'An error occured');
         }
         return json;
     }
@@ -173,6 +168,7 @@ export default class Api {
             (config.api.hostname
                 ? config.api.hostname
                 : document.location.hostname) +
+            ':' + config.api.port +
             (config.api.path || '')
         );
     }

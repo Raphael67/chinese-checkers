@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { setPath, setPawnPlace, setPossiblePlaces } from 'redux/actions/game.action';
+import { setPath, setPossiblePlaces } from 'redux/actions/game.action';
 import { Type } from 'redux/actions/types';
 import Api from 'services/api';
 import Board, { ColourPosition } from './board';
@@ -15,6 +15,13 @@ export default class Game {
     private path: IPath[] = [];
     private movesOffset = 0;
     private status?: GameStatus;
+
+    private moves?: {
+        pawn?: IPawn;
+        places: IPawnPlace[][];
+        position: number;
+        offset: number;
+    };
 
     constructor(private store: Store<any, any>) { }
 
@@ -157,8 +164,8 @@ export default class Game {
             ...this.path
             ];
 
-            this.board.placePawn(this.pawnTaken, place);
-            setPawnPlace(this.store.dispatch, this.pawnTaken, place);
+            //this.board.placePawn(this.pawnTaken, place);
+            //setPawnPlace(this.store.dispatch, this.pawnTaken, place);
 
             Api.newMove({
                 gameId: this.id,
@@ -176,7 +183,7 @@ export default class Game {
         }
     }
 
-    public placePawnPlace(pawnPlace: IPawnPlace) {
+    public placePawnPlace(pawnPlace: IPawnPlace): IPawnPlace {
         const pawn = pawnPlace.pawn;
         if (pawn) {
             const pawnFound = this.board.getPawnById(pawn.id);
@@ -184,6 +191,7 @@ export default class Game {
 
             //setPawns(this.store.dispatch, this.board.getPawns());
         }
+        return pawnPlace;
     }
 
     private setPawn(possiblePlaces: IPath[], pawn?: IPawn) {
@@ -202,13 +210,13 @@ export default class Game {
         return this.board.getPawns();
     }
 
-    public clickPlace(place: string) {
+    public clickPlace(place: string): boolean {
         const path = this.getPath(this.path);
         // If click on a place already clicked
         if (path.includes(place)) {
             // And it's the last place clicked, we place the pawn
             if (place === path[path.length - 1]) {
-                this.doubleClickPlace(place);
+                return this.doubleClickPlace(place);
             }
             // Else, reset path to this place
             else {
@@ -227,12 +235,16 @@ export default class Game {
                 this.setPathAndPossiblePlaces(place, this.path);
             }
         }
+
+        return false;
     }
 
-    public doubleClickPlace(place: string) {
+    public doubleClickPlace(place: string): boolean {
         if (this.pawnTaken && this.getPath(this.path).includes(place)) {
             this.placePawn(place);
+            return true;
         }
+        return false;
     }
 
     private setPathAndPossiblePlaces(place: string, path: IPath[]) {
@@ -252,42 +264,61 @@ export default class Game {
         }
     }
 
-    public async *replayMoves(gameId: string) {
-        const pawnMoves = await this.getMoves(gameId).catch((err) => {
-            throw err;
-        });
-        this.movesOffset += pawnMoves.length;
+    public async setMoves(gameId: string): Promise<IPawnPlace[][]> {
+        this.moves = {
+            pawn: undefined,
+            places: await this.getMoves(gameId).catch((err) => {
+                throw err;
+            }),
+            position: 0,
+            offset: 0
+        };
+        this.movesOffset += this.moves.places.length;
+        return this.moves.places;
+    }
 
-        for (let offset = 0; offset < pawnMoves.length; offset++) {
-            let pawn: IPawn | undefined = undefined;
-            const pawnMove = pawnMoves[offset];
-            for (let moveNumber = 0; moveNumber < pawnMove.length - 1; moveNumber++) {
-                let position: number | undefined = undefined;
-                let move: IPawnPlace | undefined = undefined;;
-                // eslint-disable-next-line
-                await new Promise((resolve) => {
-                    setTimeout(() => {
-                        const pawnAtMove = pawnMove[moveNumber].pawn;
-                        if (pawnAtMove) {
-                            pawn = pawnAtMove;
-                            position = Number(Object.keys(ColourPosition).find((position: string) => {
-                                return ColourPosition[Number(position)] === pawnAtMove.colour;
-                            }));
+    public placeNextPawn(): IPawnPlace | undefined {
+        if (this.moves) {
+            let { places } = this.moves;
+            if (places.length > 0 && this.moves.position < places.length) {
+                if (this.moves.offset < places[this.moves.position].length) {
+
+                    if (!this.moves.pawn) {
+                        const pawn = places[this.moves.position][this.moves.offset].pawn;
+
+                        if (pawn) {
+                            this.moves.pawn = pawn;
                         }
-                        move = {
-                            pawn,
-                            place: pawnMove[moveNumber + 1].place
-                        };
-                        this.placePawnPlace(move);
-                        //setPawnPlace(move);
+                        else {
+                            this.moves.offset++;
+                            return this.placeNextPawn();
+                        }
+                    }
 
-                        resolve(undefined);
-                    }, 2000);
+                    const place = places[this.moves.position][this.moves.offset].place;
 
+                    if (place === this.board.getPlaceForPawn(this.moves.pawn)) {
+                        this.moves.offset++;
+                        return this.placeNextPawn();
+                    }
 
-                });
-                yield [position, this.board.getPawns()];
+                    const pawnPlace = this.placePawnPlace({
+                        pawn: this.moves.pawn,
+                        place
+                    });
+                    this.moves.offset++;
+                    return pawnPlace;
+                }
+
+                this.moves.pawn = undefined;
+                this.moves.offset = 0;
+                this.moves.position++;
+                return this.placeNextPawn();
+
             }
+            this.moves = undefined;
         }
-    };
+
+        return undefined;
+    }
 }

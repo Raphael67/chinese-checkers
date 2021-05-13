@@ -12,6 +12,8 @@ interface IProps {
     path: IHashPath;
     placesHighlighted: IHashPossiblePlaces;
     currentPlayerPosition?: number;
+    onPawnPlaced: () => void;
+    canMove: boolean;
 }
 
 const BoardComponent = (props: IProps) => {
@@ -40,7 +42,9 @@ const BoardComponent = (props: IProps) => {
         props.doubleClickPlace(event.currentTarget.id);
     };
 
-    const renderPawns = (pawns: IPawnPlace[]): (ReactElement | undefined)[] => {
+    const onPawnPlaced = props.onPawnPlaced;
+
+    const renderPawns = (pawns: IPawnPlace[], canMove: boolean): (ReactElement | undefined)[] => {
         return pawns.map((pawnPlace: IPawnPlace) => {
             const { pawn, place } = pawnPlace;
             const player = props.player;
@@ -48,8 +52,8 @@ const BoardComponent = (props: IProps) => {
             if (placeElement && pawn) {
                 const { cx, cy } = placeElement as unknown as SVGCircleElement;
                 const { id, colour } = pawn;
-                const canMove = player && player.position !== undefined && props.currentPlayerPosition !== undefined && props.currentPlayerPosition === player.position ? colour === ColourPosition[player.position] : false;
-                return <Pawn key={id} canMove={canMove} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16} />;
+                const playerCanMove = player && player.position !== undefined && canMove ? colour === ColourPosition[player.position] : false;
+                return <Pawn key={id} canMove={playerCanMove} colour={colour} id={id} x={cx.baseVal.value} y={cy.baseVal.value} r={16} onPlaced={onPawnPlaced} />;
             }
             return undefined;
         });
@@ -215,7 +219,7 @@ const BoardComponent = (props: IProps) => {
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} r="20" cy="816.7724" cx="318.30524" id="p119" className="place yellow"></circle>
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} className="place yellow" id="p120" cx="345.16806" cy="863.30017" r="20"></circle>
             <circle onClick={clickPlace} onDoubleClick={doubleClickPlace} className="place yellow" id="p121" cx="399.01025" cy="863.23688" r="20"></circle>
-            {renderPawns(props.pawns.pawns)}
+            {renderPawns(props.pawns.pawns, props.canMove)}
         </g>
     </svg>;
 };
@@ -225,6 +229,7 @@ export default memo(BoardComponent, (prevProps, nextProps) => {
         prevProps.player !== nextProps.player ||
         prevProps.currentPlayerPosition !== nextProps.currentPlayerPosition ||
         prevProps.placesHighlighted.hash !== nextProps.placesHighlighted.hash ||
-        prevProps.path.hash !== nextProps.path.hash
+        prevProps.path.hash !== nextProps.path.hash ||
+        prevProps.canMove !== nextProps.canMove
     );
 });
