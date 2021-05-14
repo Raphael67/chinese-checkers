@@ -15,7 +15,7 @@ interface IProps {
     onPlaced?: () => void;
 }
 
-const PawnTransitionDurations = [1000, 1000];
+const PawnTransitionDurations = [400, 400];
 
 const Pawn = (props: IProps) => {
     const defaultPosition = props.r + 1;
@@ -42,11 +42,13 @@ const Pawn = (props: IProps) => {
                         .raise()
                         .attr('r', props.r || 16)
                         .transition()
+                        .ease(d3.easeLinear)
                         .duration(PawnTransitionDurations[0])
                         .attr('cx', (Number(d3Element.attr('cx')) + (props.x || defaultPosition)) / 2)
                         .attr('cy', (Number(d3Element.attr('cy')) + (props.y || defaultPosition)) / 2)
                         .attr('r', 25)
                         .transition()
+                        .ease(d3.easeLinear)
                         .duration(PawnTransitionDurations[1])
                         .attr('cx', props.x || defaultPosition)
                         .attr('cy', props.y || defaultPosition)
