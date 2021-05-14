@@ -19,7 +19,7 @@ export const ColourPosition: IColourPosition = {
 export default class Board {
     private readonly map: Record<string, Record<string, number>> = {
         p1: { p2: 3, p13: 4, p18: 7, p44: 6 },
-        p2: { p1: 7, p13: 6, p35: 4 },
+        p2: { p1: 7, p13: 6, p35: 4, p39: 3 },
         p3: { p31: 3, p32: 6, p36: 4, p39: 7, p40: 2 },
         p4: { p16: 4, p25: 3, p26: 7, p37: 8, p38: 2, p46: 6 },
         p5: { p6: 7, p21: 4, p33: 3, p45: 6 },
@@ -76,7 +76,7 @@ export default class Board {
         p56: { p17: 2, p27: 8, p52: 3, p54: 7, p65: 6, p67: 4 },
         p57: { p16: 2, p46: 8, p51: 3, p52: 7, p63: 6, p68: 4 },
         p58: { p47: 8, p49: 2, p66: 7, p69: 6, p71: 4 },
-        p59: { p60: 3, p70: 2, p92: 8 },
+        p59: { p60: 3, p70: 2, p103: 7, p92: 8 },
         p60: { p59: 7, p70: 8 },
         p61: { p50: 8, p53: 2, p64: 3, p72: 6, p75: 4 },
         p62: { p51: 8, p55: 2, p66: 3, p68: 7, p73: 6, p77: 4 },
