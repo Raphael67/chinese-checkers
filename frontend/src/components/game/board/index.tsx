@@ -76,10 +76,8 @@ const Board = (props: IProps): ReactElement => {
     const setPlayerPlaying = useCallback((position: number) => {
         setPlayerPlayingFromProps(position);
         setCurrentPlayerPosition(position);
-        if (position === game.getPlayerPosition()) {
-            setCanMove(true);
-        }
-    }, [setPlayerPlayingFromProps, game]);
+
+    }, [setPlayerPlayingFromProps]);
 
     const onPawnPlaced = useCallback(async () => {
         const nextMove = game.placeNextPawn();
@@ -95,13 +93,18 @@ const Board = (props: IProps): ReactElement => {
             const playerPosition = game.getPlayerPosition();
             if (playerPosition !== undefined) {
                 setPlayerPlaying(playerPosition);
+
+                const player = mapStateToObj.player;
+                if (player && playerPosition === player.position) {
+                    setCanMove(true);
+                }
             }
             await refresh(game, gameParams.gameId, onPawnPlaced);
         }
         else {
             setPlayerPlaying(nextMove.pawn!.colour);
         }
-    }, [game, gameParams.gameId, setPlayerPlaying]);
+    }, [game, gameParams.gameId, setPlayerPlaying, mapStateToObj.player]);
 
     // Init board and set timer
     useEffect(() => {
@@ -119,6 +122,10 @@ const Board = (props: IProps): ReactElement => {
                 const playerPosition = game.getPlayerPosition();
                 if (playerPosition !== undefined) {
                     setPlayerPlaying(playerPosition);
+                    const player = mapStateToObj.player;
+                    if (player && playerPosition === player.position) {
+                        setCanMove(true);
+                    }
                 }
 
                 await refresh(game, gameParams.gameId, onPawnPlaced);
@@ -131,7 +138,7 @@ const Board = (props: IProps): ReactElement => {
         return () => {
             clearTimeout(Number(timer));
         };
-    }, [game, gameParams.gameId, onPawnPlaced, setPlayerPlaying]);
+    }, [game, gameParams.gameId, onPawnPlaced, setPlayerPlaying, mapStateToObj.player]);
 
     const clickPlace = (place: string) => {
         if (game.clickPlace(place)) {
