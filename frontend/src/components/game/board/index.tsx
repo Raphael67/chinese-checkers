@@ -33,13 +33,14 @@ interface IProps {
 
 let timer: NodeJS.Timeout;
 
-async function refresh(game: Game, gameId: string, onPawnPlaced: () => void) {
+async function refresh(game: Game, gameId: string, onPawnPlaced: () => void, setPlayerMovable: () => void) {
+    setPlayerMovable();
     if ((await game.setMoves(gameId)).length > 0) {
         onPawnPlaced();
     }
     else {
         timer = setTimeout(async () => {
-            await refresh(game, gameId, onPawnPlaced);
+            await refresh(game, gameId, onPawnPlaced, setPlayerMovable);
         }, 2000);
     }
 };
@@ -79,6 +80,14 @@ const Board = (props: IProps): ReactElement => {
 
     }, [setPlayerPlayingFromProps]);
 
+    const setPlayerMovable = useCallback(() => {
+        const playerPosition = game.getPlayerPosition();
+        const player = mapStateToObj.player;
+        if (player && playerPosition === player.position) {
+            setCanMove(true);
+        }
+    }, [game, mapStateToObj.player]);
+
     const onPawnPlaced = useCallback(async () => {
         const nextMove = game.placeNextPawn();
         const pawns = game.getPawns();
@@ -94,17 +103,13 @@ const Board = (props: IProps): ReactElement => {
             if (playerPosition !== undefined) {
                 setPlayerPlaying(playerPosition);
 
-                const player = mapStateToObj.player;
-                if (player && playerPosition === player.position) {
-                    setCanMove(true);
-                }
             }
-            await refresh(game, gameParams.gameId, onPawnPlaced);
+            await refresh(game, gameParams.gameId, onPawnPlaced, setPlayerMovable);
         }
         else {
             setPlayerPlaying(nextMove.pawn!.colour);
         }
-    }, [game, gameParams.gameId, setPlayerPlaying, mapStateToObj.player]);
+    }, [game, gameParams.gameId, setPlayerPlaying, setPlayerMovable]);
 
     // Init board and set timer
     useEffect(() => {
@@ -122,13 +127,10 @@ const Board = (props: IProps): ReactElement => {
                 const playerPosition = game.getPlayerPosition();
                 if (playerPosition !== undefined) {
                     setPlayerPlaying(playerPosition);
-                    const player = mapStateToObj.player;
-                    if (player && playerPosition === player.position) {
-                        setCanMove(true);
-                    }
+                    setPlayerMovable();
                 }
 
-                await refresh(game, gameParams.gameId, onPawnPlaced);
+                await refresh(game, gameParams.gameId, onPawnPlaced, setPlayerMovable);
             }
             catch (err) {
                 console.error(err);
@@ -138,7 +140,7 @@ const Board = (props: IProps): ReactElement => {
         return () => {
             clearTimeout(Number(timer));
         };
-    }, [game, gameParams.gameId, onPawnPlaced, setPlayerPlaying, mapStateToObj.player]);
+    }, [game, gameParams.gameId, onPawnPlaced, setPlayerPlaying, mapStateToObj.player, setPlayerMovable]);
 
     const clickPlace = (place: string) => {
         if (game.clickPlace(place)) {
