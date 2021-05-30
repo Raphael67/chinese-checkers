@@ -628,6 +628,609 @@ export default class Board {
         }
     };
 
+    private readonly defaultPawns: IPawnPosition[] = [
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn0"
+            },
+            position: {
+                x: 12,
+                y: 0
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn1"
+            },
+            position: {
+                x: 11,
+                y: 1
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn2"
+            },
+            position: {
+                x: 13,
+                y: 1
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn3"
+            },
+            position: {
+                x: 10,
+                y: 2
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn4"
+            },
+            position: {
+                x: 12,
+                y: 2
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn5"
+            },
+            position: {
+                x: 14,
+                y: 2
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn6"
+            },
+            position: {
+                x: 9,
+                y: 3
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn7"
+            },
+            position: {
+                x: 11,
+                y: 3
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn8"
+            },
+            position: {
+                x: 13,
+                y: 3
+            }
+        },
+        {
+            pawn: {
+                colour: 0,
+                id: "pawn9"
+            },
+            position: {
+                x: 15,
+                y: 3
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn10"
+            },
+            position: {
+                x: 0,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn11"
+            },
+            position: {
+                x: 2,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn12"
+            },
+            position: {
+                x: 4,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn13"
+            },
+            position: {
+                x: 6,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn14"
+            },
+            position: {
+                x: 18,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn15"
+            },
+            position: {
+                x: 20,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn16"
+            },
+            position: {
+                x: 22,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn17"
+            },
+            position: {
+                x: 24,
+                y: 4
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn18"
+            },
+            position: {
+                x: 1,
+                y: 5
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn19"
+            },
+            position: {
+                x: 3,
+                y: 5
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn20"
+            },
+            position: {
+                x: 5,
+                y: 5
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn21"
+            },
+            position: {
+                x: 19,
+                y: 5
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn22"
+            },
+            position: {
+                x: 21,
+                y: 5
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn23"
+            },
+            position: {
+                x: 23,
+                y: 5
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn24"
+            },
+            position: {
+                x: 2,
+                y: 6
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn25"
+            },
+            position: {
+                x: 4,
+                y: 6
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn26"
+            },
+            position: {
+                x: 20,
+                y: 6
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn27"
+            },
+            position: {
+                x: 22,
+                y: 6
+            }
+        },
+        {
+            pawn: {
+                colour: 5,
+                id: "pawn28"
+            },
+            position: {
+                x: 3,
+                y: 7
+            }
+        },
+        {
+            pawn: {
+                colour: 1,
+                id: "pawn29"
+            },
+            position: {
+                x: 21,
+                y: 7
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn30"
+            },
+            position: {
+                x: 3,
+                y: 9
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn31"
+            },
+            position: {
+                x: 21,
+                y: 9
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn32"
+            },
+            position: {
+                x: 2,
+                y: 10
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn33"
+            },
+            position: {
+                x: 4,
+                y: 10
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn34"
+            },
+            position: {
+                x: 20,
+                y: 10
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn35"
+            },
+            position: {
+                x: 22,
+                y: 10
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn36"
+            },
+            position: {
+                x: 1,
+                y: 11
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn37"
+            },
+            position: {
+                x: 3,
+                y: 11
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn38"
+            },
+            position: {
+                x: 5,
+                y: 11
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn39"
+            },
+            position: {
+                x: 19,
+                y: 11
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn40"
+            },
+            position: {
+                x: 21,
+                y: 11
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn41"
+            },
+            position: {
+                x: 23,
+                y: 11
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn42"
+            },
+            position: {
+                x: 0,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn43"
+            },
+            position: {
+                x: 2,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn44"
+            },
+            position: {
+                x: 4,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 4,
+                id: "pawn45"
+            },
+            position: {
+                x: 6,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn46"
+            },
+            position: {
+                x: 18,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn47"
+            },
+            position: {
+                x: 20,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn48"
+            },
+            position: {
+                x: 22,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 2,
+                id: "pawn49"
+            },
+            position: {
+                x: 24,
+                y: 12
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn50"
+            },
+            position: {
+                x: 9,
+                y: 13
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn51"
+            },
+            position: {
+                x: 11,
+                y: 13
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn52"
+            },
+            position: {
+                x: 13,
+                y: 13
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn53"
+            },
+            position: {
+                x: 15,
+                y: 13
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn54"
+            },
+            position: {
+                x: 10,
+                y: 14
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn55"
+            },
+            position: {
+                x: 12,
+                y: 14
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn56"
+            },
+            position: {
+                x: 14,
+                y: 14
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn57"
+            },
+            position: {
+                x: 11,
+                y: 15
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn58"
+            },
+            position: {
+                x: 13,
+                y: 15
+            }
+        },
+        {
+            pawn: {
+                colour: 3,
+                id: "pawn59"
+            },
+            position: {
+                x: 12,
+                y: 16
+            }
+        }
+    ];
+
     private pawns: Record<string, IPawnPlace> = {};
     private pawnsMap: Record<string, IPawn> = {};
 
@@ -651,6 +1254,10 @@ export default class Board {
             };
             this.pawnsMap[place] = pawn;
         });
+    }
+
+    public initBoardWithDefault() {
+        this.initBoard(this.defaultPawns);
     }
 
     private getPlacesAroundPlace(placesAround: Record<string, number>, forPawn: boolean): IPath[] {

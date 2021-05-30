@@ -28,6 +28,7 @@ export interface IHashPossiblePlaces {
 
 interface IProps {
     currentPlayerPosition?: number;
+    fromReplay?: boolean;
     setPlayerPlaying: (position: number) => void;
 }
 
@@ -115,7 +116,7 @@ const Board = (props: IProps): ReactElement => {
     useEffect(() => {
         (async () => {
             try {
-                const pawns = await game.initBoard(gameParams.gameId).catch((err) => {
+                const pawns = await game.initBoard(gameParams.gameId, props.fromReplay).catch((err) => {
                     throw err;
                 });
 
@@ -140,7 +141,7 @@ const Board = (props: IProps): ReactElement => {
         return () => {
             clearTimeout(Number(timer));
         };
-    }, [game, gameParams.gameId, onPawnPlaced, setPlayerPlaying, mapStateToObj.player, setPlayerMovable]);
+    }, [game, gameParams.gameId, onPawnPlaced, setPlayerPlaying, mapStateToObj.player, setPlayerMovable, props.fromReplay]);
 
     const clickPlace = (place: string) => {
         if (game.clickPlace(place)) {

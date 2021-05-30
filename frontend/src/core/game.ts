@@ -105,29 +105,37 @@ export default class Game {
         };
     };
 
-    public async initBoard(gameId: string): Promise<IPawnPlace[]> {
+    public async initBoard(gameId: string, newBoard = false): Promise<IPawnPlace[]> {
         this.board = new Board();
-        this.movesOffset = (await this.getMoves(gameId)).length;
-        const game = await this.getGame(gameId);
-        this.status = game.status;
-        this.setPlayerPosition(game.currentPlayer);
-        this.board.initBoard((await Api.getBoard({
-            gameId
-        }).catch((err) => {
-            throw err;
-        })).map((rawPawn: IRawPawn, index: number) => {
-            const { pawn, coords } = rawPawn;
-            return {
-                pawn: {
-                    colour: ColourPosition[pawn],
-                    id: `pawn${index}`
-                },
-                position: {
-                    x: coords.x,
-                    y: coords.y
-                }
-            };
-        }));
+        if (!newBoard) {
+            this.movesOffset = (await this.getMoves(gameId)).length;
+            const game = await this.getGame(gameId);
+            this.status = game.status;
+            this.setPlayerPosition(game.currentPlayer);
+            this.board.initBoard((await Api.getBoard({
+                gameId
+            }).catch((err) => {
+                throw err;
+            })).map((rawPawn: IRawPawn, index: number) => {
+                const { pawn, coords } = rawPawn;
+                return {
+                    pawn: {
+                        colour: ColourPosition[pawn],
+                        id: `pawn${index}`
+                    },
+                    position: {
+                        x: coords.x,
+                        y: coords.y
+                    }
+                };
+            }));
+        }
+        else {
+            this.movesOffset = 0;
+            this.status = 'STARTED';
+            this.setPlayerPosition(0);
+            this.board.initBoardWithDefault();
+        }
 
         return this.board.getPawns();
     }

@@ -42,7 +42,7 @@ const LeaderBoard = (): ReactElement => {
     };
 
     const replayGame = (id: string) => {
-        history.push(pages.game.path.replace(':gameId', id));
+        history.push(pages.replay.path.replace(':gameId', id));
     };
 
     useEffect(() => {
