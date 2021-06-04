@@ -1,23 +1,5 @@
 import { IRoute, routes } from 'routes';
 
-interface IConfig {
-    api: {
-        hostname: string;
-        port: number;
-        protocol: string;
-        path?: string;
-    };
-}
-
-let config: IConfig = {
-    api: {
-        hostname: window.location.host,
-        protocol: window.location.protocol,
-        path: '/api',
-        port: 443
-    },
-};
-
 export default class Api {
     public static register(gameParams: IGameParams, params: IRegisterParams): Promise<IUser> {
         const { nickname, position } = params;
@@ -162,15 +144,7 @@ export default class Api {
     }
 
     private static getApiHost(): string {
-        return (
-            config.api.protocol +
-            '//' +
-            (config.api.hostname
-                ? config.api.hostname
-                : document.location.hostname) +
-            ':' + config.api.port +
-            (config.api.path || '')
-        );
+        return document.location.origin + '/api';
     }
 
     private static replaceInPath(path: string, params: any): string {
