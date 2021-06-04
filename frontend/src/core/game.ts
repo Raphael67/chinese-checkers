@@ -107,6 +107,8 @@ export default class Game {
 
     public async initBoard(gameId: string, newBoard = false): Promise<IPawnPlace[]> {
         this.board = new Board();
+        setPossiblePlaces(this.store.dispatch, []);
+        setPath(this.store.dispatch, []);
         if (!newBoard) {
             this.movesOffset = (await this.getMoves(gameId)).length;
             const game = await this.getGame(gameId);
