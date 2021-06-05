@@ -39,8 +39,24 @@ export class GameMongooseRepository implements IGameRepository {
         return gameEntity;
     }
 
-    public async find(): Promise<Game[]> {
-        const gameEntities = await this.gameModel.find().exec();
+    public async find(
+        nickname?: string,
+        date?: Date,
+        orderBy: 'createdAt' | 'rounds' = 'createdAt'
+    ): Promise<Game[]> {
+        const filter: {
+            playerNicknames?: RegExp,
+            createdAt?: any;
+        } = {};
+        if (nickname) filter.playerNicknames = new RegExp(`^${nickname}$`, 'i');
+        if (date) {
+            const begin = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            const end = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+
+            filter.createdAt = { $gte: begin, $lt: end };
+        }
+        const gameEntities = await this.gameModel.find(filter).sort({ [orderBy]: orderBy === 'createdAt' ? 'desc' : 'asc' }).exec();
         return Promise.all(gameEntities.map(gameEntity => this.fromEntityToObject(gameEntity)));
 
     }

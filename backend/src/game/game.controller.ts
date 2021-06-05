@@ -1,5 +1,6 @@
 import { Body, ClassSerializerInterceptor, Controller, Get, Inject, Param, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { isDate } from 'class-validator';
 import { PlayerService } from '../player/player.service';
 import { GameDetailsDto } from './dto/game-details.dto';
 import { GamePlayerDto } from './dto/game-player.dto';
@@ -18,9 +19,13 @@ export class GameController {
     public async getGames(
         @Query('player') nickname?: string,
         @Query('date') date?: Date,
-        @Query('orderBy') orderBy: 'createdAt' | 'rounds' = 'createdAt'
+        @Query('orderBy') orderBy: 'created_at' | 'rounds' = 'created_at'
     ): Promise<GameDetailsDto[]> {
-        const games = await this.gameService.findFinishedGames();
+        const games = await this.gameService.findFinishedGames(
+            nickname,
+            isDate(date) ? date : undefined,
+            orderBy === 'created_at' ? 'createdAt' : orderBy
+        );
         return games.map((game) => new GameDetailsDto(game));
     }
 

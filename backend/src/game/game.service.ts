@@ -17,8 +17,12 @@ export class GameService {
         private readonly playerService: PlayerService,
     ) { }
 
-    public async findFinishedGames(): Promise<Game[]> {
-        return this.gameMongooseRepository.find();
+    public async findFinishedGames(
+        nickname?: string,
+        date?: Date,
+        orderBy: 'createdAt' | 'rounds' = 'createdAt'
+    ): Promise<Game[]> {
+        return this.gameMongooseRepository.find(nickname, date, orderBy);
     }
 
     public async loadGame(gameId: string): Promise<Game> {
