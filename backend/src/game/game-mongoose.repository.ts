@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { PlayerRepository } from '../player/player-mogoose.repository';
 import { IGameRepository } from './game-repository.interface';
-import { Game } from './game.class';
+import { Game, GameStatus } from './game.class';
 import { GameEntity } from './game.entity';
 
 export class GameMongooseRepository implements IGameRepository {
@@ -39,23 +39,20 @@ export class GameMongooseRepository implements IGameRepository {
         return gameEntity;
     }
 
-    public async find(
+    public async findFinishedGame(
         nickname?: string,
         date?: Date,
         orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<Game[]> {
-        const filter: {
-            playerNicknames?: RegExp,
-            createdAt?: any;
-        } = {};
+        const filter: FilterQuery<GameEntity> = {};
         if (nickname) filter.playerNicknames = new RegExp(`^${nickname}$`, 'i');
         if (date) {
             const begin = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
             const end = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-
             filter.createdAt = { $gte: begin, $lt: end };
         }
+        filter.status = GameStatus.FINISHED;
+
         const gameEntities = await this.gameModel.find(filter).sort({ [orderBy]: orderBy === 'createdAt' ? 'desc' : 'asc' }).exec();
         return Promise.all(gameEntities.map(gameEntity => this.fromEntityToObject(gameEntity)));
 

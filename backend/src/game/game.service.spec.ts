@@ -39,7 +39,7 @@ describe('GameService', () => {
 
     describe('find', () => {
         it('should return a list of games', async () => {
-            gameMongooseRepository.find = jest.fn(async () => []);
+            gameMongooseRepository.findFinishedGame = jest.fn(async () => []);
             await expect(service.findFinishedGames()).resolves.toBeInstanceOf(Array);
         });
     });

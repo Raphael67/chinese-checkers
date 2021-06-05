@@ -22,7 +22,7 @@ export class GameService {
         date?: Date,
         orderBy: 'createdAt' | 'rounds' = 'createdAt'
     ): Promise<Game[]> {
-        return this.gameMongooseRepository.find(nickname, date, orderBy);
+        return this.gameMongooseRepository.findFinishedGame(nickname, date, orderBy);
     }
 
     public async loadGame(gameId: string): Promise<Game> {
