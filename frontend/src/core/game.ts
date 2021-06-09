@@ -293,8 +293,9 @@ export default class Game {
             if (places.length > 0 && this.moves.position < places.length) {
                 if (this.moves.offset < places[this.moves.position].length) {
 
+                    const place = places[this.moves.position][this.moves.offset].place;
                     if (!this.moves.pawn) {
-                        const pawn = places[this.moves.position][this.moves.offset].pawn;
+                        const pawn = this.board.getPawnAtPlace(place);
 
                         if (pawn) {
                             this.moves.pawn = pawn;
@@ -304,8 +305,6 @@ export default class Game {
                             return this.placeNextPawn();
                         }
                     }
-
-                    const place = places[this.moves.position][this.moves.offset].place;
 
                     if (place === this.board.getPlaceForPawn(this.moves.pawn)) {
                         this.moves.offset++;

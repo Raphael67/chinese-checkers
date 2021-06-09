@@ -5,7 +5,7 @@ import { Game } from './game.class';
 @Injectable()
 export class GameCacheRepository implements IGameRepository {
 
-    public async find(): Promise<Game[]> {
+    public async findFinishedGame(): Promise<Game[]> {
         const games: Game[] = [];
         this.gameMap.forEach(game => games.push(game));
         return games;

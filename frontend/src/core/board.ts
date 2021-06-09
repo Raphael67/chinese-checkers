@@ -1341,6 +1341,10 @@ export default class Board {
         return this.pawns[pawn.id].place;
     }
 
+    public getPawnAtPlace(place: string): IPawn {
+        return this.pawnsMap[place];
+    }
+
     public getPawnFromRaw(rawPawn: IRawPawn): IPawnPlace {
         const coords = rawPawn.coords;
         const { x, y } = coords;

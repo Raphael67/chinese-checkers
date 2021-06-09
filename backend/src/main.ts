@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { version } from './version.json';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AppModule);
     app.useGlobalPipes(new ValidationPipe({
         whitelist: true,
@@ -25,4 +25,4 @@ async function bootstrap() {
 
     await app.listen(8080);
 }
-bootstrap();
+void bootstrap();
