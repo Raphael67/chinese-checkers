@@ -1,7 +1,5 @@
 FROM node:lts-alpine
 
-RUN apk add --no-cache mysql-client
-
 WORKDIR /app/backend
 
 EXPOSE 8080
